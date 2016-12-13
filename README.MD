@@ -1,5 +1,5 @@
 # MF
-    一个轻便简约干净型PHP框架，路由吸取Laravel，自动载入采用PSR-4，核心大小不到24kb!
+    一个轻便简约干净型PHP框架，路由吸取Laravel，采用composer autoload，核心大小不到24kb!
     初次使用建议直接看Base目录文件，用不了半天时间
 ### 目录结构
 * `Base` : 框架核心
@@ -12,7 +12,7 @@
 * `composer.json` : composer配置
 
 ### 注意
-* 由于采用PSR-4自动加载
+* 由于采用composer autoload自动加载
 * 添加新Class类后，请运行composer dump-autoload
 * 添加新目录后，先更新composer.json,再运行dump-autoload
 ```
@@ -26,5 +26,5 @@
     ]
 }
 ```
-   
+* psr-4的请update   
 * **否则error:找不到类,不要问我**

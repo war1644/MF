@@ -1,0 +1,17 @@
+{
+  "require": {
+    "noahbuscher/macaw": "dev-master",
+    "war1644/PHPWechatSdk": "dev-master"
+  },
+  "autoload": {
+    "classmap": [
+      "App/C",
+      "App/M",
+      "Base",
+      "Base/DB",
+      "Base/C",
+      "Base/M",
+      "Base/Tool"
+    ]
+  }
+}

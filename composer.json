@@ -7,11 +7,7 @@
     "classmap": [
       "App/C",
       "App/M",
-      "Base",
-      "Base/DB",
-      "Base/C",
-      "Base/M",
-      "Base/Tool"
+      "Base"
     ]
   }
 }

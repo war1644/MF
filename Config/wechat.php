@@ -11,6 +11,6 @@ return [
     'appid' =>'', //填写高级调用功能的app id
     'appsecret'=>'',//填写高级调用功能的密钥
     'debug'=>true,
-    'cachedir'=>RUN_PATH,
-    'logcallback'=>'logdebug'
+    'cacheDir'=>RUN_PATH.'Wechat/',//缓存目录
+    'logcallback'=>'WxDebug'//微信回调方法
 ];

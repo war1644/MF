@@ -1,7 +1,7 @@
 <?php
 namespace Base\Tool;
 use Base\Redis;
-use War1644\Phpwechatsdk\Wechat;
+use Base\Tool\Wechat\Wechat;
 /**
  * @Created by 路漫漫.
  * @Links: ahmerry@qq.com
@@ -15,11 +15,9 @@ class MFWechat extends Wechat{
         parent::__construct($option);
 
         Redis::init();
-        if (!$this->getCache(TOKEN_NAME.$option['appid']))
+        if (!$this->getCache($this->tokenName))
             //获取access_token,并进行全局缓存
             $this->checkAuth();
-
-        var_dump($this->getCache(TOKEN_NAME.$option['appid']));
     }
 
     /**
@@ -29,7 +27,7 @@ class MFWechat extends Wechat{
      * @param int $expired 默认7200
      * @return boolean
      */
-    protected function setCache($cachename, $value, $expired=7200) {
+    public function setCache($cachename, $value, $expired=7200) {
         return Redis::set($cachename, $value, $expired);
     }
 
@@ -47,7 +45,7 @@ class MFWechat extends Wechat{
      * @param string $cachename
      * @return boolean
      */
-    protected function removeCache($cachename) {
+    public function removeCache($cachename) {
         return Redis::delete($cachename);
     }
 

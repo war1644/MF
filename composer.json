@@ -1,7 +1,5 @@
 {
   "require": {
-    "war1644/Macaw": "dev-master",
-    "war1644/MFWechat": "dev-master"
   },
   "autoload": {
     "classmap": [

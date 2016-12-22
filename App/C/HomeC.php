@@ -15,9 +15,13 @@ class HomeC extends C{
 //        Redis::set('ks20688','djhkjahsdkhfkajsdhkahds');
 //        echo Redis::get('ks20688');
 
-//        $m = new UserM();
+//        $m = new UserM();$m->find(1)
+
 //        $this->assign('data',$m->find(1));
-        test();
-        $this->display('metalmax/index');
+//        test();
+//        $this->display('metalmax/index');
+
+        $this->view('KSWechat/Running');
+
     }
 }

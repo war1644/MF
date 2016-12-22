@@ -1,5 +1,5 @@
 <?php
-namespace Base;
+namespace Base\Tool;
 /**
  * Created by 路漫漫.
  * User: ahmerry@qq.com

@@ -15,15 +15,7 @@ class PublicC extends C{
     public $WX;
 
     public function index(){
-        if (!$this->WX) {
-            $option = require MFPATH . 'Config/wechat.php';
-            $this->WX = new MFWechat($option);
-        }
-        print_r($this->WX);
-
-        $m = new AppkeyM();
-        $this->assign('data',$m->find(1));
-        $this->display('home');
+       
     }
 
 

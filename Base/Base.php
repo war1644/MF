@@ -37,15 +37,15 @@ class Base {
         $msg = $exception->getMessage();
         $file = $exception->getFile();
         $line = $exception->getline();
-        $err = 'line:' . $line . ' ' .$msg . '<br /><pre>';
-
+        $err = "File : $file\n<br>Line : $line\n<br>$msg\n<pre>";
+        //写入日志
+        MFLog($err);
         $traces = $exception->getTrace();
         if($exception instanceof \ErrorException) {
             array_shift($traces);
         }
+
         $c = new \Base\C();
-        $c->assign('err',$err);
-        $c->assign('traces',$traces);
-        $c->display('error');
+        $c->view('error',['err'=>$err,'traces'=>$traces]);
     }
 }

@@ -44,12 +44,11 @@ class MFWAF{
     }
 
 
-    function WriteLog($log)
-    {
-        $logpath = RUN_PATH."DefendLog.txt";
-        $log_f = fopen($logpath,"a+");
-        fputs($log_f,$log."\r\n");
-        fclose($log_f);
+    function WriteLog($log) {
+        $logpath = RUN_PATH . "DefendLog.txt";
+        $log_f = fopen( $logpath, "a+" );
+        fputs( $log_f, $log . "\r\n" );
+        fclose( $log_f );
     }
     function check_data($arr,$v) {
         foreach($arr as $key=>$value)
@@ -65,14 +64,11 @@ class MFWAF{
             { $this->check_data($value,$v);}
         }
     }
-    function check($str,$v)
-    {
-        foreach($v as $key=>$value)
-        {
-            if (preg_match("/".$value."/is",$str)==1||preg_match("/".$value."/is",urlencode($str))==1)
-            {
-                $this->WriteLog("<br>IP: ".$_SERVER["REMOTE_ADDR"]."<br>时间: ".strftime("%Y-%m-%d %H:%M:%S")."<br>页面:".$_SERVER["PHP_SELF"]."<br>提交方式: ".$_SERVER["REQUEST_METHOD"]."<br>提交数据: ".$str);
-                exit($_SERVER['REMOTE_ADDR']."非法操作，已记录你的行为");
+    function check($str,$v) {
+        foreach ($v as $key => $value) {
+            if (preg_match("/" . $value . "/is", $str) == 1 || preg_match("/" . $value . "/is", urlencode($str)) == 1) {
+                $this->WriteLog("<br>IP: " . $_SERVER["REMOTE_ADDR"] . "<br>时间: " . strftime("%Y-%m-%d %H:%M:%S") . "<br>页面:" . $_SERVER["PHP_SELF"] . "<br>提交方式: " . $_SERVER["REQUEST_METHOD"] . "<br>提交数据: " . $str);
+                exit($_SERVER['REMOTE_ADDR'] . "非法操作，已记录你的行为");
             }
         }
     }

@@ -26,4 +26,4 @@ require_once MFPATH."Base/F/functions.php";
 new Base();
 
 //路由,交通指挥出场
-require_once MFPATH."Config/routes.php";
+require_once CONFIG_PATH."routes.php";

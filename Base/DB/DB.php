@@ -1,38 +1,62 @@
 <?php
 namespace Base;
 /**
- * Created by 路漫漫.
- * User: ahmerry@qq.com
- * Date: 2016/12/8 15:32
+ * 数据库PDO操作
+ * @author 路漫漫
+ * @link ahmerry@qq.com
+ * @version V1.0
+ * @since
+ * <p>v0.9 2016/12/15 13:52  初版</p>
+ * <p>v1.0 2016/12/28 9:21  数据连接采用单例模式,添加事务方法</p>
  */
 
-class DB extends \PDO {
-	public function __construct() {
-		$cfg = include(MFPATH . 'Config/db.php');
-		$dsn = 'mysql:host=' . $cfg['host'] . ';dbname=' . $cfg['dbname'];
-		parent::__construct($dsn , $cfg['user'] , $cfg['password']);
-		$this->charset($cfg['charset']);
-	}
+class DB {
+    protected static $obj = null;
+    protected $db;
+
+    private function __construct() {
+        if (!class_exists('PDO')) throw new \Exception("你的环境不支持:PDO");
+
+        $cfg = include(CONFIG_PATH . 'db.php');
+        $dsn = 'mysql:host=' . $cfg['host'] . ';dbname=' . $cfg['dbname'];
+        try {
+            $this->db = new \PDO($dsn, $cfg['user'], $cfg['password']);
+            $this->charset($cfg['charset']);
+        }catch (\PDOException $e){
+            throw new \Exception($e);
+        }
+    }
+    //单例目的就是统一管理对象，所以直接关闭clone
+    //想要对象？去找Ins()
+    private function __clone() {}
+
+    public static function Ins(){
+        if (self::$obj===null){
+            self::$obj = new self();
+        }
+        return self::$obj;
+    }
 
 	/**
 	* 选择数据库
 	*/
 	public function useDb($db) {
-		$this->exec('use ' . $db);
+        $this->db->exec('use ' . $db);
 	}
 
 	/**
 	* 设置字符集
 	*/
 	public function charset($char) {
-		$this->exec('set names ' . $char);
+        $this->db->exec('set names ' . $char);
+        $this->db->exec('SET character_set_connection='.$char.', character_set_results='.$char.', character_set_client=binary');
 	}
 
 	/**
 	* 查询1行
 	*/
 	public function getRow($sql , $params=[]) {
-		$st = $this->prepare($sql);
+		$st = $this->db->prepare($sql);
 		if($st->execute($params)) {
 			return $st->fetch(\PDO::FETCH_ASSOC);
 		} else {
@@ -45,7 +69,7 @@ class DB extends \PDO {
 	* 查询多行
 	*/
 	public function getAll($sql , $params=[]) {
-		$st = $this->prepare($sql);
+		$st = $this->db->prepare($sql);
 		if($st->execute($params)) {
 			return $st->fetchAll(\PDO::FETCH_ASSOC);
 		} else {
@@ -58,7 +82,7 @@ class DB extends \PDO {
 	* 删除数据
 	*/
 	public function delete($sql , $params=[]) {
-		$st = $this->prepare($sql);
+		$st = $this->db->prepare($sql);
 		if($st->execute($params)) {
 			return $st->rowCount();
 		} else {
@@ -71,9 +95,9 @@ class DB extends \PDO {
 	* 添加记录
 	*/
 	public function insert($sql , $params=[]) {
-		$st = $this->prepare($sql);
+		$st = $this->db->prepare($sql);
 		if($st->execute($params)) {
-			return $this->lastInsertId();
+			return $this->db->lastInsertId();
 		} else {
 			list(,$errno , $errstr) = $st->errorinfo();
 			throw new \Exception($errstr, $errno);
@@ -84,7 +108,7 @@ class DB extends \PDO {
 	* 修改记录
 	*/
 	public function update($sql , $params=[]) {
-		$st = $this->prepare($sql);
+		$st = $this->db->prepare($sql);
 		if($st->execute($params)) {
 			return $st->rowCount();
 		} else {
@@ -92,5 +116,26 @@ class DB extends \PDO {
 			throw new \Exception($errstr, $errno);
 		}
 	}
+
+    /**
+     * beginTransaction 开始事务
+     */
+    public function BeginTransaction() {
+        $this->db->beginTransaction();
+    }
+
+    /**
+     * commit 提交事务
+     */
+    public function Commit() {
+        $this->db->commit();
+    }
+
+    /**
+     * rollback 回滚事务
+     */
+    public function Rollback() {
+        $this->db->rollback();
+    }
 
 }

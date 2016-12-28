@@ -57,7 +57,7 @@ class M {
     * 获取Db的实例,用于查询数据库
     */
     public function getDb() {
-        $this->db = new DB();
+        $this->db = DB::Ins();
     }
 
     /**

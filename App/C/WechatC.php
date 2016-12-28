@@ -18,7 +18,6 @@ class WechatC extends C {
     protected $WX;
     protected $jsApi;
     const DEBUG = true;
-    const TICKET= 'gQH47joAAAAAAAAAASxodHRwOi8vd2VpeGluLnFxLmNvbS9xL2taZ2Z3TVRtNzJXV1Brb3ZhYmJJAAIEZ23sUwMEmm3sUw==';
 
     public function __construct() {
         MFLog('收到微信请求');

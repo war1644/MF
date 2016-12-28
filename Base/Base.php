@@ -22,8 +22,7 @@ class Base {
      * 处理错误
      */
     public function handlerError($errno , $errstr , $file , $line) {
-        $exception = new \ErrorException($errstr , $errno , 1 , $file , $line);
-        throw $exception;
+        throw new \ErrorException($errstr , $errno , 1 , $file , $line);
     }
 
     public function handlerException($exception) {

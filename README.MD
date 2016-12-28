@@ -1,5 +1,5 @@
 # MF
-    一个轻便简约干净型PHP框架，路由吸取Laravel，采用composer autoload，核心大小不到24kb!
+    一个轻便简约干净型PHP框架，Macaw路由，composer autoload，核心大小不到24kb!
     初次使用建议直接看Base目录文件，用不了半天时间
 ### 目录结构
 * `Base` : 框架核心

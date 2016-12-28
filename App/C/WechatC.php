@@ -8,10 +8,8 @@
  * <p>v0.9 2016/12/8 15:15  初版</p>
  */
 use Base\C;
-use Base\Redis;
 use Base\Tool\MFWechat;
 use Base\Tool\Wechat\Wechat;
-use Base\Tool\Wechat\ErrorCode;
 
 class WechatC extends C {
 
@@ -61,11 +59,6 @@ class WechatC extends C {
 
         ];
         $this->WX->createMenu($buttons);
-    }
-
-    //微信调试回调debug
-    protected function WxDebug($text){
-        MFLog($text,'wxdebug','Wechat/');
     }
 
     //接收微信信息

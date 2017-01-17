@@ -8,12 +8,21 @@
 use Base\C;
 use Base\Tool\Vcode;
 use Base\Tool\Page;
-class PublicC extends C{
+class PublicC extends C {
 
     protected $WX;
 
     public function index(){
        
+    }
+
+    public function run(){
+        $this->view('running','','KSWechat/');
+    }
+
+    public function EndRun() {
+        $this->view('endRunning','','KSWechat/');
+
     }
 
     /**

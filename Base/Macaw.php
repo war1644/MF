@@ -4,10 +4,15 @@ namespace war1644\Macaw;
 use Base\Tool\MFWAF;
 /**
  * 框架核心路由类
- * 增加waf防御,传递方法到调用类 by 路漫漫
+ *
  * @auth NoahBuscher
  * @link https://github.com/NoahBuscher/Macaw
+ * @version V1.2
+ * @since
+ * <p>v1.1 2017/1/2 13:52 增加waf防御,传递调用方法到调用类 by 路漫漫</p>
+ * <p>v1.2 2017/1/28 9:21  修复重复取参的bug by 路漫漫</p>
  */
+
 
 /**
  * @method static Macaw get(string $route, Callable $callback)
@@ -126,7 +131,8 @@ class Macaw {
                 if (preg_match('#^' . $route . '$#', $uri, $matched)) {
                     if (self::$methods[$pos] == $method || self::$methods[$pos] == 'ANY') {
                         $found_route = true;
-
+                        //非法数据过滤
+                        if (self::$wafs[$pos]===true) new MFWAF($method);
                         // Remove $matched[0] as [1] is the first parameter.
                         array_shift($matched);
 

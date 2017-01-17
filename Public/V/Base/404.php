@@ -77,7 +77,7 @@
         0%{transform:rotateX(0deg) rotateY(0deg) rotateZ(0deg);}
         100%{transform:rotateX(360deg) rotateY(360deg) rotateZ(360deg);}
     }
-    @-0-keyframes play{
+    @-o-keyframes play{
         0%{transform:rotateX(0deg) rotateY(0deg) rotateZ(0deg);}
         100%{transform:rotateX(360deg) rotateY(360deg) rotateZ(360deg);}
     }
@@ -101,5 +101,6 @@
         </div>
     </div>
 </a>
+<p><?php echo $data['err'];?></p>
 </body>
 </html>

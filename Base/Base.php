@@ -36,6 +36,7 @@ class Base {
         $msg = $exception->getMessage();
         $file = $exception->getFile();
         $line = $exception->getline();
+        $code = $exception->getCode();
         $err = "File : $file\n<br>Line : $line\n<br>$msg\n<pre>";
         //写入日志
         MFLog($err);
@@ -43,8 +44,13 @@ class Base {
         if($exception instanceof \ErrorException) {
             array_shift($traces);
         }
-
         $c = new \Base\C();
-        $c->view('error',['err'=>$err,'traces'=>$traces]);
+        if (isset($code) && $code==404){
+            $c->view('404',['err'=>$err],'Base/');
+        }else{
+            $c->view('error',['err'=>$err,'traces'=>$traces],'Base/');
+
+        }
+
     }
 }

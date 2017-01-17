@@ -15,21 +15,39 @@ use war1644\Macaw\Macaw;
 Macaw::get('fuck', function() {
     echo "成功！";
 });
-Macaw::get('home', 'HomeC@home');
-Macaw::get('wxindex', 'WechatC@Test');
+
+Macaw::any('',function (){
+    echo 'welcome to MF';
+});
+
+Macaw::any('index.php/Wechat/(:all)',function ($p){
+    $c = new WechatC();
+    $c->method = $p;
+    $c->$p();
+});
+
+Macaw::any('index.php/Public/(:all)',function ($p){
+    $c = new PublicC();
+    $c->method = $p;
+    $c->$p();
+});
+
+Macaw::get('wxindex', 'WechatC@Index');
 Macaw::any('wechat', 'WechatC@auth');
+
+Macaw::get('wxtest', 'WechatC@Test');
+Macaw::get('wxrank', 'WechatC@GetCode');
+Macaw::get('wxmenu', 'WechatC@SetMenus');
+//Macaw::get('mac', 'WechatC@ForAddMac');
 //Macaw::any('logdebug', 'WechatC@logdebug');
-Macaw::get('wetest', 'WechatC@Index');
-Macaw::get('wemenu', 'WechatC@SetMenus');
+//Macaw::get('home', 'HomeC@home');
 
-
-Macaw::get('wemenu', 'WechatC@SetMenus');
 Macaw::$error_callback = function() {
-    throw new \Exception("路由无匹配项 404 Not Found");
+    throw new \Exception("路由无匹配项 404 Not Found",404);
 };
 
-//有啥是老子hold不住的, 额,post就hold不住...
-//Macaw::get('(:all)', function($fu) {
+//有啥是我hold不住的？
+//Macaw::any('(:all)', function($fu) {
 //    echo '未匹配到路由<br>'.$fu;
 //});
 

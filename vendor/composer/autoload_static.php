@@ -9,13 +9,14 @@ class ComposerStaticInit641aec49956ef204ec8526f7ffbca286
     public static $classMap = array (
         'AdminC' => __DIR__ . '/../..' . '/App/C/Admin/AdminC.php',
         'AppkeyM' => __DIR__ . '/../..' . '/App/M/AppkeyM.php',
-        'Base' => __DIR__ . '/../..' . '/Base/Base.php',
-        'Base\\C' => __DIR__ . '/../..' . '/Base/C/C.php',
-        'Base\\DB' => __DIR__ . '/../..' . '/Base/DB/DB.php',
-        'Base\\M' => __DIR__ . '/../..' . '/Base/M/M.php',
-        'Base\\MyPDO' => __DIR__ . '/../..' . '/Base/DB/MyPDO.php',
-        'Base\\Redis' => __DIR__ . '/../..' . '/Base/DB/Redis.php',
-        'Base\\Tool\\MFWAF' => __DIR__ . '/../..' . '/Base/Tool/MFWAF.php',
+        'Base\\Base' => __DIR__ . '/../..' . '/Base/Base.php',
+        'Base\\C' => __DIR__ . '/../..' . '/Base/C.php',
+        'Base\\DB\\DB' => __DIR__ . '/../..' . '/Base/DB/DB.php',
+        'Base\\DB\\MyPDO' => __DIR__ . '/../..' . '/Base/DB/MyPDO.php',
+        'Base\\DB\\Redis' => __DIR__ . '/../..' . '/Base/DB/Redis.php',
+        'Base\\M' => __DIR__ . '/../..' . '/Base/M.php',
+        'Base\\MFWAF' => __DIR__ . '/../..' . '/Base/MFWAF.php',
+        'Base\\Macaw' => __DIR__ . '/../..' . '/Base/Macaw.php',
         'Base\\Tool\\MFWechat' => __DIR__ . '/../..' . '/Base/Tool/MFWechat.php',
         'Base\\Tool\\Page' => __DIR__ . '/../..' . '/Base/Tool/Page.php',
         'Base\\Tool\\Socket' => __DIR__ . '/../..' . '/Base/Tool/Socket.php',
@@ -31,7 +32,6 @@ class ComposerStaticInit641aec49956ef204ec8526f7ffbca286
         'PublicC' => __DIR__ . '/../..' . '/App/C/PublicC.php',
         'UserM' => __DIR__ . '/../..' . '/App/M/UserM.php',
         'WechatC' => __DIR__ . '/../..' . '/App/C/WechatC.php',
-        'war1644\\Macaw\\Macaw' => __DIR__ . '/../..' . '/Base/Macaw.php',
     );
 
     public static function getInitializer(ClassLoader $loader)

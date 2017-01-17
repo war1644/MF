@@ -1,12 +1,12 @@
 <?php
-namespace Base;
+namespace Base\DB;
 /**
- * Created by 路漫漫.
- * User: ahmerry@qq.com
- * Date: 2016/12/9 10:58
- *
- * Redis
- *
+ * Redis数据库
+ * @author 路漫漫
+ * @link ahmerry@qq.com
+ * @version V0.9
+ * @since
+ * <p>v0.9 2016/12/18 9:58  初版</p>
  */
 
 class Redis {

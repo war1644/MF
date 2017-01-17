@@ -35,7 +35,7 @@
 window.onload = function (){
     //请求服务器握手
     var ws = new WebSocket("ws://127.0.0.1:1935");
-    name = prompt('来个名字吧：');
+    var name = prompt('来个名字吧：');
     //握手成功触发
     ws.onopen = function(){
         console.log("握手成功");

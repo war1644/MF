@@ -1,4 +1,5 @@
 <?php
+namespace Base\Tool;
 /**
  * Socket工具类，PHP的socket咋就这么泪奔呢？嗯，我技术问题>_<
  * 客户端在Public/V/Base
@@ -11,7 +12,7 @@
  * <p>v0.9 2017/1/17 10:48  初版</p>
  */
 
-namespace Base\Tool;
+
 ob_implicit_flush();
 
 class Socket {

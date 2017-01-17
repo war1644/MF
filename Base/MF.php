@@ -23,7 +23,7 @@ require_once MFPATH."vendor/autoload.php";
 require_once MFPATH."Base/F/functions.php";
 
 //接管
-new Base();
+new \Base\Base();
 
 //路由,交通指挥出场
 require_once CONFIG_PATH."routes.php";

@@ -1,7 +1,5 @@
 <?php
-
-namespace war1644\Macaw;
-use Base\Tool\MFWAF;
+namespace Base;
 /**
  * 框架核心路由类
  *

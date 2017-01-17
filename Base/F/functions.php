@@ -14,7 +14,7 @@
  */
 function MFLog($log, $name='', $path='') {
     if (!$path){
-        $path = RUN_PATH . 'Logs/';
+        $path = RUN_PATH . 'Logs/'.date('Y/');
     }else{
         $path = RUN_PATH . $path;
     }
@@ -52,6 +52,46 @@ function Session($name,$value=''){
     }else{
         return $_SESSION[$name];
     }
+}
+
+/**
+ * 获取IP
+ * @return string $ip
+ */
+function GetIp() {
+    static $ip = null;
+    if ($ip !==null) {
+        return $ip;
+    }
+    //判断是否为代理/别名/常规
+    if (getenv('HTTP_X_FORWARDED_FOR')) {
+
+        $ip = getenv('HTTP_X_FORWARDED_FOR');
+
+    } elseif (getenv('HTTP_CLIENT_IP')) {
+
+        $ip = getenv('HTTP_CLIENT_IP');
+
+    } else {
+        $ip = getenv('REMOTE_ADDR');
+    }
+    return $ip;
+}
+
+/**
+ * 递归转义数组中的字符,防止SQL注入
+ * @param
+ * @return bool 失败则返回false
+ */
+function SqlDef($arr) {
+    foreach ($arr as $k => $v) {
+        if (is_string($v)) {
+            $arr[$k] = addslashes ($v);
+        } elseif (is_array($v)) {
+            $arr[$k] = sqlDef($v);
+        }
+    }
+    return $arr;
 }
 
 /**
@@ -129,4 +169,74 @@ function HttpPost($url,$param,$post_file=false){
     }else{
         return false;
     }
+}
+
+/**
+ * 生成等比例缩略图
+ * @param $pic filename
+ * @param $w,$h 缩略后的宽高
+ * @return string 缩略图路径,失败则返回false
+ */
+function ScalePic($pic,$w=200,$h=200) {
+    $path =MFPATH.'Upload/'.date('m-H-i-s').'.png';
+    //获取图片信息
+    list($bw,$bh,$type) = getimagesize($pic);
+    //创建大小画布
+    //1 = GIF，2 = JPG，3 = PNG，4 = SWF，5 = PSD，6 = BMP
+    $img = [
+        1=>'imagecreatefromgif',
+        2=>'imagecreatefromjpeg',
+        3=>'imagecreatefrompng',
+        6=>'imagecreatefromwbmp'
+    ];
+    $big = $img[$type]($pic);//动态调用
+    $small = imagecreatetruecolor($w, $h);//缩率图放置框
+    //造色,填充
+    $white = imagecolorallocate($small, 255, 255, 255);
+    imagefill($small, 0, 0, $white);
+
+    //计算缩略比
+    $balance = min($w/$bw,$h/$bh);
+    $new_bw=$balance*$bw;
+    $new_bh=$balance*$bh;
+    //缩略
+    imagecopyresampled($small, $big, ($w-$new_bw)/2, ($h-$new_bh)/2, 0, 0,$new_bw, $new_bh, $bw, $bh);
+    //输出,关闭画布
+    imagepng($small,$path);
+    imagedestroy($big);
+    imagedestroy($small);
+    return $path;
+}
+
+
+/**
+ * 加水印
+ * @param $pic filename
+ * @param $stamp 水印文件
+ * @return string 水印图路径,失败则返回false
+ */
+function AddStampPic($pic,$stamp) {
+    $path =MFPATH.'Upload/'.'stamp'.date('m-H-i-s').'.png';
+    //获取图片信息
+    list($bw,$bh,$btype) = getimagesize($pic);
+    list($sw,$sh,$stype) = getimagesize($stamp);
+
+    //创建大小画布
+    //1 = GIF，2 = JPG，3 = PNG，4 = SWF，5 = PSD，6 = BMP
+    $img = [
+        1=>'imagecreatefromgif',
+        2=>'imagecreatefromjpeg',
+        3=>'imagecreatefrompng',
+        6=>'imagecreatefromwbmp'
+    ];
+    $big = $img[$btype]($pic);//动态调用
+    $small =  $img[$stype]($stamp);
+
+    //水印贴大画布上
+    imagecopymerge($big, $small, $bw-$sw, $bh-$sh, 0, 0, $sw, $sh, 60);
+    //保存,关闭
+    imagepng($big,$path);
+    imagedestroy($big);
+    imagedestroy($small);
+    return $path;
 }

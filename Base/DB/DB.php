@@ -1,5 +1,5 @@
 <?php
-namespace Base;
+namespace Base\DB;
 /**
  * 数据库PDO操作
  * @author 路漫漫

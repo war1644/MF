@@ -1,4 +1,5 @@
 <?php
+namespace Base;
 /**
  * Created by 路漫漫.
  * User: ahmerry@qq.com

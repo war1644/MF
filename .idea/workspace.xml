@@ -1,24 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="e80c507a-60b6-4396-8512-10b58c5fa3fd" name="Default" comment="WAF防御新增转义处理，修改命名空间，调整Base下目录结构">
+    <list default="true" id="e80c507a-60b6-4396-8512-10b58c5fa3fd" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Base/Base.php" afterPath="$PROJECT_DIR$/Base/Base.php" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Base/DB/DB.php" afterPath="$PROJECT_DIR$/Base/DB/DB.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Base/DB/Redis.php" afterPath="$PROJECT_DIR$/Base/DB/Redis.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Base/F/functions.php" afterPath="$PROJECT_DIR$/Base/F/functions.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Base/MF.php" afterPath="$PROJECT_DIR$/Base/MF.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Base/Macaw.php" afterPath="$PROJECT_DIR$/Base/Macaw.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Base/Tool/Socket.php" afterPath="$PROJECT_DIR$/Base/Tool/Socket.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Config/routes.php" afterPath="$PROJECT_DIR$/Config/routes.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Public/V/Base/SocketClient.html" afterPath="$PROJECT_DIR$/Public/V/Base/SocketClient.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/README.MD" afterPath="$PROJECT_DIR$/README.MD" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/vendor/composer/ClassLoader.php" afterPath="$PROJECT_DIR$/vendor/composer/ClassLoader.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/vendor/composer/autoload_classmap.php" afterPath="$PROJECT_DIR$/vendor/composer/autoload_classmap.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/vendor/composer/autoload_static.php" afterPath="$PROJECT_DIR$/vendor/composer/autoload_static.php" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/Base/C/C.php" afterPath="$PROJECT_DIR$/Base/C.php" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/Base/M/M.php" afterPath="$PROJECT_DIR$/Base/M.php" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/Base/Tool/MFWAF.php" afterPath="$PROJECT_DIR$/Base/MFWAF.php" />
     </list>
     <ignored path="MFFC.iws" />
     <ignored path=".idea/" />
@@ -45,86 +30,26 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="450">
-      <file leaf-file-name="MFWAF.php" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Base/MFWAF.php">
+      <file leaf-file-name="MyPDO.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Base/DB/MyPDO.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="58">
-              <caret line="2" column="0" lean-forward="false" selection-start-line="2" selection-start-column="0" selection-end-line="3" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="routes.php" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Config/routes.php">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-145">
-              <caret line="12" column="16" lean-forward="false" selection-start-line="12" selection-start-column="16" selection-end-line="12" selection-end-column="16" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="README.MD" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/README.MD">
-          <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
-            <state split_layout="SPLIT">
-              <first_editor relative-caret-position="348">
-                <caret line="10" column="51" lean-forward="true" selection-start-line="10" selection-start-column="51" selection-end-line="10" selection-end-column="51" />
-                <folding />
-              </first_editor>
-              <second_editor />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="MF.php" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Base/MF.php">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="597">
-              <caret line="25" column="0" lean-forward="false" selection-start-line="25" selection-start-column="0" selection-end-line="26" selection-end-column="0" />
+            <state relative-caret-position="126">
+              <caret line="49" column="34" lean-forward="false" selection-start-line="45" selection-start-column="4" selection-end-line="69" selection-end-column="5" />
               <folding>
-                <element signature="e#6#107#0#PHP" expanded="true" />
+                <marker date="1484664584286" expanded="true" signature="2396:2430" ph="UPDATE `${$t... " />
+                <marker date="1484664584286" expanded="true" signature="3075:3194" ph="INSERT INTO `${$table}`... " />
+                <marker date="1484664584286" expanded="true" signature="4285:4312" ph="DELETE FROM " />
+                <marker date="1484664584286" expanded="true" signature="5739:5777" ph="SELECT COUNT... ${$table}" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Base.php" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Base/Base.php">
+      <file leaf-file-name="DB.php" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/Base/DB/DB.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="29">
-              <caret line="1" column="0" lean-forward="false" selection-start-line="1" selection-start-column="0" selection-end-line="2" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="C.php" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Base/C.php">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="203">
-              <caret line="7" column="0" lean-forward="false" selection-start-line="7" selection-start-column="0" selection-end-line="8" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Macaw.php" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Base/Macaw.php">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="29">
-              <caret line="1" column="0" lean-forward="false" selection-start-line="1" selection-start-column="0" selection-end-line="2" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="M.php" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Base/M.php">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="29">
-              <caret line="1" column="0" lean-forward="false" selection-start-line="1" selection-start-column="0" selection-end-line="2" selection-end-column="0" />
+            <state relative-caret-position="290">
+              <caret line="10" column="28" lean-forward="true" selection-start-line="10" selection-start-column="28" selection-end-line="10" selection-end-column="69" />
               <folding />
             </state>
           </provider>
@@ -145,7 +70,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/Base/Tool/Page.php" />
         <option value="$PROJECT_DIR$/Base/Tool/Vcode.php" />
         <option value="$PROJECT_DIR$/vendor/war1644/wechatSDK/composer.json" />
         <option value="$PROJECT_DIR$/vendor/war1644/wechatSDK/wechat.class.php" />
@@ -186,16 +110,17 @@
         <option value="$PROJECT_DIR$/Base/F/functions.php" />
         <option value="$PROJECT_DIR$/Base/Tool/MFWAF.php" />
         <option value="$PROJECT_DIR$/Base/MFWAF.php" />
-        <option value="$PROJECT_DIR$/Base/DB/MyPDO.php" />
         <option value="$PROJECT_DIR$/Base/Base.php" />
         <option value="$PROJECT_DIR$/Base/Macaw.php" />
         <option value="$PROJECT_DIR$/Base/MF.php" />
         <option value="$PROJECT_DIR$/Base/Tool/Socket.php" />
         <option value="$PROJECT_DIR$/Base/C.php" />
-        <option value="$PROJECT_DIR$/Base/DB/DB.php" />
         <option value="$PROJECT_DIR$/Base/DB/Redis.php" />
         <option value="$PROJECT_DIR$/Config/routes.php" />
         <option value="$PROJECT_DIR$/README.MD" />
+        <option value="&lt;f441561a-d8aa-40b0-bf3c-425126f4deed&gt;/RunData/DefendLog.txt" />
+        <option value="$PROJECT_DIR$/Base/DB/MyPDO.php" />
+        <option value="$PROJECT_DIR$/Base/DB/DB.php" />
       </list>
     </option>
   </component>
@@ -265,7 +190,25 @@
               <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="Config" />
+              <option name="myItemId" value="Base" />
+              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="MF" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="MF" />
+              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Base" />
+              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="DB" />
               <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
             </PATH_ELEMENT>
           </PATH>
@@ -393,7 +336,7 @@
       <workItem from="1484624526376" duration="1157000" />
       <workItem from="1484626721383" duration="5761000" />
       <workItem from="1484637132724" duration="3433000" />
-      <workItem from="1484657443858" duration="5683000" />
+      <workItem from="1484657443858" duration="8148000" />
     </task>
     <task id="LOCAL-00001" summary="新增Socket工具类，完善Wechat工具类">
       <created>1484624952326</created>
@@ -402,11 +345,18 @@
       <option name="project" value="LOCAL" />
       <updated>1484624952326</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="WAF新增转义处理，调整Base目录结构以及下属的命名空间">
+      <created>1484663208429</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1484663208429</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="114419000" />
+    <option name="totallyTimeSpent" value="116884000" />
   </component>
   <component name="TodoView" selected-index="2">
     <todo-panel id="selected-file">
@@ -419,14 +369,14 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-11" y="-11" width="1849" height="1102" extended-state="6" />
-    <editor active="true" />
+    <editor active="false" />
     <layout>
-      <window_info id="Remote Host" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.20920978" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Remote Host" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.060830016" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.235361" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32983682" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32977587" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.28539577" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.66220737" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.41694537" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
@@ -476,22 +426,14 @@
   <component name="VcsManagerConfiguration">
     <option name="LOCAL_CHANGES_DETAILS_PREVIEW_SHOWN" value="true" />
     <MESSAGE value="新增Socket工具类，完善Wechat工具类" />
-    <option name="LAST_COMMIT_MESSAGE" value="新增Socket工具类，完善Wechat工具类" />
+    <MESSAGE value="WAF新增转义处理，调整Base目录结构以及下属的命名空间" />
+    <option name="LAST_COMMIT_MESSAGE" value="WAF新增转义处理，调整Base目录结构以及下属的命名空间" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager />
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/Public/V/metalmax/index.php" />
-    <entry file="file://$PROJECT_DIR$/App/C/Admin/AdminC.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="145">
-          <caret line="5" column="24" lean-forward="false" selection-start-line="5" selection-start-column="24" selection-end-line="5" selection-end-column="24" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/RunData/table.md" />
     <entry file="file://$PROJECT_DIR$/vendor/war1644/phpwechatsdk/Wechat.php" />
     <entry file="file://$PROJECT_DIR$/vendor/noahbuscher/macaw/Macaw.php" />
     <entry file="file://$PROJECT_DIR$/vendor/war1644/phpwechatsdk/composer.json" />
@@ -662,7 +604,7 @@
         <state relative-caret-position="176">
           <caret line="7" column="0" lean-forward="false" selection-start-line="7" selection-start-column="0" selection-end-line="8" selection-end-column="0" />
           <folding>
-            <element signature="e#6#90#0#PHP" expanded="true" />
+            <element signature="e#6#90#0#PHP" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -741,61 +683,11 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/App/C/WechatC.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="145">
-          <caret line="190" column="0" lean-forward="true" selection-start-line="190" selection-start-column="0" selection-end-line="190" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Base/DB/DB.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="145">
-          <caret line="5" column="0" lean-forward="false" selection-start-line="5" selection-start-column="0" selection-end-line="6" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Base/DB/Redis.php">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-2281">
           <caret line="2" column="3" lean-forward="true" selection-start-line="2" selection-start-column="3" selection-end-line="2" selection-end-column="3" />
           <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/App/C/HomeC.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="52">
-          <caret line="7" column="0" lean-forward="false" selection-start-line="7" selection-start-column="0" selection-end-line="8" selection-end-column="0" />
-          <folding>
-            <element signature="e#85#96#0#PHP" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Base/DB/MyPDO.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="290">
-          <caret line="10" column="0" lean-forward="true" selection-start-line="10" selection-start-column="0" selection-end-line="10" selection-end-column="0" />
-          <folding>
-            <marker date="1484662263091" expanded="true" signature="2325:2359" ph="UPDATE `${$t... " />
-            <marker date="1484662263091" expanded="true" signature="3004:3123" ph="INSERT INTO `${$table}`... " />
-            <marker date="1484662263091" expanded="true" signature="4214:4241" ph="DELETE FROM " />
-            <marker date="1484662263091" expanded="true" signature="5668:5706" ph="SELECT COUNT... ${$table}" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/App/C/PublicC.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="406">
-          <caret line="21" column="0" lean-forward="false" selection-start-line="21" selection-start-column="0" selection-end-line="22" selection-end-column="0" />
-          <folding>
-            <element signature="e#6#84#0#PHP" expanded="true" />
-            <element signature="e#85#96#0#PHP" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -839,16 +731,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Base/MF.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="597">
-          <caret line="25" column="0" lean-forward="false" selection-start-line="25" selection-start-column="0" selection-end-line="26" selection-end-column="0" />
-          <folding>
-            <element signature="e#6#107#0#PHP" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Base/MFWAF.php">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="58">
@@ -868,11 +750,97 @@
     <entry file="file://$PROJECT_DIR$/README.MD">
       <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
         <state split_layout="SPLIT">
-          <first_editor relative-caret-position="348">
-            <caret line="10" column="51" lean-forward="true" selection-start-line="10" selection-start-column="51" selection-end-line="10" selection-end-column="51" />
+          <first_editor relative-caret-position="243">
+            <caret line="10" column="0" lean-forward="false" selection-start-line="10" selection-start-column="0" selection-end-line="11" selection-end-column="0" />
             <folding />
           </first_editor>
           <second_editor />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/App/C/PublicC.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="406">
+          <caret line="21" column="0" lean-forward="false" selection-start-line="21" selection-start-column="0" selection-end-line="22" selection-end-column="0" />
+          <folding>
+            <element signature="e#6#84#0#PHP" expanded="false" />
+            <element signature="e#85#96#0#PHP" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/App/C/HomeC.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="52">
+          <caret line="7" column="0" lean-forward="false" selection-start-line="7" selection-start-column="0" selection-end-line="8" selection-end-column="0" />
+          <folding>
+            <element signature="e#85#96#0#PHP" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/App/C/Admin/AdminC.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="145">
+          <caret line="5" column="0" lean-forward="false" selection-start-line="5" selection-start-column="0" selection-end-line="6" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/App/C/WechatC.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="5858">
+          <caret line="190" column="0" lean-forward="false" selection-start-line="190" selection-start-column="0" selection-end-line="191" selection-end-column="0" />
+          <folding>
+            <element signature="e#6#124#0#PHP" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/App/C/Home/IndexC.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="116">
+          <caret line="4" column="23" lean-forward="true" selection-start-line="4" selection-start-column="23" selection-end-line="4" selection-end-column="23" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Base/MF.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="597">
+          <caret line="25" column="0" lean-forward="false" selection-start-line="25" selection-start-column="0" selection-end-line="26" selection-end-column="0" />
+          <folding>
+            <element signature="e#6#107#0#PHP" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Base/DB/MyPDO.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="126">
+          <caret line="49" column="34" lean-forward="false" selection-start-line="45" selection-start-column="4" selection-end-line="69" selection-end-column="5" />
+          <folding>
+            <marker date="1484664584286" expanded="true" signature="2396:2430" ph="UPDATE `${$t... " />
+            <marker date="1484664584286" expanded="true" signature="3075:3194" ph="INSERT INTO `${$table}`... " />
+            <marker date="1484664584286" expanded="true" signature="4285:4312" ph="DELETE FROM " />
+            <marker date="1484664584286" expanded="true" signature="5739:5777" ph="SELECT COUNT... ${$table}" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$APPLICATION_HOME_DIR$/plugins/php/lib/php.jar!/stubs/standard/PDO.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="373">
+          <caret line="769" column="81" lean-forward="true" selection-start-line="769" selection-start-column="36" selection-end-line="769" selection-end-column="81" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Base/DB/DB.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="290">
+          <caret line="10" column="28" lean-forward="true" selection-start-line="10" selection-start-column="28" selection-end-line="10" selection-end-column="69" />
+          <folding />
         </state>
       </provider>
     </entry>

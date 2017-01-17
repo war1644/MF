@@ -4,20 +4,23 @@ namespace Base\DB;
  * 数据库PDO操作
  * @author 路漫漫
  * @link ahmerry@qq.com
- * @version V1.0
+ * @version V1.1
  * @since
  * <p>v0.9 2016/12/15 13:52  初版</p>
  * <p>v1.0 2016/12/28 9:21  数据连接采用单例模式</p>
+ * <p>v1.1 2017/1/17 23:04  增加非预处理的执行，查询语句，增加debug模式，增加判断表引擎，以方便事务处理</p>
  */
 
 class DB {
     protected static $obj = null;
     protected $db;
+    protected $dbName;
 
     private function __construct() {
         if (!class_exists('PDO')) throw new \Exception("你的环境不支持:PDO");
 
         $cfg = include(CONFIG_PATH . 'db.php');
+        $this->dbName = $cfg['dbname'];
         $dsn = 'mysql:host=' . $cfg['host'] . ';dbname=' . $cfg['dbname'];
         try {
             $this->db = new \PDO($dsn, $cfg['user'], $cfg['password']);
@@ -51,6 +54,21 @@ class DB {
         $this->db->exec('set names ' . $char);
         $this->db->exec('SET character_set_connection='.$char.', character_set_results='.$char.', character_set_client=binary');
 	}
+
+    /**
+     * 获取表引擎
+     *
+     * @param String $tableName 表名
+     * @param Boolean $debug
+     * @return String
+     */
+    public function getTableEngine($tableName)
+    {
+        $strSql = "SHOW TABLE STATUS FROM $this->dbName WHERE Name='".$tableName."'";
+        $arrayTableInfo = $this->query($strSql);
+        $this->getPDOError();
+        return $arrayTableInfo[0]['Engine'];
+    }
 
 	/**
 	* 查询1行
@@ -120,6 +138,54 @@ class DB {
 	}
 
     /**
+     * execSql 执行SQL语句
+     *
+     * @param String $strSql
+     * @param Boolean $debug
+     * @return Int
+     */
+    public function ExecSql($strSql, $debug = false)
+    {
+        if ($debug === true) $this->debug($strSql);
+        $result = $this->db->exec($strSql);
+        $this->getPDOError();
+        return $result;
+    }
+
+    /**
+     * Query 查询
+     *
+     * @param String $strSql SQL语句
+     * @param String $queryMode 查询方式(All or Row)
+     * @param Boolean $debug
+     * @return Array
+     */
+    public function Query($strSql, $queryMode = 'all', $debug = false)
+    {
+        if ($debug === true) $this->debug($strSql);
+        $recordset = $this->db->query($strSql);
+        $this->getPDOError();
+        if ($recordset) {
+            $recordset->setFetchMode(PDO::FETCH_ASSOC);
+            if ($queryMode == 'all') {
+                $result = $recordset->fetchAll();
+            } elseif ($queryMode == 'row') {
+                $result = $recordset->fetch();
+            }
+        } else {
+            $result = null;
+        }
+        return $result;
+    }
+
+    /**
+     * 获取最后插入行的ID
+     */
+    public function LastId() {
+        return $this->db->lastInsertId();
+    }
+
+    /**
      * beginTransaction 开始事务
      */
     public function BeginTransaction() {
@@ -138,6 +204,45 @@ class DB {
      */
     public function Rollback() {
         $this->db->rollback();
+    }
+
+    /**
+     * debug
+     *
+     * @param mixed $debuginfo
+     */
+    private function debug($debuginfo)
+    {
+        var_dump($debuginfo);
+        exit();
+    }
+
+    /**
+     * getPDOError 捕获PDO错误信息
+     */
+    private function getPDOError()
+    {
+        if ($this->db->errorCode() != '00000') {
+            $arrayError = $this->db->errorInfo();
+            $this->outputError($arrayError[2]);
+        }
+    }
+
+    /**
+     * 输出错误信息
+     *
+     * @param String $strErrMsg
+     */
+    private function outputError($strErrMsg)
+    {
+        throw new \Exception('MySQL Error: '.$strErrMsg);
+    }
+
+    /**
+     * destruct 关闭数据库连接
+     */
+    public function destruct(){
+        $this->db = null;
     }
 
 }

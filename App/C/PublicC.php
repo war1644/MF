@@ -6,8 +6,8 @@
  *
  */
 use Base\C;
-use Base\Vcode;
-
+use Base\Tool\Vcode;
+use Base\Tool\Page;
 class PublicC extends C{
 
     protected $WX;
@@ -20,6 +20,11 @@ class PublicC extends C{
      * 后台登录
      */
     public function login(){
+        if (Vcode::check($_POST['vcode'])){
+
+        }else{
+
+        }
 
     }
 
@@ -39,6 +44,22 @@ class PublicC extends C{
     //接收微信
     public function wechat(){
         new WechatC();
+    }
+
+    /**
+     * 分页功能
+     */
+    public function testpage() {
+        $page = new Page(345);
+        print_r($page->show());
+    }
+
+    /**
+     * 验证码功能
+     */
+    public function vcode() {
+        $vcode = new Vcode();
+        $vcode->scode();
     }
 
 }

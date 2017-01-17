@@ -61,24 +61,24 @@ class M {
     }
 
     /**
-    * 根据主键来查询一条信息
-    */
+     * 根据主键来查询一条信息
+     */
     public function find($id) {
-        $sql = "select * from $this->table where $this->pk =?";
+        $sql = "select * from $this->table where $this->pk = ?";
         return $this->data = $this->db->getRow($sql , [$id]);
     }
 
     /**
-    * 根据主键来删除一条信息
-    */
+     * 根据主键来删除一条信息
+     */
     public function remove($id) {
-        $sql = 'delete from ' . $this->table . ' where ' . $this->pk . '=?';
+        $sql = "delete from $this->table where $this->pk = ?";
         return $this->db->delete($sql , [$id]);
     }
 
     /**
-    * 根据传来的数组自动增加1条记录
-    */
+     * 根据传来的数组自动增加1条记录
+     */
     public function add($data=[]) {
         if(empty($data)) {
             $data = $this->data;

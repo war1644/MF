@@ -7,7 +7,7 @@ namespace Base;
  * @version V1.0
  * @since
  * <p>v0.9 2016/12/15 13:52  初版</p>
- * <p>v1.0 2016/12/28 9:21  数据连接采用单例模式,添加事务方法</p>
+ * <p>v1.0 2016/12/28 9:21  数据连接采用单例模式</p>
  */
 
 class DB {
@@ -40,14 +40,14 @@ class DB {
 	/**
 	* 选择数据库
 	*/
-	public function useDb($db) {
+	public function UseDb($db) {
         $this->db->exec('use ' . $db);
 	}
 
 	/**
 	* 设置字符集
 	*/
-	public function charset($char) {
+	private function charset($char) {
         $this->db->exec('set names ' . $char);
         $this->db->exec('SET character_set_connection='.$char.', character_set_results='.$char.', character_set_client=binary');
 	}
@@ -92,8 +92,9 @@ class DB {
 	}
 
 	/**
-	* 添加记录
-	*/
+	 * 添加记录
+     * @return 插入的id
+	 */
 	public function insert($sql , $params=[]) {
 		$st = $this->db->prepare($sql);
 		if($st->execute($params)) {
@@ -105,8 +106,9 @@ class DB {
 	}
 
 	/**
-	* 修改记录
-	*/
+	 * 修改记录
+     * @return 修改的行数
+	 */
 	public function update($sql , $params=[]) {
 		$st = $this->db->prepare($sql);
 		if($st->execute($params)) {

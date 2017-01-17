@@ -3,8 +3,7 @@
   },
   "autoload": {
     "classmap": [
-      "App/C",
-      "App/M",
+      "App",
       "Base"
     ]
   }

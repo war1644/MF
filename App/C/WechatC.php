@@ -25,16 +25,27 @@ class WechatC extends C {
                 $this->WX = new MFWechat($option);
             }else{
                 $this->WX = new Wechat($option);
+                
                 if (!$this->WX->getCache($this->WX->tokenName))
                     //获取access_token,并进行全局缓存
                     $this->WX->checkAuth();
+                
             }
         }
+//        $this->WX->valid();
         //处理请求内容
         $this->ReceiveEvent();
 
         //开启JSAPI
         $this->JsApi();
+    }
+
+    /**
+     * 微信debug调试回调方法
+     * 方法名在config定义
+     */
+    public function WxDebug($text){
+        MFLog($text,'wxdebug','Wechat/');
     }
 
     public function auth(){
@@ -53,7 +64,7 @@ class WechatC extends C {
             ],
             [
                 'name'=>'页面测试', 'sub_button'=>[
-                    ['type'=>'view','name'=>'test','url'=>'http://wx.duanxq.cn/wetest'],
+                    ['type'=>'view','name'=>'test','url'=>'http://wx.duanxq.cn/wxtest'],
                 ]
             ]
 
@@ -82,6 +93,12 @@ class WechatC extends C {
                     if (self::DEBUG) {
                         $this->WxDebug("收到微信请求 : ".json_encode($_REQUEST)."\n数据 : ".json_encode($this->WX->getRevData()));
                     }
+                    if ($_REQUEST['code']){
+
+                        $json = $this->WX->getOauthAccessToken();
+//                        var_dump($json);
+                        $this->Ranking();
+                    }
                     $this->WX->text( "help info" )->reply();
                     break;
             }
@@ -91,17 +108,58 @@ class WechatC extends C {
     }
 
     protected function JsApi() {
-
-        if (!$this->WX->getJsTicket()) {
+        $tick = $this->WX->getJsTicket();
+        if (!$tick) {
             echo $tmp = "\n获取js_ticket失败<br>";
             echo $errCode = "\n错误码：".$this->WX->errCode;
             echo $errCode = "\n错误原因：".ErrCode::getErrText($this->WX->errCode);
-            $this->WxDebug($tmp.$errCode.$errCode);
+            MFLog($tmp.$errCode.$errCode);
             exit;
         }
         $this->jsApi = $this->WX->getJsSign();
     }
 
+    /**
+     * 排行榜
+     * @return Wechat
+     */
+    public function GetCode() {
+        $redirect_uri = 'http://wx.duanxq.cn/wechat';
+        $url = $this->WX->getOauthRedirect($redirect_uri);
+        var_dump($url);
+//        echo json_encode(HttpGet($url));
+
+
+//        https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx91e7b6ade546e6a4&redirect_uri=http%3A%2F%2Fwx.duanxq.cn%2Fauth%2Fwechat&response_type=code&scope=snsapi_userinfo,snsapi_health_realtime,snsapi_health_history&state=sportVersion3&connect_redirect=1#wechat_redirect
+//        https://api.weixin.qq.com/sns/oauth2/access_token?appid=APPID&secret=SECRET&code=CODE&grant_type=authorization_code
+    }
+
+    /**
+     * 排行榜
+     * @return Wechat
+     */
+    public function Ranking() {
+        $url = $this->WX->getRanking();
+        var_dump(json_encode(file_get_contents($url)));
+
+        var_dump(HttpGet($url));
+
+        //<xml>
+        //<ToUserName><![CDATA[toUser]]></ToUserName>
+        //<FromUserName><![CDATA[fromUser]]></FromUserName>
+        //<CreateTime>123456789</CreateTime>
+        //<MsgType><![CDATA[hardware]]></MsgType>
+        //<HardWare>
+        //<MessageView><![CDATA[myrank]]></MessageView>
+        //<MessageAction><![CDATA[ranklist]]></MessageAction>
+        //</HardWare>
+        //<FuncFlag>0</FuncFlag>
+        //</xml>
+//        $data['title'] = 'KS,为跑步而生';
+//        $data['jsSign'] = $this->jsApi;
+//        $this->view('KSWechat/device',$data);
+    }
+    
     /**
      * 跑步机交互页
      * @return Wechat
@@ -109,7 +167,7 @@ class WechatC extends C {
     public function Test() {
         $data['title'] = 'KS,为跑步而生';
         $data['jsSign'] = $this->jsApi;
-        $this->view('KSWechat/scanDevice',$data);
+        $this->view('KSWechat/device',$data);
     }
 
     /**
@@ -119,8 +177,49 @@ class WechatC extends C {
     public function Index() {
         $data['title'] = 'KS,为跑步而生';
         $data['jsSign'] = $this->jsApi;
-        $this->view('KSWechat/device',$data);
+        $this->view('KSWechat/scanDevice',$data);
     }
+
+    /**
+     * 循环添加
+     * @return Wechat
+     */
+    public function ForAddMac() {
+        return;
+        $log = [];
+        for ($i=0;$i<=2;$i++){
+
+            $mac = dechex($i);
+            if ($mac==0){
+                $mac = '00';
+            }
+            $name = strtoupper($mac);
+            $data = [
+                "device_num"=>"1",
+                "device_list"=>[[
+                    "id"=>"KS940V1-$name",
+                    "mac"=>"14580f0000$mac",
+                    "connect_protocol"=>"3",
+                    "auth_key"=>"",
+                    "close_strategy"=>"2",
+                    "conn_strategy"=>"1",
+                    "crypt_method"=>"0",
+                    "auth_ver"=>"0",
+                    "manu_mac_pos"=>"-1",
+                    "ser_mac_pos"=>"-2"
+                ]],
+                "product_id"=>"24777"
+            ];
+            if ($this->WX->addDeviceMac($data)){
+                $log[$mac] = "$mac 添加成功";
+            }else{
+                $log[$mac] = "$mac 添加失败";
+            }
+        }
+        MFLog(json_encode($log));
+
+    }
+
 
 
 }

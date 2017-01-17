@@ -27,15 +27,18 @@ class Macaw {
     public static $patterns = array(
         ':any' => '[^/]+',
         ':num' => '[0-9]+',
-        ':all' => '.*'
+        ':all' => '.*',
+        ':slug'=> '[a-z0-9-_]+'
     );
     public static $error_callback;
 
     /**
-    * Defines a route w/ callback and method
-    */
+     * Defines a route w/ callback and method
+     */
     public static function __callstatic($method, $params) {
-        $uri = dirname($_SERVER['PHP_SELF']).'/'.$params[0];
+        //取PHP_SELF会导致$uri重复参数，修改为SCRIPT_NAME
+//        $uri = dirname($_SERVER['PHP_SELF']).'/'.$params[0];
+        $uri = dirname($_SERVER['SCRIPT_NAME']).'/'.$params[0];
         $callback = $params[1];
         if (empty($params[2]) || $params[2]===true){
             array_push(self::$wafs, true);

@@ -225,6 +225,10 @@ class Wechat {
 
 
     public $tokenName;
+    public $openid;
+    public $unionid;
+    public $code;
+
 	private $token;
 	private $encodingAesKey;
 	private $encrypt_type;
@@ -938,6 +942,39 @@ class Wechat {
 		$this->Message($msg);
 		return $this;
 	}
+
+    /**
+     * 设置回复排行榜消息
+     * Example: $obj->text('hello')->reply();
+     */
+    public function ranking()
+    {
+        //<xml>
+        //<ToUserName><![CDATA[toUser]]></ToUserName>
+        //<FromUserName><![CDATA[fromUser]]></FromUserName>
+        //<CreateTime>123456789</CreateTime>
+        //<MsgType><![CDATA[hardware]]></MsgType>
+        //<HardWare>
+        //<MessageView><![CDATA[myrank]]></MessageView>
+        //<MessageAction><![CDATA[ranklist]]></MessageAction>
+        //</HardWare>
+        //<FuncFlag>0</FuncFlag>
+        //</xml>
+        $msg = array(
+            'ToUserName' => $this->getRevFrom(),
+            'FromUserName'=>$this->getRevTo(),
+            'MsgType'=>'hardware',
+            'HardWare'=>array(
+                'MessageView'=>'myrank',
+                'MessageAction'=>'ranklist',
+            ),
+            'CreateTime'=>time(),
+            'FuncFlag'=>0
+        );
+        $this->Message($msg);
+        return $this;
+    }
+
 	/**
 	 * 设置回复消息
 	 * Example: $obj->image('media_id')->reply();
@@ -2602,6 +2639,15 @@ class Wechat {
 		return false;
 	}
 
+    /**
+     * oauth 微信运动排行榜
+     * @param string $callback 回调URI
+     * @return string
+     */
+    public function getRanking(){
+        return "https://hw.weixin.qq.com/steprank/step/personal?openid=$this->openid&code=$this->code";
+    }
+
 	/**
 	 * oauth 授权跳转接口
 	 * @param string $callback 回调URI
@@ -2617,18 +2663,26 @@ class Wechat {
 	 */
 	public function getOauthAccessToken(){
 		$code = isset($_GET['code'])?$_GET['code']:'';
+		$this->code = $code;
 		if (!$code) return false;
 		$result = $this->http_get(self::API_BASE_URL_PREFIX.self::OAUTH_TOKEN_URL.'appid='.$this->appid.'&secret='.$this->appsecret.'&code='.$code.'&grant_type=authorization_code');
 		if ($result)
 		{
-			$json = json_decode($result,true);
+		    $json = json_decode($result,true);
 			if (!$json || !empty($json['errcode'])) {
 				$this->errCode = $json['errcode'];
 				$this->errMsg = $json['errmsg'];
 				return false;
 			}
 			$this->user_token = $json['access_token'];
-			return $json;
+			$this->setCache('authAccessToken',$json['access_token'],$json['expires_in']);
+            $this->openid = $json['openid'];
+            $this->unionid = $json['unionid'];
+            MFLog('openid :'.$this->openid);
+            MFLog('unionid :'.$this->unionid);
+
+
+            return $json;
 		}
 		return false;
 	}
@@ -2661,7 +2715,8 @@ class Wechat {
 	 * @return array {openid,nickname,sex,province,city,country,headimgurl,privilege,[unionid]}
 	 * 注意：unionid字段 只有在用户将公众号绑定到微信开放平台账号后，才会出现。建议调用前用isset()检测一下
 	 */
-	public function getOauthUserinfo($access_token,$openid){
+	public function getOauthUserinfo($access_token='',$openid){
+	    if (!$access_token) $access_token=$this->user_token;
 		$result = $this->http_get(self::API_BASE_URL_PREFIX.self::OAUTH_USERINFO_URL.'access_token='.$access_token.'&openid='.$openid);
 		if ($result)
 		{
@@ -4632,6 +4687,26 @@ class Wechat {
 		else
 			return false;
 	}
+
+    /**
+     * 添加设备授权MAC
+     * $data array 授权的mac信息
+     */
+    public function addDeviceMac($data){
+        if (!$this->access_token && !$this->checkAuth()) return false;
+        $result = $this->http_post(self::API_BASE_URL_PREFIX . self::AUTHORIZE_DEVICE . 'access_token=' . $this->access_token, self::json_encode($data));
+        $this->log($result);
+        if ($result) {
+            $json = json_decode($result, true);
+            if (!$json || !empty($json['errcode'])) {
+                $this->errCode = $json['errcode'];
+                $this->errMsg  = $json['errmsg'];
+                return false;
+            }
+            return $json;
+        }
+        return false;
+    }
 }
 /**
  * PKCS7Encoder class

@@ -1,4 +1,9 @@
-<?php include 'head.php';?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>404</title>
+</head>
 <style>
     *{
         margin: 0;
@@ -73,8 +78,8 @@
         100%{transform:rotateX(360deg) rotateY(360deg) rotateZ(360deg);}
     }
     @-0-keyframes play{
-    0%{transform:rotateX(0deg) rotateY(0deg) rotateZ(0deg);}
-    100%{transform:rotateX(360deg) rotateY(360deg) rotateZ(360deg);}
+        0%{transform:rotateX(0deg) rotateY(0deg) rotateZ(0deg);}
+        100%{transform:rotateX(360deg) rotateY(360deg) rotateZ(360deg);}
     }
     @-ms-keyframes play{
         0%{transform:rotateX(0deg) rotateY(0deg) rotateZ(0deg);}
@@ -83,19 +88,18 @@
     .text{color: white;text-align: center;margin-top: 200px;font-size: 26px;}
 
 </style>
-<div class="container">
-    <a href="\">
-        <div class="box">
-            <div class="show">
-                <div>404</div>
-                <div>404</div>
-                <div>404</div>
-                <div>404</div>
-                <div>404</div>
-                <div>404</div>
-            </div>
+<body>
+<a href="\">
+    <div class="box">
+        <div class="show">
+            <div>404</div>
+            <div>404</div>
+            <div>404</div>
+            <div>404</div>
+            <div>404</div>
+            <div>404</div>
         </div>
-    </a>
-</div><!-- /.container -->
-
-<?php include 'foot.php';?>
+    </div>
+</a>
+</body>
+</html>

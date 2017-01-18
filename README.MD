@@ -40,18 +40,17 @@ MF
     ```
 * nginx rewrite
     ```
-        location / {
-            if (!-e $request_filename) {
-                rewrite  ^/(.*)$  /index.php/$1  last;
-                break;
-            }
-            index  index.html index.php;
-        } 
+    location / {
+        if (!-e $request_filename) {
+            rewrite  ^/(.*)$  /index.php/$1  last;
+            break;
+        }
+        index  index.html index.php;
+    } 
     ```
 * Base下工具类用不上的可以删掉，完全独立。放在那也没事，不new也会耗资源
 * 虽然用了composer，但耦合很低。不想用它，直接删除，自己添加class映射就好
 * 添加新目录后，先更新composer.json,再运行dump-autoload -o
-
     ```
     "autoload":
      {

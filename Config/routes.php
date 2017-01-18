@@ -10,7 +10,7 @@
 use Base\Macaw;
 
 //路由分发
-//其实你找不到get方法>_<，找不到就触发__callstatic这货,接收$method 和 $params参数，$method就是没找到的方法名，$params为方法里的两个参数
+//其实你找不到get/post/any方法>_<，找不到就触发__callstatic这货,接收$method 和 $params参数，$method就是没找到的方法名，$params为方法里的两个参数
 //__callstatic分别将URL（即 fuck）、HTTP方法（即 GET）和回调代码压入 $routes、$methods 和 $callbacks 三个 Macaw 类的静态成员变量（数组）中
 Macaw::get('fuck', function() {
     echo "成功！";
@@ -20,27 +20,20 @@ Macaw::any('',function (){
     echo 'welcome to MF';
 });
 
-Macaw::any('index.php/Wechat/(:all)',function ($p){
+Macaw::any('Wechat/(:all)',function ($p){
     $c = new WechatC();
     $c->method = $p;
     $c->$p();
 });
 
-Macaw::any('index.php/Public/(:all)',function ($p){
+Macaw::any('Public/(:all)',function ($p){
     $c = new PublicC();
     $c->method = $p;
     $c->$p();
 });
 
-Macaw::get('wxindex', 'WechatC@Index');
-Macaw::any('wechat', 'WechatC@auth');
 
-Macaw::get('wxtest', 'WechatC@Test');
-Macaw::get('wxrank', 'WechatC@GetCode');
-Macaw::get('wxmenu', 'WechatC@SetMenus');
-//Macaw::get('mac', 'WechatC@ForAddMac');
-//Macaw::any('logdebug', 'WechatC@logdebug');
-//Macaw::get('home', 'HomeC@home');
+Macaw::any('wechat', 'WechatC@auth');
 
 Macaw::$error_callback = function() {
     throw new \Exception("路由无匹配项 404 Not Found",404);

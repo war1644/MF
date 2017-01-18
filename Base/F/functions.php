@@ -1,9 +1,11 @@
 <?php
 /**
- * Created by 路漫漫.
- * Link: ahmerry@qq.com
- * Date: 2016/12/12 17:27
- * 一些方法
+ * 全局方法，采用首字母大写驼峰命名（以标识这是框架的全局方法）
+ * @author 路漫漫
+ * @link ahmerry@qq.com
+ * @version 0.9
+ * @since
+ * <p>v0.9 2016/12/8 15:15  初版</p>
  */
 
 /**
@@ -18,14 +20,18 @@ function MFLog($log, $name='', $path='') {
     }else{
         $path = RUN_PATH . $path;
     }
-    CheckDir( $path );
     if (!$name) $name = date( 'm-d' );
+    CheckDir($path);
+    $file = $path.$name.'.log';
+    $content = "\n\nTime : ".date('Y-m-d H:i:s')."\n".$log;
+    error_log($content,3,$file);
+    //    CheckDir( $path );
+//    file_put_contents(
+//        $path.$name.'.log',
+//        "\n\nTime : ".date('Y-m-d H:i:s')."\n".$log,
+//        FILE_APPEND
+//    );
 
-    file_put_contents(
-        $path.$name.'.log',
-        "\n\nTime : ".date('Y-m-d H:i:s')."\n".$log,
-        FILE_APPEND
-    );
 }
 
 /**
@@ -46,10 +52,10 @@ function CheckDir($dir, $mode=0777) {
  */
 function Session($name,$value=''){
     session_start();
-    if ($value !== ''){
+    if ($value){
         $_SESSION[$name] = $value;
         return true;
-    }else{
+    }else if($value){
         return $_SESSION[$name];
     }
 }

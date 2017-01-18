@@ -371,6 +371,7 @@ class Wechat {
      * 日志记录，可被重载。
      * @param mixed $log 输入日志
      * @return mixed
+     * @TODO 注意命名空间和类里的方法特殊回调写法，这里只是普通的回调方法
      */
     public function log($log){
     		if ($this->debug && function_exists($this->logcallback)) {

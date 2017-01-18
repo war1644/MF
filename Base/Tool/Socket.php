@@ -33,7 +33,7 @@ class Socket {
             //拿所有的连接
             $changes=$this->sockets;
 
-            $a = socket_select($changes,$write=NULL,$except=NULL,NULL);
+            socket_select($changes,$write=NULL,$except=NULL,NULL);
             //遍历连接
             foreach($changes as $sock){
                 if($sock==$this->master){

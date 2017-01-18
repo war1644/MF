@@ -6,5 +6,10 @@
  * Date: 2016/12/9 17:27
 */
 class AdminC extends \Base\C {
+    function __construct() {
+        if (!defined('IS_ADMIN') || !IS_ADMIN){
+            die();
+        }
+    }
 
 }

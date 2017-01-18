@@ -22,6 +22,32 @@ MF
 
 注意
 ===
+* url需要重写下，当然不重写就在路由匹配时多写个index.php也可以。详见下
+    ```php
+        //未重写的url匹配
+        Macaw::any('index.php/Wechat/(:all)',function ($p){
+            $c = new WechatC();
+            $c->method = $p;
+            $c->$p();
+        });
+        
+        //重写过后的url匹配
+        Macaw::any('Wechat/(:all)',function ($p){
+            $c = new WechatC();
+            $c->method = $p;
+            $c->$p();
+        });
+    ```
+* Nginx rewrite
+    ```nginx
+    location / {
+        if (!-e $request_filename) {
+            rewrite  ^/(.*)$  /index.php/$1  last;
+            break;
+        }
+        index  index.html index.php;
+    } 
+    ```
 * Base下工具类用不上的可以删掉，完全独立。放在那也没事，不new也会耗资源
 * 虽然用了composer，但耦合很低。不想用它，直接删除，自己添加class映射就好
 * 添加新目录后，先更新composer.json,再运行dump-autoload -o

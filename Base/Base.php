@@ -47,9 +47,9 @@ class Base {
         }
         $c = new \Base\C();
         if (isset($code) && $code==404){
-            $c->view('404',['err'=>$err],'Base/');
+            $c->view('Base/404',['err'=>$err]);
         }else{
-            $c->view('error',['err'=>$err,'traces'=>$traces],'Base/');
+            $c->view('Base/error',['err'=>$err,'traces'=>$traces]);
 
         }
 

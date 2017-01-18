@@ -17,16 +17,17 @@ class PublicC extends C {
     }
 
     public function run(){
-        $this->view('running','','KSWechat/');
+        define('IS_LOGIN',true);
+        $this->view('KSWechat/running');
     }
 
-    public function EndRun() {
-        $this->view('endRunning','','KSWechat/');
+    public function endRun() {
+        $this->view('KSWechat/endRunning');
 
     }
 
     /**
-     * 后台登录
+     * 登录
      */
     public function login(){
         if (Vcode::check($_POST['vcode'])){
@@ -46,7 +47,7 @@ class PublicC extends C {
      * 微信debug调试回调方法
      * 方法名在config定义
      */
-    public function WxDebug($text){
+    public static function wxDebug($text){
         MFLog($text,'wxdebug','Wechat/');
     }
 

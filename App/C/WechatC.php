@@ -44,7 +44,7 @@ class WechatC extends C {
      * 微信debug调试回调方法
      * 方法名在config定义
      */
-    public function WxDebug($text){
+    public static function wxDebug($text){
         MFLog($text,'wxdebug','Wechat/');
     }
 
@@ -52,7 +52,7 @@ class WechatC extends C {
         MFLog('auth完成');
     }
 
-    public function SetMenus(){
+    public function setMenu(){
 
         //设置菜单
         $buttons =  [
@@ -93,7 +93,7 @@ class WechatC extends C {
                     if (self::DEBUG) {
                         $this->WxDebug("收到微信请求 : ".json_encode($_REQUEST)."\n数据 : ".json_encode($this->WX->getRevData()));
                     }
-                    if ($_REQUEST['code']){
+                    if (isset($_REQUEST['code'])){
 
                         $json = $this->WX->getOauthAccessToken();
 //                        var_dump($json);
@@ -126,12 +126,6 @@ class WechatC extends C {
     public function GetCode() {
         $redirect_uri = 'http://wx.duanxq.cn/wechat';
         $url = $this->WX->getOauthRedirect($redirect_uri);
-        var_dump($url);
-//        echo json_encode(HttpGet($url));
-
-
-//        https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx91e7b6ade546e6a4&redirect_uri=http%3A%2F%2Fwx.duanxq.cn%2Fauth%2Fwechat&response_type=code&scope=snsapi_userinfo,snsapi_health_realtime,snsapi_health_history&state=sportVersion3&connect_redirect=1#wechat_redirect
-//        https://api.weixin.qq.com/sns/oauth2/access_token?appid=APPID&secret=SECRET&code=CODE&grant_type=authorization_code
     }
 
     /**
@@ -140,21 +134,6 @@ class WechatC extends C {
      */
     public function Ranking() {
         $url = $this->WX->getRanking();
-        var_dump(json_encode(file_get_contents($url)));
-
-        var_dump(HttpGet($url));
-
-        //<xml>
-        //<ToUserName><![CDATA[toUser]]></ToUserName>
-        //<FromUserName><![CDATA[fromUser]]></FromUserName>
-        //<CreateTime>123456789</CreateTime>
-        //<MsgType><![CDATA[hardware]]></MsgType>
-        //<HardWare>
-        //<MessageView><![CDATA[myrank]]></MessageView>
-        //<MessageAction><![CDATA[ranklist]]></MessageAction>
-        //</HardWare>
-        //<FuncFlag>0</FuncFlag>
-        //</xml>
 //        $data['title'] = 'KS,为跑步而生';
 //        $data['jsSign'] = $this->jsApi;
 //        $this->view('KSWechat/device',$data);
@@ -178,6 +157,16 @@ class WechatC extends C {
         $data['title'] = 'KS,为跑步而生';
         $data['jsSign'] = $this->jsApi;
         $this->view('KSWechat/scanDevice',$data);
+    }
+
+    /**
+     * 连接跑步机页面
+     * @return Wechat
+     */
+    public function EndRunning() {
+        $data['title'] = 'KS,为跑步而生';
+        $data['jsSign'] = $this->jsApi;
+        $this->view('KSWechat/endRunning',$data);
     }
 
     /**

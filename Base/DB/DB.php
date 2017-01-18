@@ -43,7 +43,7 @@ class DB {
 	/**
 	* 选择数据库
 	*/
-	public function UseDb($db) {
+	public function useDb($db) {
         $this->db->exec('use ' . $db);
 	}
 
@@ -144,7 +144,7 @@ class DB {
      * @param Boolean $debug
      * @return Int
      */
-    public function ExecSql($strSql, $debug = false)
+    public function execSql($strSql, $debug = false)
     {
         if ($debug === true) $this->debug($strSql);
         $result = $this->db->exec($strSql);
@@ -160,7 +160,7 @@ class DB {
      * @param Boolean $debug
      * @return Array
      */
-    public function Query($strSql, $queryMode = 'all', $debug = false)
+    public function query($strSql, $queryMode = 'all', $debug = false)
     {
         if ($debug === true) $this->debug($strSql);
         $recordset = $this->db->query($strSql);
@@ -181,28 +181,28 @@ class DB {
     /**
      * 获取最后插入行的ID
      */
-    public function LastId() {
+    public function lastId() {
         return $this->db->lastInsertId();
     }
 
     /**
      * beginTransaction 开始事务
      */
-    public function BeginTransaction() {
+    public function beginTransaction() {
         $this->db->beginTransaction();
     }
 
     /**
      * commit 提交事务
      */
-    public function Commit() {
+    public function commit() {
         $this->db->commit();
     }
 
     /**
      * rollback 回滚事务
      */
-    public function Rollback() {
+    public function rollback() {
         $this->db->rollback();
     }
 

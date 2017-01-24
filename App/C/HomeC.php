@@ -7,6 +7,7 @@
  */
 use Base\C;
 use Base\Redis;
+use Base\Tool\SMTP;
 
 class HomeC extends C{
 
@@ -35,5 +36,25 @@ class HomeC extends C{
 
         }
 
+    }
+
+    public function fuck(){
+        $acticity = new RunGroupActivityUserM();
+        $file = UP_PATH.'export.xls';
+        $acticity->findAll();
+        file_put_contents($file,ob_get_contents(),LOCK_EX);
+        $subject = "测试邮件系统";//邮件主题
+        $body = "<h1> 测试邮件系统----路漫漫 </h1>";//邮件内容
+
+        //发送邮件，多个使用','分隔
+        $mail = SMTP::Ins();
+        //加附件先加再发送，如果不指定name自动从指定的文件中取文件名
+        $mail->AddFile($file,'跑团活动.xls');
+        $mail->send('ahmerry@qq.com',$subject,$body);
+    }
+
+    public function test(){
+        $u = new UserM();
+        $u->test();
     }
 }

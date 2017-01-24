@@ -7,5 +7,7 @@
  *
  */
 class UserM extends \Base\M {
-
+    function test() {
+        var_dump($this->prefix);
+    }
 }

@@ -15,6 +15,7 @@ class DB {
     protected static $obj = null;
     protected $db;
     protected $dbName;
+    public $prefix;
 
     private function __construct() {
         if (!class_exists('PDO')) throw new \Exception("你的环境不支持:PDO");
@@ -22,6 +23,8 @@ class DB {
         $cfg = include(CONFIG_PATH . 'db.php');
         $this->dbName = $cfg['dbname'];
         $dsn = 'mysql:host=' . $cfg['host'] . ';dbname=' . $cfg['dbname'];
+        $this->prefix = $cfg['prefix'];
+
         try {
             $this->db = new \PDO($dsn, $cfg['user'], $cfg['password']);
             $this->charset($cfg['charset']);
@@ -166,7 +169,7 @@ class DB {
         $recordset = $this->db->query($strSql);
         $this->getPDOError();
         if ($recordset) {
-            $recordset->setFetchMode(PDO::FETCH_ASSOC);
+            $recordset->setFetchMode(\PDO::FETCH_ASSOC);
             if ($queryMode == 'all') {
                 $result = $recordset->fetchAll();
             } elseif ($queryMode == 'row') {

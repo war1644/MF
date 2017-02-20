@@ -23,6 +23,9 @@ function MFLog($log, $name='', $path='') {
     if (!$name) $name = date( 'm-d' );
     CheckDir($path);
     $file = $path.$name.'.log';
+    if (is_array($log)){
+        $log = json_encode($log);
+    }
     $content = "\n\nTime : ".date('Y-m-d H:i:s')."\n".$log;
     error_log($content,3,$file);
     //    CheckDir( $path );
@@ -50,13 +53,21 @@ function CheckDir($dir, $mode=0777) {
 /**
  * 设置session
  */
-function Session($name,$value=''){
-    session_start();
-    if ($value){
-        $_SESSION[$name] = $value;
+function Session($name='',$value=''){
+    if(!isset($_SESSION)) session_start();
+    if ($name && $value===''){
+        if (isset($_SESSION[$name])){
+            return $_SESSION[$name];
+        }
+        return false;
+    }elseif (is_null($value)){
+        unset($_SESSION[$name]);
         return true;
     }else if($value){
-        return $_SESSION[$name];
+        $_SESSION[$name] = $value;
+        return true;
+    }else if($name === '' && $value === ''){
+        return $_SESSION;
     }
 }
 
@@ -177,6 +188,37 @@ function HttpPost($url,$param,$post_file=false){
     }
 }
 
+function PostMan($url,$data) {
+
+    $curl = curl_init();
+
+    curl_setopt_array($curl, [
+        CURLOPT_URL => $url,
+        CURLOPT_RETURNTRANSFER => true,
+        CURLINFO_HEADER_OUT=> true,
+        CURLOPT_ENCODING => "",
+        CURLOPT_MAXREDIRS => 10,
+        CURLOPT_TIMEOUT => 10,
+        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+        CURLOPT_CUSTOMREQUEST => "POST",
+        CURLOPT_POSTFIELDS => $data,
+        CURLOPT_HTTPHEADER => [
+            "cache-control: no-cache",
+            "content-type: application/json",
+        ]
+    ]);
+    $response = curl_exec($curl);
+    $err = curl_error($curl);
+    curl_close($curl);
+    if ($err) {
+        MFLog("cURL Error #:" . $err);
+        return false;
+    } else {
+        return $response;
+    }
+}
+
+
 /**
  * 生成等比例缩略图
  * @param $pic filename
@@ -245,4 +287,111 @@ function AddStampPic($pic,$stamp) {
     imagedestroy($big);
     imagedestroy($small);
     return $path;
+}
+
+/**
+ * 浏览器友好的变量输出
+ * @param mixed $var 变量
+ * @param boolean $echo 是否输出 默认为True 如果为false 则返回输出字符串
+ * @param string $label 标签 默认为空
+ * @param boolean $strict 是否严谨 默认为true
+ * @return void|string
+ */
+function Dump($var, $echo=true, $label=null, $strict=true) {
+    $label = ($label === null) ? '' : rtrim($label) . ' ';
+    if (!$strict) {
+        if (ini_get('html_errors')) {
+            $output = print_r($var, true);
+            $output = '<pre>' . $label . htmlspecialchars($output, ENT_QUOTES) . '</pre>';
+        } else {
+            $output = $label . print_r($var, true);
+        }
+    } else {
+        ob_start();
+        var_dump($var);
+        $output = ob_get_clean();
+        if (!extension_loaded('xdebug')) {
+            $output = preg_replace('/\]\=\>\n(\s+)/m', '] => ', $output);
+            $output = '<pre>' . $label . htmlspecialchars($output, ENT_QUOTES) . '</pre>';
+        }
+    }
+    if ($echo) {
+        echo($output);
+        return null;
+    }else {
+        return $output;
+    }
+}
+
+
+
+/**
+ * Cookie 设置、获取、删除
+ * @param string $name cookie名称
+ * @param mixed $value cookie值
+ * @param mixed $option cookie参数
+ * @return mixed
+ */
+function cookie($name='', $value='', $option=null) {
+    // 默认设置
+    $config = include CONFIG_PATH.'config.php';
+    $config = $config['cookie'];
+    // 参数设置(会覆盖默认认设置)
+    if (!is_null($option)) {
+        if (is_numeric($option))
+            $option = array('expire' => $option);
+        elseif (is_string($option))
+            parse_str($option, $option);
+        $config     = array_merge($config, array_change_key_case($option));
+    }
+    if(!empty($config['httponly'])){
+        ini_set("session.cookie_httponly", 1);
+    }
+    // 清除指定前缀的所有cookie
+    if (is_null($name)) {
+        if (empty($_COOKIE))
+            return null;
+        // 要删除的cookie前缀，不指定则删除config设置的指定前缀
+        $prefix = empty($value) ? $config['prefix'] : $value;
+        if (!empty($prefix)) {// 如果前缀为空字符串将不作处理直接返回
+            foreach ($_COOKIE as $key => $val) {
+                if (0 === stripos($key, $prefix)) {
+                    setcookie($key, '', time() - 3600, $config['path'], $config['domain'],$config['secure'],$config['httponly']);
+                    unset($_COOKIE[$key]);
+                }
+            }
+        }
+        return null;
+    }elseif('' === $name){
+        // 获取全部的cookie
+        return $_COOKIE;
+    }
+    $name = $config['prefix'] . str_replace('.', '_', $name);
+    if ('' === $value) {
+        if(isset($_COOKIE[$name])){
+            $value =    $_COOKIE[$name];
+            if(0===strpos($value,'mf:')){
+                $value  =   substr($value,6);
+                return array_map('urldecode',json_decode($value,true));
+            }else{
+                return $value;
+            }
+        }else{
+            return null;
+        }
+    } else {
+        if (is_null($value)) {
+            setcookie($name, '', time() - 3600, $config['path'], $config['domain'],$config['secure'],$config['httponly']);
+            unset($_COOKIE[$name]); // 删除指定cookie
+        } else {
+            // 设置cookie
+            if(is_array($value)){
+                $value  = 'mf:'.json_encode(array_map('urlencode',$value));
+            }
+            $expire = !empty($config['expire']) ? time() + intval($config['expire']) : 0;
+            setcookie($name, $value, $expire, $config['path'], $config['domain'],$config['secure'],$config['httponly']);
+            $_COOKIE[$name] = $value;
+        }
+    }
+    return null;
 }

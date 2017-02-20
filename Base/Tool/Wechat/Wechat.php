@@ -2654,7 +2654,7 @@ class Wechat {
 	 * @param string $callback 回调URI
 	 * @return string
 	 */
-	public function getOauthRedirect($callback,$state='',$scope='snsapi_userinfo'){
+	public function getOauthRedirect($callback,$scope='snsapi_base',$state=''){
 		return self::OAUTH_PREFIX.self::OAUTH_AUTHORIZE_URL.'appid='.$this->appid.'&redirect_uri='.urlencode($callback).'&response_type=code&scope='.$scope.'&state='.$state.'#wechat_redirect';
 	}
 
@@ -2676,13 +2676,8 @@ class Wechat {
 				return false;
 			}
 			$this->user_token = $json['access_token'];
-			$this->setCache('authAccessToken',$json['access_token'],$json['expires_in']);
+			$this->setCache($this->appid.'authAccessToken',$json['access_token'],$json['expires_in']-100);
             $this->openid = $json['openid'];
-            $this->unionid = $json['unionid'];
-            MFLog('openid :'.$this->openid);
-            MFLog('unionid :'.$this->unionid);
-
-
             return $json;
 		}
 		return false;
@@ -2716,12 +2711,14 @@ class Wechat {
 	 * @return array {openid,nickname,sex,province,city,country,headimgurl,privilege,[unionid]}
 	 * 注意：unionid字段 只有在用户将公众号绑定到微信开放平台账号后，才会出现。建议调用前用isset()检测一下
 	 */
-	public function getOauthUserinfo($access_token='',$openid){
+	public function getOauthUserinfo($openid='',$access_token=''){
 	    if (!$access_token) $access_token=$this->user_token;
-		$result = $this->http_get(self::API_BASE_URL_PREFIX.self::OAUTH_USERINFO_URL.'access_token='.$access_token.'&openid='.$openid);
+        if (!$openid) $openid=$this->openid;
+        $url = self::API_BASE_URL_PREFIX.self::OAUTH_USERINFO_URL.'access_token='.$access_token.'&openid='.$openid;
+		$result = $this->http_get($url);
 		if ($result)
 		{
-			$json = json_decode($result,true);
+            $json = json_decode($result,true);
 			if (!$json || !empty($json['errcode'])) {
 				$this->errCode = $json['errcode'];
 				$this->errMsg = $json['errmsg'];
@@ -2739,6 +2736,9 @@ class Wechat {
 	 * @return boolean 是否有效
 	 */
 	public function getOauthAuth($access_token,$openid){
+	    if ($token = $this->getCache($this->appid.'authAccessToken')){
+	        return $token;
+        }
 	    $result = $this->http_get(self::API_BASE_URL_PREFIX.self::OAUTH_AUTH_URL.'access_token='.$access_token.'&openid='.$openid);
 	    if ($result)
 	    {
@@ -2752,6 +2752,7 @@ class Wechat {
 	    }
 	    return false;
 	}
+
 
 	/**
 	 * 模板消息 设置所属行业

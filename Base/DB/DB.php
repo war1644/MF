@@ -20,7 +20,7 @@ class DB {
     private function __construct() {
         if (!class_exists('PDO')) throw new \Exception("你的环境不支持:PDO");
 
-        $cfg = include(CONFIG_PATH . 'db.php');
+        $cfg = include CONFIG_PATH . 'db.php';
         $this->dbName = $cfg['dbname'];
         $dsn = 'mysql:host=' . $cfg['host'] . ';dbname=' . $cfg['dbname'];
         $this->prefix = $cfg['prefix'];
@@ -44,15 +44,15 @@ class DB {
     }
 
 	/**
-	* 选择数据库
-	*/
+	 * 选择数据库
+	 */
 	public function useDb($db) {
         $this->db->exec('use ' . $db);
 	}
 
 	/**
-	* 设置字符集
-	*/
+	 * 设置字符集
+	 */
 	private function charset($char) {
         $this->db->exec('set names ' . $char);
         $this->db->exec('SET character_set_connection='.$char.', character_set_results='.$char.', character_set_client=binary');
@@ -65,8 +65,7 @@ class DB {
      * @param Boolean $debug
      * @return String
      */
-    public function getTableEngine($tableName)
-    {
+    public function getTableEngine($tableName) {
         $strSql = "SHOW TABLE STATUS FROM $this->dbName WHERE Name='".$tableName."'";
         $arrayTableInfo = $this->query($strSql);
         $this->getPDOError();
@@ -74,8 +73,8 @@ class DB {
     }
 
 	/**
-	* 查询1行
-	*/
+	 * 查询1行
+	 */
 	public function getRow($sql , $params=[]) {
 		$st = $this->db->prepare($sql);
 		if($st->execute($params)) {
@@ -87,8 +86,8 @@ class DB {
 	}
 
 	/**
-	* 查询多行
-	*/
+	 * 查询多行
+	 */
 	public function getAll($sql , $params=[]) {
 		$st = $this->db->prepare($sql);
 		if($st->execute($params)) {
@@ -100,8 +99,8 @@ class DB {
 	}
 
 	/**
-	* 删除数据
-	*/
+	 * 删除数据
+	 */
 	public function delete($sql , $params=[]) {
 		$st = $this->db->prepare($sql);
 		if($st->execute($params)) {
@@ -147,8 +146,7 @@ class DB {
      * @param Boolean $debug
      * @return Int
      */
-    public function execSql($strSql, $debug = false)
-    {
+    public function execSql($strSql, $debug = false) {
         if ($debug === true) $this->debug($strSql);
         $result = $this->db->exec($strSql);
         $this->getPDOError();
@@ -163,8 +161,7 @@ class DB {
      * @param Boolean $debug
      * @return Array
      */
-    public function query($strSql, $queryMode = 'all', $debug = false)
-    {
+    public function query($strSql, $queryMode = 'all', $debug = false) {
         if ($debug === true) $this->debug($strSql);
         $recordset = $this->db->query($strSql);
         $this->getPDOError();
@@ -214,17 +211,15 @@ class DB {
      *
      * @param mixed $debuginfo
      */
-    private function debug($debuginfo)
-    {
-        var_dump($debuginfo);
+    private function debug($info) {
+        var_dump($info);
         exit();
     }
 
     /**
      * getPDOError 捕获PDO错误信息
      */
-    private function getPDOError()
-    {
+    private function getPDOError() {
         if ($this->db->errorCode() != '00000') {
             $arrayError = $this->db->errorInfo();
             $this->outputError($arrayError[2]);
@@ -232,17 +227,16 @@ class DB {
     }
 
     /**
-     * 输出错误信息
+     * 错误信息异常抛出
      *
      * @param String $strErrMsg
      */
-    private function outputError($strErrMsg)
-    {
+    private function outputError($strErrMsg) {
         throw new \Exception('MySQL Error: '.$strErrMsg);
     }
 
     /**
-     * destruct 关闭数据库连接
+     * 关闭数据库连接
      */
     public function destruct(){
         $this->db = null;

@@ -1,7 +1,7 @@
 <?php
 namespace Base\Tool;
 /**
- * Socket工具类，PHP的socket咋就这么泪奔呢？嗯，我技术问题>_<
+ * WebSocket工具类，PHP跟websocket交互咋就这么泪奔呢？
  * 客户端在Public/V/Base
  * @author 路漫漫
  * @link ahmerry@qq.com
@@ -12,10 +12,7 @@ namespace Base\Tool;
  * <p>v0.9 2017/1/17 10:48  初版</p>
  */
 
-
-ob_implicit_flush();
-
-class Socket {
+class WebSocket {
     private $sockets;//socket数组
     private $users;
     private $master;
@@ -32,8 +29,7 @@ class Socket {
         while(true){
             //拿所有的连接
             $changes=$this->sockets;
-
-            socket_select($changes,$write=NULL,$except=NULL,NULL);
+            socket_select($changes,$write,$except,0);
             //遍历连接
             foreach($changes as $sock){
                 if($sock==$this->master){
@@ -141,6 +137,7 @@ class Socket {
 
     //帧数据编码（发回客户端用），php还是在流泪
     private function code($msg){
+        $msg = json_encode($msg);
         $msg = preg_replace(array('/\r$/','/\n$/','/\r\n$/',), '', $msg);
         $frame = array();
         $frame[0] = '81';
@@ -162,9 +159,9 @@ class Socket {
     //编码后发回到客户端
     //$k为识别客户端（发送指定客户端），暂时不用，以后再扩展
     private function send($k,$msg){
-        $msg = json_encode($msg);
+//        $msg = json_encode($msg);
         $msg = $this->code($msg);
-        $this->e($msg);
+        $this->e($msg,1);
         foreach($this->users as $v){
             //发送到客户端
             socket_write($v['socket'],$msg,strlen($msg));
@@ -172,10 +169,15 @@ class Socket {
     }
 
     //记录到log
-    private function e($str){
-        $path=dirname(__FILE__).'/log.txt';
+    private function e($str,$flag=0){
+        $path=RUN_PATH.'WebSocket.log';
+        if ($flag) $str = json_decode($str);
         $str=$str."\n";
-
         error_log($str,3,$path);
+        $str = mb_convert_encoding($str,'GBK','UTF-8');
+        echo $str;
     }
 }
+
+//调用示例
+new WebSocket('127.0.0.1',8416);

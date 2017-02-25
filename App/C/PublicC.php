@@ -22,7 +22,11 @@ class PublicC extends C {
     }
 
     public function endRun() {
-        $this->view('KSWechat/endRunning');
+        if ($_POST){
+            MFLog(json_encode($_POST));
+            echo true;
+        }
+
 
     }
 
@@ -48,7 +52,7 @@ class PublicC extends C {
      * 方法名在config定义
      */
     public static function wxDebug($text){
-        MFLog($text,'wxdebug','Wechat/');
+        MFLog($text,'WxDebug','Wechat/');
     }
 
     //接收微信

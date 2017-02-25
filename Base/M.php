@@ -1,17 +1,18 @@
 <?php
 namespace Base;
 /**
- * Created by 路漫漫.
- * User: ahmerry@qq.com
- * Date: 2016/12/8 15:32
- *
  * 表数据基础处理模型
  * 自动化映射表（主键，字段等等）
  * 清除不合法字段
  * 提供常用增删改查方法
- *
+ * @author 路漫漫
+ * @link ahmerry@qq.com
+ * @since
+ * <p>v0.9 2016/12/8 15:32  初版</p>
+ * <p>v1.0 2017/01/23 11:22  表名映射采用正则匹配</p>
+ * <p>v1.1 2017/01/24 9:18  增加最简单粗暴的query 和 exec方法(注意这两个为非预处理方式)</p>
  */
-
+use Base\DB\DB;
 class M {
     protected $table = '';
     protected $db = null;
@@ -22,11 +23,8 @@ class M {
     protected $prefix = '';
 
     public function __construct() {
-        $cfg = include(MFPATH . 'Config/db.php');
-        $this->prefix = $cfg['prefix'];
-        unset($cfg);
-        $this->getTable();
         $this->getDb();
+        $this->getTable();
         $this->parseTable();
         $this->reset();
     }
@@ -46,16 +44,21 @@ class M {
     }
 
     /**
-    * 根据Model类名分析出表名
-    */
+     * 根据Model类名分析出表名
+     */
     public function getTable() {
-        $className = get_called_class();
-        $this->table = $this->prefix.strtolower(substr($className , 0 , -1));
+        $this->prefix = $this->db->prefix;
+        $patt = '/[A-Z][a-z]*/';
+        preg_match_all($patt, get_called_class(), $res);
+        $res = $res[0];
+        array_pop($res);
+        $res = strtolower(join('_',$res));
+        $this->table = $this->prefix.$res;
     }
 
     /**
-    * 获取Db的实例,用于查询数据库
-    */
+     * 获取Db的实例,用于查询数据库
+     */
     public function getDb() {
         $this->db = DB::Ins();
     }
@@ -88,7 +91,7 @@ class M {
         $data = $this->facade($data); // 过滤非法字段
 
         if(empty($data)) {
-            throw new Exception("data object is empty", 500);
+            throw new \Exception("data object is empty", 500);
         }
 
         $sql = 'insert into ' . $this->table . ' (';
@@ -101,9 +104,9 @@ class M {
     }
 
     /**
-    * 根据传来的数组修改1条记录
-    * 传来的数组需要含有主键列,即要根据主要来修改
-    */
+     * 根据传来的数组修改1条记录
+     * 传来的数组需要含有主键列,即要根据主要来修改
+     */
     public function save($data=[]) {
         if(empty($data)) {
             $data = $this->data;
@@ -112,7 +115,7 @@ class M {
         $data = $this->facade($data); // 过滤非法字段
 
         if(!isset($data[$this->pk])) {
-            throw new Exception("need the primary key on svae", 500);
+            throw new \Exception("need the primary key on svae", 500);
         }
 
         $pk = $data[$this->pk];
@@ -236,8 +239,8 @@ class M {
     }
 
     /**
-    * 清除不合法字段
-    */
+     * 清除不合法字段
+     */
     public function facade($data) {
         foreach($data as $k=>$v) {
             if(!in_array($k , $this->fields)) {
@@ -246,6 +249,30 @@ class M {
         }
 
         return $data;
+    }
+
+    /**
+     * query 执行SQL语句
+     * 最简单粗暴的查询方式
+     *
+     * @param String $strSql
+     * @param String $queryMode 查询方式(All or Row)
+     * @param Boolean $debug
+     * @return Array
+     */
+    public function query($strSql, $queryMode = 'all', $debug = false){
+        return $this->db->query($strSql, $queryMode, $debug);
+    }
+
+    /**
+     * execSql 执行SQL语句
+     * 最简单粗暴的执行方式
+     * @param String $strSql
+     * @param Boolean $debug
+     * @return Int
+     */
+    public function execSql($strSql, $debug = false) {
+        return $this->db->execSql($strSql, $debug);
     }
 
 }

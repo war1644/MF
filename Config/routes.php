@@ -32,6 +32,12 @@ Macaw::any('Public/(:all)',function ($p){
     $c->$p();
 });
 
+Macaw::any('Home/(:all)',function ($p){
+    $c = new HomeC();
+    $c->method = $p;
+    $c->$p();
+});
+
 
 Macaw::any('wechat', 'WechatC@auth');
 

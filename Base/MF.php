@@ -10,6 +10,7 @@ defined('MFPATH') ? : define('MFPATH' , $_SERVER["DOCUMENT_ROOT"].'/../');
 defined('BASE_URL') ? : define('BASE_URL' , 'http://c.cn/');
 defined('RUN_PATH') ? : define('RUN_PATH' , MFPATH.'RunData/');
 defined('V_PATH') ? : define('V_PATH' , MFPATH.'Public/V/');
+defined('UP_PATH') ? : define('UP_PATH' , MFPATH.'Public/Upload/');
 defined('KS_PATH') ? : define('KS_PATH' , V_PATH.'KSWechat/');
 defined('V_URL') ? : define('V_URL' , BASE_URL.'V/');
 defined('STATIC_URL') OR define('STATIC_URL' , V_URL.'Static/');

@@ -9,7 +9,7 @@ ini_set("display_errors", "On");
 error_reporting(E_ALL | E_STRICT);
 //设置全局常量
 define('MFPATH' , str_replace('\\', '/', __DIR__).'/../');
-define('BASE_URL' , 'http://c.cn/');
+define('BASE_URL' , 'http://192.168.1.30/');
 
 require_once MFPATH.'Base/MF.php';
 

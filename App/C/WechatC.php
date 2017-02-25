@@ -45,7 +45,7 @@ class WechatC extends C {
      * 方法名在config定义
      */
     public static function wxDebug($text){
-        MFLog($text,'wxdebug','Wechat/');
+        MFLog($text,'WxDebug','Wechat/');
     }
 
     public function auth(){
@@ -56,7 +56,7 @@ class WechatC extends C {
 
         //设置菜单
         $buttons =  [
-            ['type'=>'view','name'=>'连接智能设备','url'=>'http://wx.duanxq.cn/wxindex'],
+            ['type'=>'view','name'=>'连接智能设备','url'=>'http://wx.duanxq.cn/Wechat/index'],
             [
                 'name'=>'智能设备', 'sub_button'=>[
                     ['type'=>'view','name'=>'已绑设备','url'=>'https://hw.weixin.qq.com/devicectrl/panel/device-list.html?appid=wx6834f279296c34e2'],
@@ -64,7 +64,7 @@ class WechatC extends C {
             ],
             [
                 'name'=>'页面测试', 'sub_button'=>[
-                    ['type'=>'view','name'=>'test','url'=>'http://wx.duanxq.cn/wxtest'],
+                    ['type'=>'view','name'=>'test','url'=>'http://wx.duanxq.cn/Wechat/test'],
                 ]
             ]
 
@@ -123,7 +123,7 @@ class WechatC extends C {
      * 排行榜
      * @return Wechat
      */
-    public function GetCode() {
+    public function getCode() {
         $redirect_uri = 'http://wx.duanxq.cn/wechat';
         $url = $this->WX->getOauthRedirect($redirect_uri);
     }
@@ -132,7 +132,7 @@ class WechatC extends C {
      * 排行榜
      * @return Wechat
      */
-    public function Ranking() {
+    public function ranking() {
         $url = $this->WX->getRanking();
 //        $data['title'] = 'KS,为跑步而生';
 //        $data['jsSign'] = $this->jsApi;
@@ -143,7 +143,7 @@ class WechatC extends C {
      * 跑步机交互页
      * @return Wechat
      */
-    public function Test() {
+    public function test() {
         $data['title'] = 'KS,为跑步而生';
         $data['jsSign'] = $this->jsApi;
         $this->view('KSWechat/device',$data);
@@ -153,17 +153,17 @@ class WechatC extends C {
      * 连接跑步机页面
      * @return Wechat
      */
-    public function Index() {
+    public function index() {
         $data['title'] = 'KS,为跑步而生';
         $data['jsSign'] = $this->jsApi;
-        $this->view('KSWechat/scanDevice',$data);
+        $this->view('KSWechat/endRunning',$data);
     }
 
     /**
      * 连接跑步机页面
      * @return Wechat
      */
-    public function EndRunning() {
+    public function endRun() {
         $data['title'] = 'KS,为跑步而生';
         $data['jsSign'] = $this->jsApi;
         $this->view('KSWechat/endRunning',$data);

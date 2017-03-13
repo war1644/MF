@@ -9,6 +9,7 @@ namespace Base;
 class Base {
     public function __construct() {
         $this->initSystemHandlers();
+        $this->init();
     }
 
     /**
@@ -52,6 +53,36 @@ class Base {
             $c->view('Base/error',['err'=>$err,'traces'=>$traces]);
 
         }
+    }
 
+    /**
+     * 自动加载对应文件
+     *
+     * @param string $class
+     * @return bool
+     */
+    protected function autoLoad($class) {
+        $file = str_replace('\\', DIRECTORY_SEPARATOR, $class) . '.php';
+
+        clearstatcache();
+        $path = MFPATH . $file;
+        if (is_file($path)) {
+            include $path;
+            if (class_exists($class, false)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * 初始化
+     *
+     * @return object
+     */
+    public function init() {
+        spl_autoload_register([$this, 'autoLoad']);
+        return $this;
     }
 }

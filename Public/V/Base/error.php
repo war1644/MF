@@ -5,7 +5,7 @@
     <div class="starter-template">
         <div class="alert alert-warning">
         	<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-        	<h1><strong>&gt;_&lt;出错啦&gt;_&lt;</strong></h1>
+        	<h1><strong>&gt;_&lt; 出错啦 &gt;_&lt;</strong></h1>
             <p style="text-align: left"><?php print_r($data['err']); ?></p>
             <hr>
             <h3>堆栈调用明细</h3>

@@ -8,6 +8,6 @@
  * @since
  * <p>v0.9 2017/1/20 17:18  初版</p>
  */
-class RunRecordDetailM {
+class RunRecordDetailM extends \Base\M {
 
 }

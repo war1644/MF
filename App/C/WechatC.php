@@ -3,7 +3,6 @@
  * 微信相关处理类
  * @author 路漫漫
  * @link ahmerry@qq.com
- * @version 0.9
  * @since
  * <p>v0.9 2016/12/8 15:15  初版</p>
  */
@@ -15,6 +14,7 @@ class WechatC extends C {
 
     protected $WX;
     protected $jsApi;
+    protected $userInfo;
     const DEBUG = true;
 
     public function __construct() {
@@ -56,7 +56,7 @@ class WechatC extends C {
 
         //设置菜单
         $buttons =  [
-            ['type'=>'view','name'=>'连接智能设备','url'=>'http://wx.duanxq.cn/Wechat/index'],
+            ['type'=>'view','name'=>'连接智能设备','url'=>'https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx6834f279296c34e2&redirect_uri=http%3A%2F%2Fwx.duanxq.cn%2FWechat%2FgetKSUserInfo&response_type=code&scope=snsapi_userinfo&state='],
             [
                 'name'=>'智能设备', 'sub_button'=>[
                     ['type'=>'view','name'=>'已绑设备','url'=>'https://hw.weixin.qq.com/devicectrl/panel/device-list.html?appid=wx6834f279296c34e2'],
@@ -67,9 +67,8 @@ class WechatC extends C {
                     ['type'=>'view','name'=>'test','url'=>'http://wx.duanxq.cn/Wechat/test'],
                 ]
             ]
-
         ];
-        $this->WX->createMenu($buttons);
+        Dump($this->WX->createMenu($buttons));
     }
 
     //接收微信信息
@@ -79,7 +78,6 @@ class WechatC extends C {
             switch ( $type ) {
                 case Wechat::MSGTYPE_TEXT:
                     $this->WX->text( "欢迎来到KS智能设备世界" )->reply();
-                    exit;
                     break;
                 case Wechat::MSGTYPE_EVENT:
                     $event = $this->WX->getRevEvent();
@@ -94,17 +92,14 @@ class WechatC extends C {
                         $this->WxDebug("收到微信请求 : ".json_encode($_REQUEST)."\n数据 : ".json_encode($this->WX->getRevData()));
                     }
                     if (isset($_REQUEST['code'])){
-
-                        $json = $this->WX->getOauthAccessToken();
-//                        var_dump($json);
-                        $this->Ranking();
+                        $this->WX->getOauthAccessToken();
+                        $this->userInfo = $this->WX->getOauthUserinfo();
                     }
                     $this->WX->text( "help info" )->reply();
                     break;
             }
             MFLog('响应微信完成');
         }
-
     }
 
     protected function JsApi() {
@@ -124,8 +119,46 @@ class WechatC extends C {
      * @return Wechat
      */
     public function getCode() {
-        $redirect_uri = 'http://wx.duanxq.cn/wechat';
+        $redirect_uri = 'http://wx.duanxq.cn/Wechat/getKSUserInfo';
         $url = $this->WX->getOauthRedirect($redirect_uri);
+        Dump($url);
+    }
+
+    /**
+     * 获取用户信息
+     * @return Wechat
+     */
+    public function getKSUserInfo() {
+        $userInfo = $this->userInfo;
+        $arr = Session($userInfo['unionid']);
+        if (!$arr){
+            $jsonData = json_encode([
+                "service"=>"user.weixin",
+                "wx_openid"=>$userInfo['openid'],
+                "wx_unionid"=>$userInfo['unionid'],
+                "brand"=>"wechat",
+                "wx_nickname"=>$userInfo['nickname'],
+                "avatar"=>$userInfo['headimgurl'],
+            ]);
+            $res = PostMan(API_URL,$jsonData);
+            $res = json_decode($res,true);
+            if ($res['ret']==200){
+                $arr = ['ksid'=>$res['data']['info']['ksid'],'uid'=>$userInfo['unionid'],'oid'=>$userInfo['openid']];
+                Session($userInfo['unionid'],json_encode($arr));
+                $this->endRun($arr);
+            }else{
+                Dump('服务器获取信息失败,请刷新页面');
+            }
+        }else{
+            $this->endRun(json_decode($arr,true));
+        }
+
+
+
+
+        //https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx6834f279296c34e2&redirect_uri=http%3A%2F%2Fwx.duanxq.cn%2FWechat%2FgetKSUserInfo&response_type=code&scope=snsapi_userinfo&state=
+        //https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx91e7b6ade546e6a4&redirect_uri=http%3A%2F%2Fwx.duanxq.cn%2FWechat%2FgetKSUserInfo&response_type=code&scope=snsapi_userinfo&state=
+
     }
 
     /**
@@ -150,6 +183,20 @@ class WechatC extends C {
     }
 
     /**
+     * 绑定跑步机
+     * @return Wechat
+     */
+    public function bindDevice() {
+        $data['title'] = 'KS,为跑步而生';
+        $postData = [
+            "ticket"=> $_POST['ticket'],
+            "device_id"=> $_POST['deviceId'],
+            "openid"=> $_POST['oid'],
+        ];
+        echo $this->WX->bindDevice($postData);
+    }
+
+    /**
      * 连接跑步机页面
      * @return Wechat
      */
@@ -163,30 +210,32 @@ class WechatC extends C {
      * 连接跑步机页面
      * @return Wechat
      */
-    public function endRun() {
+    public function endRun($arr) {
         $data['title'] = 'KS,为跑步而生';
         $data['jsSign'] = $this->jsApi;
+        $data['ksid'] = $arr['ksid'];
+        $data['oid'] = $arr['oid'];
         $this->view('KSWechat/endRunning',$data);
     }
 
     /**
-     * 循环添加
+     * 循环添加mac
      * @return Wechat
      */
-    public function ForAddMac() {
+    public function addMac() {
         return;
         $log = [];
-        for ($i=0;$i<=2;$i++){
+        for ($i=9;$i<=19;$i++){
 
             $mac = dechex($i);
-            if ($mac==0){
-                $mac = '00';
+            if (strlen($mac)==1){
+                $mac = "0$mac";
             }
             $name = strtoupper($mac);
             $data = [
                 "device_num"=>"1",
                 "device_list"=>[[
-                    "id"=>"KS940V1-$name",
+                    "id"=>"KSP1V1-$name",
                     "mac"=>"14580f0000$mac",
                     "connect_protocol"=>"3",
                     "auth_key"=>"",
@@ -197,16 +246,38 @@ class WechatC extends C {
                     "manu_mac_pos"=>"-1",
                     "ser_mac_pos"=>"-2"
                 ]],
-                "product_id"=>"24777"
+                "product_id"=>"27569"
             ];
             if ($this->WX->addDeviceMac($data)){
-                $log[$mac] = "$mac 添加成功";
+                $log[$i] = "$mac 添加成功";
             }else{
-                $log[$mac] = "$mac 添加失败";
+                $log[$i] = "$mac 添加失败";
+                $data = [
+                    "device_num"=>"1",
+                    "device_list"=>[[
+                        "id"=>"KSP1V1-$name",
+                        "mac"=>"14580f0000$mac",
+                        "connect_protocol"=>"3",
+                        "auth_key"=>"",
+                        "close_strategy"=>"2",
+                        "conn_strategy"=>"1",
+                        "crypt_method"=>"0",
+                        "auth_ver"=>"0",
+                        "manu_mac_pos"=>"-1",
+                        "ser_mac_pos"=>"-2"
+                    ]],
+                    "product_id"=>"27569",
+                    "op_type"=>"1"
+
+                ];
+                if ($this->WX->addDeviceMac($data)){
+                    $log[$i] = "$mac 添加成功";
+                }else{
+                    $log[$i] = "$mac 添加失败";
+                }
             }
         }
-        MFLog(json_encode($log));
-
+        MFLog($log);
     }
 
 

@@ -1,9 +1,10 @@
 <?php
 /**
- * Created by 路漫漫.
- * link: ahmerry@qq.com
- * Date: 2016/12/9 10:00
- * 在框架里面，你应该接管一切信息----路漫漫
+ * 在框架里，你应该接管一切信息----路漫漫
+ * @author 路漫漫
+ * @link ahmerry@qq.com
+ * @since
+ * <p>v0.9 2017/3/9 10:49  初版</p>
  */
 //检测常量
 defined('MFPATH') ? : define('MFPATH' , $_SERVER["DOCUMENT_ROOT"].'/../');
@@ -20,13 +21,14 @@ defined('CONFIG_PATH') OR define('CONFIG_PATH' , MFPATH.'Config/');
 //搬运工出场
 //autoload自动载入 内存中开启一个(命名空间类名=>文件名路径)数组
 //代码中使用某个类的时候（use xxxx），将自动载入该类所在的文件
-require_once MFPATH."vendor/autoload.php";
+//include MFPATH."vendor/autoload.php";
 
 //引入全局方法
-require_once MFPATH."Base/F/functions.php";
+include MFPATH."Base/F/functions.php";
+include MFPATH."Base/Base.php";
 
 //接管
 new \Base\Base();
 
 //路由,交通指挥出场
-require_once CONFIG_PATH."routes.php";
+include CONFIG_PATH."routes.php";

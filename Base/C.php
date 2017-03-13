@@ -20,7 +20,7 @@ class C {
      * @param $data 输出到视图的变量
      * @param $path 视图路径
      */
-    public function view($template,$data='') {
+    public function view($template='',$data='') {
         if (!isset($data['title'])){
             $data['title'] = '废土战记';
         }
@@ -28,6 +28,10 @@ class C {
             $template = $this->method;
         }
         //引入视图
-        include (V_PATH.$template . '.php');
+        if (file_exists(V_PATH.$template . '.php')){
+            include V_PATH.$template . '.php';
+        }else{
+            include V_PATH.$template . '.html';
+        }
     }
 }

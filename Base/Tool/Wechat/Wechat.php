@@ -213,16 +213,17 @@ class Wechat {
 	const SHAKEAROUND_USER_GETSHAKEINFO = '/shakearound/user/getshakeinfo?';//获取摇周边的设备及用户信息
 	const SHAKEAROUND_STATISTICS_DEVICE = '/shakearound/statistics/device?';//以设备为维度的数据统计接口
     const SHAKEAROUND_STATISTICS_PAGE = '/shakearound/statistics/page?';//以页面为维度的数据统计接口
-	///微信小店相关接口
+	//微信小店相关接口
 	const MERCHANT_ORDER_GETBYID = '/merchant/order/getbyid?';//根据订单ID获取订单详情
 	const MERCHANT_ORDER_GETBYFILTER = '/merchant/order/getbyfilter?';//根据订单状态/创建时间获取订单详情
 	const MERCHANT_ORDER_SETDELIVERY = '/merchant/order/setdelivery?';//设置订单发货信息
 	const MERCHANT_ORDER_CLOSE = '/merchant/order/close?';//关闭订单
 
-    ///微信智能设备相关接口
+    //微信智能设备相关接口
     const DEVICEID_AND_URL = '/device/getqrcode?';//获取设备的deviceid和二维码
     const AUTHORIZE_DEVICE = '/device/authorize_device?';//蓝牙设备授权
-
+    const BIND_DEVICE = '/device/bind?';//绑定设备
+    const UNBIND_DEVICE = '/device/unbind?';//解绑设备
 
     public $tokenName;
     public $openid;
@@ -383,17 +384,19 @@ class Wechat {
     /**
      * 获取微信服务器发来的信息
      */
-	public function getRev()
-	{
-		if ($this->_receive) return $this;
-		$postStr = !empty($this->postxml)?$this->postxml:file_get_contents("php://input");
-		//兼顾使用明文又不想调用valid()方法的情况
-//		$this->log($postStr);
-		if (!empty($postStr)) {
-			$this->_receive = (array)simplexml_load_string($postStr, 'SimpleXMLElement', LIBXML_NOCDATA);
-		}
-		return $this;
-	}
+	public function getRev() {
+        if ($this->_receive) return $this;
+        $postStr = !empty($this->postxml) ? $this->postxml : file_get_contents("php://input");
+        //兼顾使用明文又不想调用valid()方法的情况
+//        $this->log($postStr);
+        MFLog($postStr);
+        if(!xml_parse(xml_parser_create(),$postStr,true))
+            return $this;
+        if (!empty($postStr)) {
+                $this->_receive = (array)simplexml_load_string($postStr, 'SimpleXMLElement', LIBXML_NOCDATA);
+        }
+        return $this;
+    }
 
 	/**
 	 * 获取微信服务器发来的信息
@@ -4697,7 +4700,6 @@ class Wechat {
     public function addDeviceMac($data){
         if (!$this->access_token && !$this->checkAuth()) return false;
         $result = $this->http_post(self::API_BASE_URL_PREFIX . self::AUTHORIZE_DEVICE . 'access_token=' . $this->access_token, self::json_encode($data));
-        $this->log($result);
         if ($result) {
             $json = json_decode($result, true);
             if (!$json || !empty($json['errcode'])) {
@@ -4706,6 +4708,30 @@ class Wechat {
                 return false;
             }
             return $json;
+        }
+        return false;
+    }
+
+    /**
+     * 添加设备授权MAC
+     * $data array 授权的mac信息
+     */
+    public function bindDevice($data,$bind=true){
+        if (!$this->access_token && !$this->checkAuth()) return false;
+        if ($bind){
+            $result = $this->http_post(self::API_BASE_URL_PREFIX . self::BIND_DEVICE . 'access_token=' . $this->access_token,self::json_encode($data));
+        }else{
+            $result = $this->http_post(self::API_BASE_URL_PREFIX . self::UNBIND_DEVICE . 'access_token=' . $this->access_token,self::json_encode($data));
+        }
+        MFLog('BINGDING:' . $result);
+        if ($result) {
+//            $json = json_decode($result, true);
+//            if (!$json || !empty($json['errcode'])) {
+//                $this->errCode = $json['errcode'];
+//                $this->errMsg  = $json['errmsg'];
+//                return false;
+//            }
+            return $result;
         }
         return false;
     }

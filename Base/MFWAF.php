@@ -7,7 +7,6 @@ namespace Base;
  * 嗯，再牛逼的防御也不如良好的编码习惯----路漫漫
  * @author 路漫漫
  * @link ahmerry@qq.com
- * @version V1.0
  * @since
  * <p>v0.9 2016/12/16 15:17  初版</p>
  * <p>v1.0 2017/1/17 21:49  增加get,post,cookie转义处理</p>

@@ -1,9 +1,11 @@
 <?php
+namespace App\C;
 /**
- * Created by 路漫漫.
- * User: ahmerry@qq.com
- * Date: 2016/12/9 17:17
- *
+ * demo 示例
+ * @author 路漫漫
+ * @link ahmerry@qq.com
+ * @since
+ * <p>v0.9 2016/12/9 初版</p>
  */
 use Base\C;
 use Base\Tool\Vcode;
@@ -13,7 +15,11 @@ class PublicC extends C {
     protected $WX;
 
     public function index(){
-       
+       die(1);
+    }
+
+    public function test(){
+        $this->view();
     }
 
     public function run(){
@@ -21,12 +27,16 @@ class PublicC extends C {
         $this->view('KSWechat/running');
     }
 
-    public function endRun() {
-        if ($_POST){
-            MFLog(json_encode($_POST));
-            echo true;
+    public function endRun(){
+        if ($_POST && $_POST['summary']['id'] && $_POST['summary']['dist']>0.1){
+            MFLog($_POST);
+            $ksid = $_POST['summary']['id'];
+            $data = base64_encode(gzcompress(json_encode($_POST)));
+            $jsonData = json_encode(["service"=>"pad.upload","ksid"=>$ksid,"data"=>$data,"appkey"=>"LlCKimYod15f","crc"=>"26a6922e6409095a1e4cbce91b98c41e"]);
+            echo $res = PostMan('api.kingsmith.com.cn/Open/',$jsonData);
+            MFLog($res);
         }
-
+        die();
 
     }
 

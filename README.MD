@@ -39,7 +39,7 @@ MF
             $c->$p();
         });
     ```
-* nginx rewrite
+* nginx rewrite  
     ```
     location / {
         if (!-e $request_filename) {

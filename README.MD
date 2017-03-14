@@ -39,14 +39,15 @@ MF
             $c->$p();
         });
     ```
-* nginx rewrite  
+* nginx rewrite
+
     ```
-    location / {
-        if (!-e $request_filename) {
-            rewrite  ^/(.*)$  /index.php/$1  last;
-            break;
-        }
-        index  index.html index.php;
-    } 
+        location / {  
+            if (!-e $request_filename) {  
+                rewrite  ^/(.*)$  /index.php/$1  last;  
+                break;  
+            }  
+            index index.php;  
+        }   
     ```
 * Base下工具类用不上的可以删掉，完全独立的。放在那也没事，不new也会耗资源

@@ -48,7 +48,7 @@ class SMTP {
     public $errstr = '';
 
     private function __construct() {
-        $cfg = require_once CONFIG_PATH.'smtp.php';
+        $cfg = Config('smtp');
         if (empty($cfg['host']))
             die('SMTP服务器未指定!');
         $this->smtp = fsockopen($cfg['host'],$cfg['port'],$errno,$errstr,5);

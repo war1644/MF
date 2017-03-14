@@ -1,12 +1,19 @@
 <?php
 /**
- * Created by 路漫漫.
- * User: ahmerry@qq.com
- * Date: 2016/12/8 13:53
- * PHP框架,有了路由就有了一切----路漫漫
- * 增加该路由防御体系(cookie,get,post),若不想防御,增加第三个参数'false'
+ *         ▂▃╬▄▄▃▂▁▁
+ *  ●●●█〓██████████████▇▇▇▅▅▅▅▅▅▅▅▅▇▅▅          BUG
+ *  ▄▅████☆RED █ WOLF☆███▄▄▃▂
+ *  █████████████████████████████
+ *  ◥⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙◤
+ *
+ * PHP框架,有了路由就有了一切
+ * @author 路漫漫
+ * @link ahmerry@qq.com
+ * @version
+ * v1.0 2017/01/09  增加该路由防御体系(cookie,get,post),若不想防御过滤,增加第三个参数为false
+ * v0.9 2017/03/09  初版
  */
-//载入了 Macaw 类
+
 use Base\Macaw;
 
 //路由分发
@@ -17,23 +24,23 @@ Macaw::get('fuck', function() {
 });
 
 Macaw::any('',function (){
-    echo 'welcome to MF';
+    phpinfo();
 });
 
 Macaw::any('Wechat/(:all)',function ($p){
-    $c = new WechatC();
+    $c = new App\C\WechatC();
     $c->method = $p;
     $c->$p();
 });
 
 Macaw::any('Public/(:all)',function ($p){
-    $c = new PublicC();
+    $c = new App\C\PublicC();
     $c->method = $p;
     $c->$p();
 });
 
 Macaw::any('Home/(:all)',function ($p){
-    $c = new HomeC();
+    $c = new App\C\HomeC();
     $c->method = $p;
     $c->$p();
 });

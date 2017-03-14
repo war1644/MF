@@ -11,9 +11,9 @@ namespace Base;
  *
  * @auth NoahBuscher
  * @link https://github.com/NoahBuscher/Macaw
- * @since
- * <p>v1.1 2017/1/2 13:52 增加waf防御,传递调用方法到调用类 by 路漫漫</p>
- * <p>v1.2 2017/1/28 9:21  修复重复取参的bug by 路漫漫</p>
+ * @version
+ * v1.2 2017/1/28 9:21  修复重复取参的bug by 路漫漫
+ * v1.1 2017/1/2 13:52 增加waf防御,传递调用方法到调用类 by 路漫漫
  */
 
 

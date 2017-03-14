@@ -6,7 +6,7 @@ MF
 ===
     为什么我还要写MF？因为虽然不需要复杂的框架，但是一款简单结构化代码的工具还是需要的！
    
-    一个轻便简约干净型MVC PHP框架，Macaw路由，命名空间式autoload，内置waf，核心大小不到24kb!
+    一个轻便简约干净型MVC PHP框架，Macaw路由，命名空间式autoload，内置waf，核心大小46kb!
     
     使用请看App文件夹下demo
     

@@ -27,7 +27,7 @@ class Redis {
      * @param string $config['auth'] Redis 密码
      */
     public static function init() {
-        $config = include MFPATH.self::CONFIG_FILE;
+        $config = Config('redis');
         self::$redis = new \Redis();
         self::$redis->pconnect($config['host'], $config['port'], 300);
         self::$prefix = isset($config['prefix']) ? $config['prefix'] : '';

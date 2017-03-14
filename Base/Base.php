@@ -15,16 +15,27 @@ namespace Base;
  * v0.9 2016/12/15      初版
  */
 class Base {
-    public function __construct() {
+    protected static $obj = null;
+    private function __construct() {
         $this->initSystemHandlers();
         //autoload自动载入
         $this->init();
     }
 
+    //关闭clone
+    private function __clone() {}
+
+    public static function ins(){
+        if (self::$obj===null){
+            self::$obj = new self();
+        }
+        return self::$obj;
+    }
+
     /**
      * 接管系统错误、异常
      */
-    public function initSystemHandlers() {
+    protected function initSystemHandlers() {
         set_error_handler([$this , 'handlerError']);
         set_exception_handler([$this , 'handlerException']);
     }
@@ -43,7 +54,7 @@ class Base {
     /**
      * 处理异常
      */
-    public function handler($exception) {
+    protected function handler($exception) {
         $msg = $exception->getMessage();
         $file = $exception->getFile();
         $line = $exception->getline();
@@ -57,9 +68,9 @@ class Base {
         }
         $c = new \Base\C();
         if (isset($code) && $code==404){
-            $c->view('Base/404',['err'=>$err]);
+            $c->view('Base/404.php',['err'=>$err]);
         }else{
-            $c->view('Base/error',['err'=>$err,'traces'=>$traces]);
+            $c->view('Base/error.php',['err'=>$err,'traces'=>$traces]);
 
         }
     }
@@ -91,7 +102,7 @@ class Base {
      *
      * @return object
      */
-    public function init() {
+    protected function init() {
         spl_autoload_register([$this, 'autoLoad']);
         return $this;
     }

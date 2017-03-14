@@ -29,7 +29,7 @@ class WechatC extends C {
     public function __construct() {
         MFLog('收到微信请求');
         if (!$this->WX) {
-            $option = require CONFIG_PATH . 'wechat.php';
+            $option = Config('wx');
             if (REDIS){
                 $this->WX = new MFWechat($option);
             }else{

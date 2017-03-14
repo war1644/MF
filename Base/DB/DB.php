@@ -25,7 +25,7 @@ class DB {
     private function __construct() {
         if (!class_exists('PDO')) throw new \Exception("你的环境不支持:PDO");
 
-        $cfg = include CONFIG_PATH . 'db.php';
+        $cfg = Config('db');
         $this->dbName = $cfg['dbname'];
         $dsn = 'mysql:host=' . $cfg['host'] . ';dbname=' . $cfg['dbname'];
         $this->prefix = $cfg['prefix'];

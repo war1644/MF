@@ -37,6 +37,24 @@ function MFLog($log, $name='', $path='') {
 }
 
 /**
+ * 全局配置参数读写
+ * @param $key 参数
+ */
+function Config($key='') {
+    if (!defined('CONFIG')){
+        echo '引入了config';
+        //载入配置并供全局调用
+        $C = include CONFIG_PATH.'config.php';
+        define('CONFIG',json_encode($C));
+    }else{
+        $C = json_decode(CONFIG,true);
+    }
+
+    if ($key === '') return $C;
+    return $C[$key];
+}
+
+/**
  * 检测是否是有该文件夹，没有则生成
  */
 function CheckDir($dir, $mode=0777) {

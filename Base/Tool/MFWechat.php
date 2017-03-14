@@ -3,12 +3,18 @@ namespace Base\Tool;
 use Base\Redis;
 use Base\Tool\Wechat\Wechat;
 /**
- * @Created by 路漫漫.
- * @Links: ahmerry@qq.com
- * @Date: 2016/12/9 15:07
+ *         ▂▃╬▄▄▃▂▁▁
+ *  ●●●█〓██████████████▇▇▇▅▅▅▅▅▅▅▅▅▇▅▅          BUG
+ *  ▄▅████☆RED█WOLF☆████▄▄▃▂
+ *  █████████████████████████████
+ *  ◥⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙◤
+ *
  * 实现微信类的access_token缓存方案
+ * @author 路漫漫
+ * @link ahmerry@qq.com
+ * @version
+ * v0.9 2016/12/9 初版
  */
-
 class MFWechat extends Wechat{
 
     public function __construct($option) {

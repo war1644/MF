@@ -1,11 +1,17 @@
 <?php
 /**
+ *         ▂▃╬▄▄▃▂▁▁
+ *  ●●●█〓██████████████▇▇▇▅▅▅▅▅▅▅▅▅▇▅▅          BUG
+ *  ▄▅████☆RED █ WOLF☆███▄▄▃▂
+ *  █████████████████████████████
+ *  ◥⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙◤
+ *
  * 全局方法，采用首字母大写驼峰命名（以标识这是框架的全局方法）
  * @author 路漫漫
  * @link ahmerry@qq.com
- * @version 0.9
- * @since
- * <p>v0.9 2016/12/8 15:15  初版</p>
+ * @version
+ * v1.0 2017/02/25   扩充了一些方法
+ * v0.9 2016/12/08   初版
  */
 
 /**
@@ -28,13 +34,6 @@ function MFLog($log, $name='', $path='') {
     }
     $content = "\n\nTime : ".date('Y-m-d H:i:s')."\n".$log;
     error_log($content,3,$file);
-    //    CheckDir( $path );
-//    file_put_contents(
-//        $path.$name.'.log',
-//        "\n\nTime : ".date('Y-m-d H:i:s')."\n".$log,
-//        FILE_APPEND
-//    );
-
 }
 
 /**

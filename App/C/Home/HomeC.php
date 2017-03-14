@@ -1,12 +1,20 @@
 <?php
+namespace App\C\Home;
 /**
- * Created by 路漫漫.
- * User: ahmerry@qq.com
- * Date: 2016/12/8 15:17
+ *         ▂▃╬▄▄▃▂▁▁
+ *  ●●●█〓██████████████▇▇▇▅▅▅▅▅▅▅▅▅▇▅▅          BUG
+ *  ▄▅████☆RED █ WOLF☆███▄▄▃▂
+ *  █████████████████████████████
+ *  ◥⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙◤
  *
+ * demo 示例
+ * @author 路漫漫
+ * @link ahmerry@qq.com
+ * @version
+ * v1.0 2017/02/26 邮件SMTP及表格导出测试
+ * v0.9 2016/12/8 初版
  */
 use Base\C;
-use Base\Redis;
 use Base\Tool\SMTP;
 
 class HomeC extends C{
@@ -42,6 +50,6 @@ class HomeC extends C{
     }
 
     public function test(){
-        $this->view('Base/chat');
+        $this->view('Base/chat.php');
     }
 }

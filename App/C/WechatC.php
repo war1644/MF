@@ -1,10 +1,19 @@
 <?php
+namespace App\C;
 /**
- * 微信相关处理类
+ *         ▂▃╬▄▄▃▂▁▁
+ *  ●●●█〓██████████████▇▇▇▅▅▅▅▅▅▅▅▅▇▅▅          BUG
+ *  ▄▅████☆RED █ WOLF☆███▄▄▃▂
+ *  █████████████████████████████
+ *  ◥⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙◤
+ *
+ * 微信相关处理类demo 示例
  * @author 路漫漫
  * @link ahmerry@qq.com
- * @since
- * <p>v0.9 2016/12/8 15:15  初版</p>
+ * @version
+ * v1.1 2017/03/02 微信智能设备相关处理
+ * v1.0 2017/02/26 Oauth授权处理
+ * v0.9 2016/12/08 初版
  */
 use Base\C;
 use Base\Tool\MFWechat;
@@ -34,10 +43,10 @@ class WechatC extends C {
         }
 //        $this->WX->valid();
         //处理请求内容
-        $this->ReceiveEvent();
+        $this->receiveEvent();
 
         //开启JSAPI
-        $this->JsApi();
+        $this->jsApi();
     }
 
     /**
@@ -72,7 +81,7 @@ class WechatC extends C {
     }
 
     //接收微信信息
-    protected function ReceiveEvent() {
+    protected function receiveEvent() {
         if ($_REQUEST) {
             $type = $this->WX->getRev()->getRevType();
             switch ( $type ) {
@@ -81,15 +90,15 @@ class WechatC extends C {
                     break;
                 case Wechat::MSGTYPE_EVENT:
                     $event = $this->WX->getRevEvent();
-                    $this->WxDebug('收到微信事件 : '.json_encode($event));
+                    $this->wxDebug('收到微信事件 : '.json_encode($event));
                     break;
                 case Wechat::MSGTYPE_BIND:
                     $event = $this->WX->getRevDevice();
-                    $this->WxDebug('收到微信绑定事件 : '.json_encode($event));
+                    $this->wxDebug('收到微信绑定事件 : '.json_encode($event));
                     break;
                 default:
                     if (self::DEBUG) {
-                        $this->WxDebug("收到微信请求 : ".json_encode($_REQUEST)."\n数据 : ".json_encode($this->WX->getRevData()));
+                        $this->wxDebug("收到微信请求 : ".json_encode($_REQUEST)."\n数据 : ".json_encode($this->WX->getRevData()));
                     }
                     if (isset($_REQUEST['code'])){
                         $this->WX->getOauthAccessToken();
@@ -102,7 +111,7 @@ class WechatC extends C {
         }
     }
 
-    protected function JsApi() {
+    protected function jsApi() {
         $tick = $this->WX->getJsTicket();
         if (!$tick) {
             echo $tmp = "\n获取js_ticket失败<br>";
@@ -152,10 +161,6 @@ class WechatC extends C {
         }else{
             $this->endRun(json_decode($arr,true));
         }
-
-
-
-
         //https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx6834f279296c34e2&redirect_uri=http%3A%2F%2Fwx.duanxq.cn%2FWechat%2FgetKSUserInfo&response_type=code&scope=snsapi_userinfo&state=
         //https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx91e7b6ade546e6a4&redirect_uri=http%3A%2F%2Fwx.duanxq.cn%2FWechat%2FgetKSUserInfo&response_type=code&scope=snsapi_userinfo&state=
 
@@ -179,7 +184,7 @@ class WechatC extends C {
     public function test() {
         $data['title'] = 'KS,为跑步而生';
         $data['jsSign'] = $this->jsApi;
-        $this->view('KSWechat/device',$data);
+        $this->view('KSWechat/device.php',$data);
     }
 
     /**
@@ -203,7 +208,7 @@ class WechatC extends C {
     public function index() {
         $data['title'] = 'KS,为跑步而生';
         $data['jsSign'] = $this->jsApi;
-        $this->view('KSWechat/endRunning',$data);
+        $this->view('KSWechat/endRunning.php',$data);
     }
 
     /**
@@ -215,7 +220,7 @@ class WechatC extends C {
         $data['jsSign'] = $this->jsApi;
         $data['ksid'] = $arr['ksid'];
         $data['oid'] = $arr['oid'];
-        $this->view('KSWechat/endRunning',$data);
+        $this->view('KSWechat/endRunning.php',$data);
     }
 
     /**

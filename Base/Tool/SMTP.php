@@ -44,7 +44,7 @@ class SMTP {
     private static $obj = null;
     //附件
     private $attach = array();
-    public $debug = true;
+    public $debug = false;
     public $errstr = '';
 
     private function __construct() {

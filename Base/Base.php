@@ -1,14 +1,23 @@
 <?php
 namespace Base;
 /**
- * Created by 路漫漫.
- * User: ahmerry@qq.com
- * Date: 2016/12/9 10:00
- * 在框架里面，你应该接管一切信息----路漫漫
+ *         ▂▃╬▄▄▃▂▁▁
+ *  ●●●█〓██████████████▇▇▇▅▅▅▅▅▅▅▅▅▇▅▅          BUG
+ *  ▄▅████☆RED █ WOLF☆███▄▄▃▂
+ *  █████████████████████████████
+ *  ◥⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙◤
+ *
+ * 在框架里面，你应该接管一切信息
+ * @author 路漫漫
+ * @link ahmerry@qq.com
+ * @version
+ * v1.0 2017/03/14      删除composer,采用autoload方式加载文件
+ * v0.9 2016/12/15      初版
  */
 class Base {
     public function __construct() {
         $this->initSystemHandlers();
+        //autoload自动载入
         $this->init();
     }
 
@@ -61,8 +70,9 @@ class Base {
      * @param string $class
      * @return bool
      */
-    protected function autoLoad($class) {
+    protected static function autoLoad($class) {
         $file = str_replace('\\', DIRECTORY_SEPARATOR, $class) . '.php';
+        echo $file.'<br/>';
 
         clearstatcache();
         $path = MFPATH . $file;

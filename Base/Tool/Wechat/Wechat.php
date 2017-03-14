@@ -4713,8 +4713,8 @@ class Wechat {
     }
 
     /**
-     * 添加设备授权MAC
-     * $data array 授权的mac信息
+     * 绑定设备
+     * $data array 绑定设备的参数
      */
     public function bindDevice($data,$bind=true){
         if (!$this->access_token && !$this->checkAuth()) return false;

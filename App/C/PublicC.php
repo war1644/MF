@@ -1,6 +1,12 @@
 <?php
 namespace App\C;
 /**
+ *         ▂▃╬▄▄▃▂▁▁
+ *  ●●●█〓██████████████▇▇▇▅▅▅▅▅▅▅▅▅▇▅▅          BUG
+ *  ▄▅████☆RED █ WOLF☆███▄▄▃▂
+ *  █████████████████████████████
+ *  ◥⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙◤
+ *
  * demo 示例
  * @author 路漫漫
  * @link ahmerry@qq.com
@@ -10,6 +16,7 @@ namespace App\C;
 use Base\C;
 use Base\Tool\Vcode;
 use Base\Tool\Page;
+
 class PublicC extends C {
 
     protected $WX;
@@ -28,15 +35,7 @@ class PublicC extends C {
     }
 
     public function endRun(){
-        if ($_POST && $_POST['summary']['id'] && $_POST['summary']['dist']>0.1){
-            MFLog($_POST);
-            $ksid = $_POST['summary']['id'];
-            $data = base64_encode(gzcompress(json_encode($_POST)));
-            $jsonData = json_encode(["service"=>"pad.upload","ksid"=>$ksid,"data"=>$data,"appkey"=>"LlCKimYod15f","crc"=>"26a6922e6409095a1e4cbce91b98c41e"]);
-            echo $res = PostMan('api.kingsmith.com.cn/Open/',$jsonData);
-            MFLog($res);
-        }
-        die();
+
 
     }
 
@@ -67,7 +66,7 @@ class PublicC extends C {
 
     //接收微信
     public function wechat(){
-        new WechatC();
+        new \WechatC();
     }
 
     /**

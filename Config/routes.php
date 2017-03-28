@@ -10,8 +10,8 @@
  * @author 路漫漫
  * @link ahmerry@qq.com
  * @version
- * v1.0 2017/01/09  增加该路由防御体系(cookie,get,post),若不想防御过滤,增加第三个参数为false
- * v0.9 2017/03/09  初版
+ * v2017/01/09  增加该路由防御体系(cookie,get,post),若不想防御过滤,增加第三个参数为false
+ * v2017/03/09  初版
  */
 
 use Base\Macaw;
@@ -24,7 +24,7 @@ Macaw::get('fuck', function() {
 });
 
 Macaw::any('',function (){
-    phpinfo();
+//    phpinfo();
 });
 
 Macaw::any('Wechat/(:all)',function ($p){

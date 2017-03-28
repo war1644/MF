@@ -11,8 +11,8 @@ namespace App\C\Home;
  * @author 路漫漫
  * @link ahmerry@qq.com
  * @version
- * v1.0 2017/02/26 邮件SMTP及表格导出测试
- * v0.9 2016/12/8 初版
+ * v2017/02/26 邮件SMTP及表格导出测试
+ * v2016/12/8 初版
  */
 use Base\C;
 use Base\Tool\SMTP;

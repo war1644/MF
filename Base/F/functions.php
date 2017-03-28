@@ -10,8 +10,9 @@
  * @author 路漫漫
  * @link ahmerry@qq.com
  * @version
- * v1.0 2017/02/25   扩充了一些方法
- * v0.9 2016/12/08   初版
+ * v2017/03/28   调整日志记录命名及seesion的存取
+ * v2017/02/25   扩充了一些方法
+ * v2016/12/08   初版
  */
 
 /**
@@ -22,16 +23,15 @@
  */
 function MFLog($log, $name='', $path='') {
     if (!$path){
-        $path = RUN_PATH . 'Logs/'.date('Y/');
+        $path = RUN_PATH . 'Logs/'.date('Ym/');
     }else{
         $path = RUN_PATH . $path;
     }
-    if (!$name) $name = date( 'm-d' );
+    if (!$name) $name = date( 'Ymd' );
     CheckDir($path);
     $file = $path.$name.'.log';
-    if (is_array($log)){
-        $log = json_encode($log);
-    }
+    if (is_array($log)) $log = json_encode($log);
+
     $content = "\n\nTime : ".date('Y-m-d H:i:s')."\n".$log;
     error_log($content,3,$file);
 }
@@ -42,7 +42,6 @@ function MFLog($log, $name='', $path='') {
  */
 function Config($key='') {
     if (!defined('CONFIG')){
-        echo '引入了config';
         //载入配置并供全局调用
         $C = include CONFIG_PATH.'config.php';
         define('CONFIG',json_encode($C));
@@ -57,7 +56,7 @@ function Config($key='') {
 /**
  * 检测是否是有该文件夹，没有则生成
  */
-function CheckDir($dir, $mode=0777) {
+function CheckDir($dir, $mode=0770) {
     if (!$dir)  return false;
     if(!is_dir($dir)) {
         if (!file_exists($dir) && @mkdir($dir, $mode, true))
@@ -72,19 +71,17 @@ function CheckDir($dir, $mode=0777) {
  */
 function Session($name='',$value=''){
     if(!isset($_SESSION)) session_start();
-    if ($name && $value===''){
-        if (isset($_SESSION[$name])){
-            return $_SESSION[$name];
-        }
-        return false;
-    }elseif (is_null($value)){
+    if($name === '') {
+        return $_SESSION;
+    }else if ($name && $value===''){
+        if (isset($_SESSION[$name])) return $_SESSION[$name];
+        return null;
+    }else if (is_null($value)){
         unset($_SESSION[$name]);
         return true;
     }else if($value){
         $_SESSION[$name] = $value;
         return true;
-    }else if($name === '' && $value === ''){
-        return $_SESSION;
     }
 }
 

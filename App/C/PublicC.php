@@ -10,8 +10,8 @@ namespace App\C;
  * demo 示例
  * @author 路漫漫
  * @link ahmerry@qq.com
- * @since
- * <p>v0.9 2016/12/9 初版</p>
+ * @version
+ * v2016/12/9 初版
  */
 use Base\C;
 use Base\Tool\Vcode;
@@ -22,7 +22,8 @@ class PublicC extends C {
     protected $WX;
 
     public function index(){
-       die(1);
+        $option = Config('wx');
+        $option = Config('smtp');
     }
 
     public function test(){
@@ -36,7 +37,7 @@ class PublicC extends C {
 
     public function endRun(){
 
-
+        die();
     }
 
     /**

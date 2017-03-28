@@ -11,9 +11,9 @@ namespace App\C;
  * @author 路漫漫
  * @link ahmerry@qq.com
  * @version
- * v1.1 2017/03/02 微信智能设备相关处理
- * v1.0 2017/02/26 Oauth授权处理
- * v0.9 2016/12/08 初版
+ * v2017/03/02 微信智能设备相关处理
+ * v2017/02/26 Oauth授权处理
+ * v2016/12/08 初版
  */
 use Base\C;
 use Base\Tool\MFWechat;
@@ -208,6 +208,9 @@ class WechatC extends C {
     public function index() {
         $data['title'] = 'KS,为跑步而生';
         $data['jsSign'] = $this->jsApi;
+        $data['ksid'] = 1111;
+        $data['oid'] = 1111;
+
         $this->view('KSWechat/endRunning.php',$data);
     }
 

@@ -11,8 +11,8 @@ namespace Base;
  * @author 路漫漫
  * @link ahmerry@qq.com
  * @version
- * v1.0 2017/03/14      删除composer,采用autoload方式加载文件
- * v0.9 2016/12/15      初版
+ * v2017/03/14      删除composer,采用autoload方式加载文件
+ * v2016/12/15      初版
  */
 class Base {
     protected static $obj = null;
@@ -83,8 +83,6 @@ class Base {
      */
     protected static function autoLoad($class) {
         $file = str_replace('\\', DIRECTORY_SEPARATOR, $class) . '.php';
-        echo $file.'<br/>';
-
         clearstatcache();
         $path = MFPATH . $file;
         if (is_file($path)) {
@@ -93,7 +91,6 @@ class Base {
                 return true;
             }
         }
-
         return false;
     }
 

@@ -12,8 +12,8 @@ namespace Base;
  * @auth NoahBuscher
  * @link https://github.com/NoahBuscher/Macaw
  * @version
- * v1.2 2017/1/28 9:21  修复重复取参的bug by 路漫漫
- * v1.1 2017/1/2 13:52 增加waf防御,传递调用方法到调用类 by 路漫漫
+ * v2017/01/28     修复重复取参的bug by 路漫漫
+ * v2017/01/02     增加waf防御,传递调用方法到调用类 by 路漫漫
  */
 
 
@@ -75,10 +75,11 @@ class Macaw {
     public static function dispatch(){
         //当前请求不带参数url,忽略域名
         $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+        $ip = GetIp();
         //当前请求方法
         $method = $_SERVER['REQUEST_METHOD'];
         //记录到日志
-        MFLog("访问 : $uri,  method : $method");
+        MFLog("$ip 访问 : $uri,  method : $method");
         $searches = array_keys(static::$patterns);
         $replaces = array_values(static::$patterns);
         $found_route = false;
@@ -94,7 +95,7 @@ class Macaw {
                 if (self::$methods[$route] == $method || self::$methods[$route] == 'ANY') {
                     $found_route = true;
                     //非法数据过滤
-                    if (self::$wafs[$route]===true) new MFWAF($method);
+                    if (self::$wafs[$route]===true) new MFWAF($method,$ip);
                     // If route is not an object
                     if (!is_object(self::$callbacks[$route])) {
 
@@ -135,7 +136,7 @@ class Macaw {
                     if (self::$methods[$pos] == $method || self::$methods[$pos] == 'ANY') {
                         $found_route = true;
                         //非法数据过滤
-                        if (self::$wafs[$pos]===true) new MFWAF($method);
+                        if (self::$wafs[$pos]===true) new MFWAF($method,$ip);
                         // Remove $matched[0] as [1] is the first parameter.
                         array_shift($matched);
 

@@ -31,8 +31,8 @@ class MFWAF{
     private $query_string;
     private $ip;
 
-    function __construct($method) {
-        $this->ip = GetIp();
+    function __construct($method,$ip) {
+        $this->ip = $ip;
         $this->referer=empty($_SERVER['HTTP_REFERER']) ? array() : array($_SERVER['HTTP_REFERER']);
         $this->query_string=empty($_SERVER["QUERY_STRING"]) ? array() : array($_SERVER["QUERY_STRING"]);
         $this->checkData($this->query_string,$this->url_arr);

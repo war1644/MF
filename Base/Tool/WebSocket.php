@@ -1,15 +1,22 @@
 <?php
 namespace Base\Tool;
 /**
+ *         ▂▃╬▄▄▃▂▁▁
+ *  ●●●█〓██████████████▇▇▇▅▅▅▅▅▅▅▅▅▇▅▅          BUG
+ *  ▄▅████☆RED█WOLF☆████▄▄▃▂
+ *  █████████████████████████████
+ *  ◥⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙◤
+ *
  * WebSocket工具类，PHP跟websocket交互咋就这么泪奔呢？
  * 客户端在Public/V/Base
- * @author 路漫漫
- * @link ahmerry@qq.com
+ * 调用示例：
+ * new WebSocket('127.0.0.1',8416);
  * @param $address 连接地址
  * @param $port 端口
- * @version V0.9
- * @since
- * <p>v0.9 2017/1/17 10:48  初版</p>
+ * @author 路漫漫
+ * @link ahmerry@qq.com
+ * @version
+ * v0.9 2017/01/17   初版
  */
 
 class WebSocket {
@@ -179,5 +186,3 @@ class WebSocket {
     }
 }
 
-//调用示例
-new WebSocket('127.0.0.1',8416);

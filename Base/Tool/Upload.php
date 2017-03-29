@@ -1,9 +1,17 @@
 <?php
 namespace Base\Tool;
 /**
- * Created by 路漫漫.
- * User: ahmerry@qq.com
- * Date: 2016/12/9 11:31
+ *         ▂▃╬▄▄▃▂▁▁
+ *  ●●●█〓██████████████▇▇▇▅▅▅▅▅▅▅▅▅▇▅▅          BUG
+ *  ▄▅████☆RED█WOLF☆████▄▄▃▂
+ *  █████████████████████████████
+ *  ◥⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙◤
+ *
+ *
+ * @author 路漫漫
+ * @link ahmerry@qq.com
+ * @version
+ * v0.9 2016/12/19   初版
  */
 class Upload {
 	public $file = [];
@@ -64,5 +72,3 @@ class Upload {
 	 检测文件的大小是否超标
 	*/
 }
-
-?>

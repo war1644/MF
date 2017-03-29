@@ -6,9 +6,9 @@ MF
 ===
     为什么我还要写MF？因为虽然不需要复杂的框架，但是一款简单结构化代码的工具还是需要的！
    
-    一个轻便简约干净型MVC PHP框架，Macaw路由，composer autoload，内置waf，核心大小不到24kb!
+    一个轻便简约干净型MVC PHP框架，Macaw路由，命名空间式autoload，内置waf，核心大小46kb!
     
-    因为简单，所以你可以直接看源码。放心，这不是Laravel，入门phper应该半天以内就看完了
+    使用请看App文件夹下demo
     
 目录结构
 ===
@@ -19,11 +19,11 @@ MF
      * `index.php` : 入口文件
      * `V` : 视图目录
      * `Upload` : 上传文件目录
-* `composer.json` : composer配置
 
 注意
 ===
-* url需要重写下，当然不重写就在路由匹配时多写个index.php也可以。详见下
+* 路由配置在Config下
+* url需要重写下，当然不重写就在路由匹配时多写个index.php也可以，详见下
     ```php
         //未重写的url匹配
         Macaw::any('index.php/Wechat/(:all)',function ($p){
@@ -40,25 +40,14 @@ MF
         });
     ```
 * nginx rewrite
+
     ```
-    location / {
-        if (!-e $request_filename) {
-            rewrite  ^/(.*)$  /index.php/$1  last;
-            break;
-        }
-        index  index.html index.php;
-    } 
+        location / {  
+            if (!-e $request_filename) {  
+                rewrite  ^/(.*)$  /index.php/$1  last;  
+                break;  
+            }  
+            index index.php;  
+        }   
     ```
-* Base下工具类用不上的可以删掉，完全独立。放在那也没事，不new也会耗资源
-* 虽然用了composer，但耦合很低。不想用它，直接删除，自己添加class映射就好
-* 添加新目录后，先更新composer.json,再运行dump-autoload -o
-    ```
-    "autoload":
-     {
-        "classmap":
-        [
-           "App",
-           "Base"
-        ]
-    }
-    ```
+* Base下工具类用不上的可以删掉，完全独立的。放在那也没事，不new也会耗资源

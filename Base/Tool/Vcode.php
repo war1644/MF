@@ -1,9 +1,17 @@
 <?php
 namespace Base\Tool;
 /**
- * Created by 路漫漫.
- * User: ahmerry@qq.com
- * Date: 2016/12/9 14:31
+ *         ▂▃╬▄▄▃▂▁▁
+ *  ●●●█〓██████████████▇▇▇▅▅▅▅▅▅▅▅▅▇▅▅          BUG
+ *  ▄▅████☆RED█WOLF☆████▄▄▃▂
+ *  █████████████████████████████
+ *  ◥⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙◤
+ *
+ * 验证码
+ * @author 路漫漫
+ * @link ahmerry@qq.com
+ * @version
+ * v0.9 2016/12/19   初版
  */
 
 class Vcode {
@@ -80,5 +88,3 @@ class Vcode {
 	// 生成干扰点
 
 }
-
-?>

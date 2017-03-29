@@ -1,16 +1,19 @@
 <?php
 namespace Base;
-
 /**
+ *         ▂▃╬▄▄▃▂▁▁
+ *  ●●●█〓██████████████▇▇▇▅▅▅▅▅▅▅▅▅▇▅▅          BUG
+ *  ▄▅████☆RED █ WOLF☆███▄▄▃▂
+ *  █████████████████████████████
+ *  ◥⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙◤
+ *
  * 框架安全类
  * 过滤非法字段，非法请求，转义sql字符串
- * 嗯，再牛逼的防御也不如良好的编码习惯----路漫漫
  * @author 路漫漫
  * @link ahmerry@qq.com
- * @version V1.0
- * @since
- * <p>v0.9 2016/12/16 15:17  初版</p>
- * <p>v1.0 2017/1/17 21:49  增加get,post,cookie转义处理</p>
+ * @version
+ * v1.0 2017/1/17   增加get,post,cookie转义处理
+ * v0.9 2016/12/16  初版
  */
 
 class MFWAF{
@@ -28,28 +31,28 @@ class MFWAF{
     private $query_string;
     private $ip;
 
-    function __construct($method) {
-        $this->ip = GetIp();
+    function __construct($method,$ip) {
+        $this->ip = $ip;
         $this->referer=empty($_SERVER['HTTP_REFERER']) ? array() : array($_SERVER['HTTP_REFERER']);
         $this->query_string=empty($_SERVER["QUERY_STRING"]) ? array() : array($_SERVER["QUERY_STRING"]);
-        $this->CheckData($this->query_string,$this->url_arr);
+        $this->checkData($this->query_string,$this->url_arr);
         switch ($method){
             case 'GET':
-                $this->CheckData($_GET,$this->args_arr);
-                $_GET = $this->SqlDef($_GET);
+                $this->checkData($_GET,$this->args_arr);
+                $_GET = $this->sqlDef($_GET);
                 break;
             case 'POST':
-                $this->CheckData($_POST,$this->args_arr);
-                $_POST = $this->SqlDef($_POST);
+                $this->checkData($_POST,$this->args_arr);
+                $_POST = $this->sqlDef($_POST);
                 break;
             default:
                 die('拒绝接收非常用请求');
                 break;
         }
 
-        $this->CheckData($_COOKIE,$this->args_arr);
-        $_COOKIE = $this->SqlDef($_COOKIE);
-        $this->CheckData($this->referer,$this->args_arr);
+        $this->checkData($_COOKIE,$this->args_arr);
+        $_COOKIE = $this->sqlDef($_COOKIE);
+        $this->checkData($this->referer,$this->args_arr);
     }
 
     /**
@@ -57,7 +60,7 @@ class MFWAF{
      * @param
      * @return bool 失败则返回false
      */
-    function SqlDef($arr) {
+    function sqlDef($arr) {
         if (get_magic_quotes_gpc()){
             return;
         }
@@ -65,29 +68,29 @@ class MFWAF{
             if (is_string($v)) {
                 $arr[$k] = addslashes ($v);
             } elseif (is_array($v)) {
-                $arr[$k] = $this->SqlDef($v);
+                $arr[$k] = $this->sqlDef($v);
             }
         }
         return $arr;
     }
 
-    function CheckData($arr,$v) {
+    function checkData($arr,$v) {
         foreach($arr as $key=>$value) {
             if(!is_array($key)) {
-                $this->Check($key,$v);
+                $this->check($key,$v);
             } else {
-                $this->CheckData($key,$v);
+                $this->checkData($key,$v);
             }
 
             if(!is_array($value)) {
-                $this->Check($value,$v);
+                $this->check($value,$v);
             } else {
-                $this->CheckData($value,$v);
+                $this->checkData($value,$v);
             }
         }
     }
 
-    function Check($str,$v) {
+    function check($str,$v) {
         $uStr = urlencode($str);
         $len = strlen($str) > 200;
         foreach ($v as $key => $value) {

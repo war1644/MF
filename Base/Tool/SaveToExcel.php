@@ -17,36 +17,69 @@ class SaveToExcel {
      * @param array $title   excel第一行的标题
      * @param string $filename 文件名
      */
-    public static function exportExcel($data=array(),$title=array(),$filename='report'){
-        header("Content-type:application/octet-stream");
-        header("Accept-Ranges:bytes");
-        header("Content-type:application/vnd.ms-excel");
-        header("Content-Disposition:attachment;filename=".$filename.".xls");
-        header("Pragma: no-cache");
-        header("Expires: 0");
-
+    public static function exportExcel($data=array(),$title=array()){
+        //导出xls 开始
+        $file = RUN_PATH.'export.xls';
+        $head = <<<head
+<html xmlns:o="urn:schemas-microsoft-com:office:office"
+xmlns:x="urn:schemas-microsoft-com:office:excel"
+xmlns="http://www.w3.org/TR/REC-html40">
+<head>
+<meta http-equiv="expires" content="Mon, 06 Jan 1999 00:00:01 GMT">
+<meta http-equiv=Content-Type content="text/html; charset=gb2312">
+<!--[if gte mso 9]><xml>
+<x:ExcelWorkbook>
+<x:ExcelWorksheets>
+<x:ExcelWorksheet>
+<x:Name></x:Name>
+<x:WorksheetOptions>
+<x:DisplayGridlines/>
+</x:WorksheetOptions>
+</x:ExcelWorksheet>
+</x:ExcelWorksheets>
+</x:ExcelWorkbook>
+</xml><![endif]-->
+</head>
+<table>
+head;
+        file_put_contents($file,"$head");
         if (!empty($title)){
             foreach ($title as $k => $v) {
-                $title[$k]=iconv("UTF-8", "GB2312",$v);
+                $title[$k]=iconv("UTF-8", "GB2312","<td><strong>$v</strong></td>");
             }
-            $title= implode("\t ", $title);
-            echo "$title\n";
+            $title = implode("\t ", $title);
+            file_put_contents($file,"<tr>$title</tr>",FILE_APPEND);
         }
         if (!empty($data)){
             foreach($data as $key=>$val){
                 foreach ($val as $ck => $cv) {
                     if ($ck=='id'){
-                        $cv = strval($key);
+                        $cv = $key+1;
                     }
-//                    $data[$key][$ck]=iconv("UTF-8", "GB2312", $cv);
-                    $data[$key][$ck]=mb_convert_encoding($cv,"GB2312","UTF-8");
+                    if ($ck=='signed'){
+                        if ($cv){
+                            $cv = '是';
+                        }else{
+                            $cv = '否';
+                        }
+                    }
 
+                    if ($ck=='idNum'){
+                        //身份证格式处理
+                        $data[$key][$ck]=mb_convert_encoding('<td style="vnd.ms-excel.numberformat:@">'.$cv.'</td>',"GB2312","UTF-8");
+                    }else{
+                        $data[$key][$ck]=mb_convert_encoding("<td>$cv</td>","GB2312","UTF-8");
+                    }
                 }
-                $data[$key]=implode("\t ", $data[$key]);
-
+                $data[$key]='<tr>'.implode("\t ", $data[$key]).'</tr>';
             }
-            echo implode("\n",$data);
+
+            file_put_contents($file,implode("\n",$data).'</table>',FILE_APPEND);
+
+
         }
+
+
     }
 
 }

@@ -1,17 +1,28 @@
 <?php
 /**
- * Created by 路漫漫.
- * User: ahmerry@qq.com
- * Date: 2016/12/8 13:53
- * index,一切的开始,就像初恋一样----路漫漫
+ *         ▂▃╬▄▄▃▂▁▁
+ *  ●●●█〓██████████████▇▇▇▅▅▅▅▅▅▅▅▅▇▅▅          BUG
+ *  ▄▅████☆RED █ WOLF☆███▄▄▃▂
+ *  █████████████████████████████
+ *  ◥⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙◤
+ *
+ * 一切的开始
+ * @author 路漫漫
+ * @link ahmerry@qq.com
+ * @version
+ * v2016/12/8  初版
  */
+//报错开关
 ini_set("display_errors", "On");
-error_reporting(E_ALL | E_STRICT);
+//报错等级 0 关闭 -1 全开
+error_reporting(0);
+
 //设置全局常量
 define('MFPATH' , str_replace('\\', '/', __DIR__).'/../');
 define('BASE_URL' , 'http://192.168.1.30/');
+define('API_URL' , '');
 
-require_once MFPATH.'Base/MF.php';
+include MFPATH.'Base/MF.php';
 
 
 

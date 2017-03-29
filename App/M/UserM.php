@@ -1,10 +1,17 @@
 <?php
-
+namespace App\M;
 /**
- * Created by 路漫漫.
- * Link: ahmerry@qq.com
- * Date: 2016/12/10 18:24
+ *         ▂▃╬▄▄▃▂▁▁
+ *  ●●●█〓██████████████▇▇▇▅▅▅▅▅▅▅▅▅▇▅▅          BUG
+ *  ▄▅████☆RED █ WOLF☆███▄▄▃▂
+ *  █████████████████████████████
+ *  ◥⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙◤
  *
+ * demo 示例
+ * @author 路漫漫
+ * @link ahmerry@qq.com
+ * @version
+ * v0.9 2016/12/18 初版
  */
 class UserM extends \Base\M {
     function test() {

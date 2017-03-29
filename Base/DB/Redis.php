@@ -1,12 +1,17 @@
 <?php
 namespace Base\DB;
 /**
+ *         ▂▃╬▄▄▃▂▁▁
+ *  ●●●█〓██████████████▇▇▇▅▅▅▅▅▅▅▅▅▇▅▅          BUG
+ *  ▄▅████☆RED █ WOLF☆███▄▄▃▂
+ *  █████████████████████████████
+ *  ◥⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙◤
+ *
  * Redis数据库
  * @author 路漫漫
  * @link ahmerry@qq.com
- * @version V0.9
- * @since
- * <p>v0.9 2016/12/18 9:58  初版</p>
+ * @version
+ * v0.9 2016/12/18 9:58  初版
  */
 
 class Redis {
@@ -22,7 +27,7 @@ class Redis {
      * @param string $config['auth'] Redis 密码
      */
     public static function init() {
-        $config = require MFPATH.self::CONFIG_FILE;
+        $config = Config('redis');
         self::$redis = new \Redis();
         self::$redis->pconnect($config['host'], $config['port'], 300);
         self::$prefix = isset($config['prefix']) ? $config['prefix'] : '';

@@ -1,11 +1,17 @@
 <?php
-
+namespace App\M;
 /**
+ *         ▂▃╬▄▄▃▂▁▁
+ *  ●●●█〓██████████████▇▇▇▅▅▅▅▅▅▅▅▅▇▅▅          BUG
+ *  ▄▅████☆RED █ WOLF☆███▄▄▃▂
+ *  █████████████████████████████
+ *  ◥⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙◤
  *
+ * demo 示例
  * @author 路漫漫
  * @link ahmerry@qq.com
- * @since
- * <p>v0.9 2017/1/23 9:25  初版</p>
+ * @version
+ * v0.9 2017/01/23 初版
  */
 use Base\M;
 use Base\Tool\SaveToExcel;

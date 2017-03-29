@@ -1,19 +1,33 @@
 <?php
+namespace App\C;
 /**
- * Created by 路漫漫.
- * User: ahmerry@qq.com
- * Date: 2016/12/9 17:17
+ *         ▂▃╬▄▄▃▂▁▁
+ *  ●●●█〓██████████████▇▇▇▅▅▅▅▅▅▅▅▅▇▅▅          BUG
+ *  ▄▅████☆RED █ WOLF☆███▄▄▃▂
+ *  █████████████████████████████
+ *  ◥⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙◤
  *
+ * demo 示例
+ * @author 路漫漫
+ * @link ahmerry@qq.com
+ * @version
+ * v2016/12/9 初版
  */
 use Base\C;
 use Base\Tool\Vcode;
 use Base\Tool\Page;
+
 class PublicC extends C {
 
     protected $WX;
 
     public function index(){
-       
+        $option = Config('wx');
+        $option = Config('smtp');
+    }
+
+    public function test(){
+        $this->view();
     }
 
     public function run(){
@@ -21,13 +35,9 @@ class PublicC extends C {
         $this->view('KSWechat/running');
     }
 
-    public function endRun() {
-        if ($_POST){
-            MFLog(json_encode($_POST));
-            echo true;
-        }
+    public function endRun(){
 
-
+        die();
     }
 
     /**
@@ -57,7 +67,7 @@ class PublicC extends C {
 
     //接收微信
     public function wechat(){
-        new WechatC();
+        new \WechatC();
     }
 
     /**

@@ -1,14 +1,20 @@
 <?php
 namespace Base\DB;
 /**
+ *         ▂▃╬▄▄▃▂▁▁
+ *  ●●●█〓██████████████▇▇▇▅▅▅▅▅▅▅▅▅▇▅▅          BUG
+ *  ▄▅████☆RED █ WOLF☆███▄▄▃▂
+ *  █████████████████████████████
+ *  ◥⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙◤
+ *
  * 数据库PDO操作
  * @author 路漫漫
  * @link ahmerry@qq.com
- * @version V1.1
- * @since
- * <p>v0.9 2016/12/15 13:52  初版</p>
- * <p>v1.0 2016/12/28 9:21  数据连接采用单例模式</p>
- * <p>v1.1 2017/1/17 23:04  增加非预处理的执行，查询语句，增加debug模式，增加判断表引擎，以方便事务处理</p>
+ * @version
+ * v2017/03/28  增加PDO预处理方式的mysql语句写法
+ * v2017/01/17  增加非预处理的执行，查询语句，增加debug模式，增加判断表引擎，以方便事务处理
+ * v2016/12/28  数据连接采用单例模式
+ * v2016/12/15  初版
  */
 
 class DB {
@@ -20,7 +26,7 @@ class DB {
     private function __construct() {
         if (!class_exists('PDO')) throw new \Exception("你的环境不支持:PDO");
 
-        $cfg = include CONFIG_PATH . 'db.php';
+        $cfg = Config('db');
         $this->dbName = $cfg['dbname'];
         $dsn = 'mysql:host=' . $cfg['host'] . ';dbname=' . $cfg['dbname'];
         $this->prefix = $cfg['prefix'];
@@ -138,6 +144,44 @@ class DB {
 			throw new \Exception($errstr, $errno);
 		}
 	}
+
+    /**
+     * executeSql 预处理执行SQL语句
+     *
+     * @param String $sql
+     * @param Boolean $debug
+     * @return Int
+     */
+    public function executeSql($sql,$params=[],$mode='row',$debug=false) {
+        $result = false;
+        $flag = strtoupper(str_word_count($sql,1)[0]);
+        $pdo = $this->db->prepare($sql);
+        if ($pdo->execute($params)) {
+            switch ($flag){
+                case 'INSERT':
+                    $result = $this->db->lastInsertId();
+                    break;
+                case 'UPDATE':
+                    $result = $pdo->rowCount();
+                    break;
+                case 'SELECT':
+                    //返回格式为数组
+                    $pdo->setFetchMode(\PDO::FETCH_ASSOC);
+                    if ($mode == 'row'){
+                        $result = $pdo->fetch();
+                    }else{
+                        $result = $pdo->fetchAll();
+                    }
+                    break;
+            }
+        }
+        $this->getPDOError();
+        if ($debug){
+            $str = $pdo->debugDumpParams();
+            $this->debug($str);
+        }
+        return $result;
+    }
 
     /**
      * execSql 执行SQL语句

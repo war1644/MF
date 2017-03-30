@@ -10,22 +10,28 @@
  * @author 路漫漫
  * @link ahmerry@qq.com
  * @version
- * v0.9 2017/3/9 10:49  初版
+ * v2017/03/30   精简调整部分结构
+ * v2016/12/09   初版
  */
-//检测常量
+/***********************检测常量**************************/
+//核心常量
 defined('MFPATH') || define('MFPATH' , $_SERVER["DOCUMENT_ROOT"].'/../');
 defined('BASE_URL') || define('BASE_URL' , 'http://c.cn/');
 defined('RUN_PATH') || define('RUN_PATH' , MFPATH.'RunData/');
 defined('V_PATH') || define('V_PATH' , MFPATH.'Public/V/');
-defined('UP_PATH') || define('UP_PATH' , MFPATH.'Public/Upload/');
-defined('KS_PATH') || define('KS_PATH' , V_PATH.'KSWechat/');
 defined('V_URL') || define('V_URL' , BASE_URL.'V/');
+defined('UP_PATH') || define('UP_PATH' , RUN_PATH.'Upload/');
+defined('CONFIG_PATH') || define('CONFIG_PATH' , MFPATH.'Base/Config/');
 defined('STATIC_URL') || define('STATIC_URL' , V_URL.'Static/');
-defined('REDIS') || define('REDIS' , false);
-defined('CONFIG_PATH') || define('CONFIG_PATH' , MFPATH.'Config/');
 
-//引入全局方法
-include MFPATH."Base/F/functions.php";
+//功能性常量
+defined('REDIS') || define('REDIS' , false);
+
+
+/***********************框架需要的全局内容可以在此引入**************************/
+//全局方法
+include MFPATH."Base/F.php";
+//include MFPATH."App/F/F.php";引入自定义的全局方法
 
 //接管系统
 include MFPATH."Base/Base.php";

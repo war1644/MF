@@ -23,9 +23,9 @@ class C {
     public $method = null;
     /**
      * 载入视图,输出变量到视图
-     * @param $template 视图文件名,若为空则为方法名
-     * @param $data 输出到视图的变量
-     * @param $path 视图路径
+     * @param string $template 视图文件名,若为空则为方法名
+     * @param array $data 输出到视图的变量
+     * @param string $path 视图路径
      */
     public function view($template='',$data='') {
         //数据输出到view

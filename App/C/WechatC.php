@@ -42,8 +42,11 @@ class WechatC extends C {
             }
         }
 //        $this->WX->valid();
-        //处理请求内容
-        $this->receiveEvent();
+        if (!isset($_GET['callback'])){
+            //处理请求内容
+            $this->receiveEvent();
+        }
+
 
         //开启JSAPI
         $this->jsApi();
@@ -139,6 +142,7 @@ class WechatC extends C {
      */
     public function getKSUserInfo() {
         $userInfo = $this->userInfo;
+        MFLog($userInfo);
         $arr = Session($userInfo['unionid']);
         if (!$arr){
             $jsonData = json_encode([
@@ -180,6 +184,7 @@ class WechatC extends C {
     /**
      * 跑步机交互页
      * @return Wechat
+     *
      */
     public function test() {
         $data['title'] = 'KS,为跑步而生';
@@ -206,12 +211,9 @@ class WechatC extends C {
      * @return Wechat
      */
     public function index() {
-        $data['title'] = 'KS,为跑步而生';
-        $data['jsSign'] = $this->jsApi;
-        $data['ksid'] = 1111;
-        $data['oid'] = 1111;
-
-        $this->view('KSWechat/endRunning.php',$data);
+        $callback=$_GET['callback'];
+        $res = json_encode($this->jsApi);
+        printf("%s(%s);", $callback, $res);
     }
 
     /**

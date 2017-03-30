@@ -46,7 +46,7 @@ Macaw::any('Home/(:all)',function ($p){
 });
 
 
-Macaw::any('wechat', 'WechatC@auth');
+Macaw::any('wechat', 'App\C\WechatC@auth');
 
 Macaw::$error_callback = function() {
     throw new \Exception("路由无匹配项 404 Not Found",404);

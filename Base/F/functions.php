@@ -16,6 +16,29 @@
  */
 
 /**
+ * 随机字符串
+ * @param int $length
+ * @return string
+ */
+function RandStr($length=6) {
+    $str = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyz';
+    return substr(str_shuffle($str),0,$length);
+}
+
+/**
+ * 数据响应格式化
+ * 自动判断是否为jsonp
+ * @param array $params
+ * @return json || jsonp
+ */
+function resFormat($params = []){
+    if (!isset($_GET['callback'])) return json_encode($params);
+    $callback = $_GET['callback'];
+    $res = json_encode($params);
+    return sprintf("%s(%s)", $callback, $res);
+}
+
+/**
  * 写入日志到文件
  * @param $log 日志内容
  * @param $name 日志文件名

@@ -26,16 +26,14 @@ defined('STATIC_URL') || define('STATIC_URL' , V_URL.'Static/');
 
 //功能性常量
 defined('REDIS') || define('REDIS' , false);
-
+defined('APP_PATH') || define('APP_PATH' , MFPATH.'App/');
 
 /***********************框架需要的全局内容可以在此引入**************************/
 //全局方法
 include MFPATH."Base/F.php";
-//include MFPATH."App/F/F.php";引入自定义的全局方法
 
 //接管系统
 include MFPATH."Base/Base.php";
-\Base\Base::ins();
 
 //路由,交通指挥出场
 include CONFIG_PATH."routes.php";

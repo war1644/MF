@@ -31,7 +31,7 @@ function RandStr($length=6) {
  * @param array $params
  * @return json || jsonp
  */
-function resFormat($params = []){
+function ResultFormat($params = []){
     if (!isset($_GET['callback'])) return json_encode($params);
     $callback = $_GET['callback'];
     $res = json_encode($params);
@@ -432,3 +432,6 @@ function cookie($name='', $value='', $option=null) {
     }
     return null;
 }
+
+//引入自定义的全局方法
+if (file_exists(APP_PATH."F/F.php")) include APP_PATH."F/F.php";

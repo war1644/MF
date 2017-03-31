@@ -104,3 +104,5 @@ class Base {
         return $this;
     }
 }
+//自调用
+Base::ins();

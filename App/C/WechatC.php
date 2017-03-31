@@ -18,6 +18,7 @@ namespace App\C;
 use Base\C;
 use Base\Tool\MFWechat;
 use Base\Tool\Wechat\Wechat;
+use Base\Tool\SaveToExcel;
 
 class WechatC extends C {
 
@@ -233,24 +234,46 @@ class WechatC extends C {
      * @return Wechat
      */
     public function addMac() {
-        return;
-        $log = [];
-        for ($i=9;$i<=19;$i++){
-
+        $excel = $log = [];
+        for ($i=25;$i<28;$i++){
             $mac = dechex($i);
-            if (strlen($mac)==1){
-                $mac = "0$mac";
+            $len = 6-strlen($mac);
+            $zeroNum = '';
+            if ($len){
+                for ($j=0;$j<$len;$j++){
+                    $zeroNum.='0';
+                }
             }
-            $name = strtoupper($mac);
+            $mac = "14580f$zeroNum$mac";
+
+            $len = 5-strlen($i);
+            $zeroNum = '';
+            if ($len){
+                for ($j=0;$j<$len;$j++){
+                    $zeroNum.='0';
+                }
+            }
+            $name = "KingSmith-$zeroNum$i-V1";
+
+            $qrcode = [
+                "service"=>"connBLE",
+                [
+                    "name"=>$name,
+                    "mac"=>$mac
+                ]
+            ];
+            $base64 = base64_encode(json_encode($qrcode));
+            $qrcode = "http://weixin.qq.com/r/4ztSSmTEYTkerSAp927x#$base64";
+
             $data = [
                 "device_num"=>"1",
                 "device_list"=>[[
-                    "id"=>"KSP1V1-$name",
-                    "mac"=>"14580f0000$mac",
+                    "id"=>"$name",
+                    "mac"=>"$mac",
                     "connect_protocol"=>"3",
                     "auth_key"=>"",
-                    "close_strategy"=>"2",
-                    "conn_strategy"=>"1",
+                    "close_strategy"=>"1",
+                    "conn_strategy"=>"16",
                     "crypt_method"=>"0",
                     "auth_ver"=>"0",
                     "manu_mac_pos"=>"-1",
@@ -258,35 +281,15 @@ class WechatC extends C {
                 ]],
                 "product_id"=>"27569"
             ];
+            $excel[] = [$name,$mac,$qrcode];
             if ($this->WX->addDeviceMac($data)){
-                $log[$i] = "$mac 添加成功";
+                $log[] = "$name : $mac 添加成功\n";
             }else{
-                $log[$i] = "$mac 添加失败";
-                $data = [
-                    "device_num"=>"1",
-                    "device_list"=>[[
-                        "id"=>"KSP1V1-$name",
-                        "mac"=>"14580f0000$mac",
-                        "connect_protocol"=>"3",
-                        "auth_key"=>"",
-                        "close_strategy"=>"2",
-                        "conn_strategy"=>"1",
-                        "crypt_method"=>"0",
-                        "auth_ver"=>"0",
-                        "manu_mac_pos"=>"-1",
-                        "ser_mac_pos"=>"-2"
-                    ]],
-                    "product_id"=>"27569",
-                    "op_type"=>"1"
-
-                ];
-                if ($this->WX->addDeviceMac($data)){
-                    $log[$i] = "$mac 添加成功";
-                }else{
-                    $log[$i] = "$mac 添加失败";
-                }
+                $log[] = "$name : $mac 添加失败\n";
             }
         }
+        $title = ['name','mac','qrcode'];
+        SaveToExcel::exportExcel($excel,$title);
         MFLog($log);
     }
 

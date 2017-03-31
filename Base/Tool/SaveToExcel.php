@@ -19,7 +19,7 @@ class SaveToExcel {
      */
     public static function exportExcel($data=array(),$title=array()){
         //导出xls 开始
-        $file = RUN_PATH.'export.xls';
+        $file = RUN_PATH.'macList.xls';
         $head = <<<head
 <html xmlns:o="urn:schemas-microsoft-com:office:office"
 xmlns:x="urn:schemas-microsoft-com:office:excel"
@@ -53,23 +53,9 @@ head;
         if (!empty($data)){
             foreach($data as $key=>$val){
                 foreach ($val as $ck => $cv) {
-                    if ($ck=='id'){
-                        $cv = $key+1;
-                    }
-                    if ($ck=='signed'){
-                        if ($cv){
-                            $cv = '是';
-                        }else{
-                            $cv = '否';
-                        }
-                    }
 
-                    if ($ck=='idNum'){
-                        //身份证格式处理
-                        $data[$key][$ck]=mb_convert_encoding('<td style="vnd.ms-excel.numberformat:@">'.$cv.'</td>',"GB2312","UTF-8");
-                    }else{
                         $data[$key][$ck]=mb_convert_encoding("<td>$cv</td>","GB2312","UTF-8");
-                    }
+
                 }
                 $data[$key]='<tr>'.implode("\t ", $data[$key]).'</tr>';
             }

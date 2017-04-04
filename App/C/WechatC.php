@@ -15,7 +15,7 @@ namespace App\C;
  * v2017/02/26 Oauth授权处理
  * v2016/12/08 初版
  */
-use Base\C;
+use Base\Lib\C;
 use Base\Tool\MFWechat;
 use Base\Tool\Wechat\Wechat;
 use Base\Tool\SaveToExcel;

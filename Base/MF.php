@@ -30,10 +30,10 @@ defined('APP_PATH') || define('APP_PATH' , MFPATH.'App/');
 
 /***********************框架需要的全局内容可以在此引入**************************/
 //全局方法
-include MFPATH."Base/F.php";
+include MFPATH."Base/Lib/F.php";
 
 //接管系统
-include MFPATH."Base/Base.php";
+include MFPATH."Base/Lib/Base.php";
 
 //路由,交通指挥出场
 include CONFIG_PATH."routes.php";

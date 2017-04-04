@@ -14,7 +14,7 @@
  * v2017/03/09  初版
  */
 
-use Base\Macaw;
+use Base\Lib\Macaw;
 
 //路由分发
 //其实你找不到get/post/any方法>_<，找不到就触发__callstatic这货,接收$method 和 $params参数，$method就是没找到的方法名，$params为方法里的两个参数

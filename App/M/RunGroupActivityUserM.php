@@ -13,7 +13,7 @@ namespace App\M;
  * @version
  * v0.9 2017/01/23 初版
  */
-use Base\M;
+use Base\Lib\M;
 use Base\Tool\SaveToExcel;
 
 class RunGroupActivityUserM extends M {

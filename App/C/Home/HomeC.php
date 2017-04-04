@@ -14,7 +14,7 @@ namespace App\C\Home;
  * v2017/02/26 邮件SMTP及表格导出测试
  * v2016/12/8 初版
  */
-use Base\C;
+use Base\Lib\C;
 use Base\Tool\SMTP;
 
 class HomeC extends C{

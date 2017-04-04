@@ -13,7 +13,7 @@ namespace App\C;
  * @version
  * v2016/12/9 初版
  */
-use Base\C;
+use Base\Lib\C;
 use Base\Tool\Vcode;
 use Base\Tool\Page;
 

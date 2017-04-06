@@ -79,7 +79,9 @@ class Macaw {
         //当前请求方法
         $method = $_SERVER['REQUEST_METHOD'];
         //记录到日志
-        MFLog("$ip 访问 : $uri,  method : $method");
+        $get = json_encode($_GET);
+        $data = $_POST ? json_encode($_POST) : json_encode(file_get_contents("php://input"));
+        MFLog("$ip 访问 : $uri,\nmethod : $method,\nparams : $get,\ndata : $data");
         $searches = array_keys(static::$patterns);
         $replaces = array_values(static::$patterns);
         $found_route = false;

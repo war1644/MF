@@ -66,7 +66,7 @@ class Base {
         if($exception instanceof \ErrorException) {
             array_shift($traces);
         }
-        $c = new \Base\C();
+        $c = new \Base\Lib\C();
         if (isset($code) && $code==404){
             $c->view('Base/404.php',['err'=>$err]);
         }else{

@@ -162,7 +162,8 @@ class WechatC extends C {
                     'ksid'=>$res['data']['info']['ksid'],
                     'uid'=>$userInfo['unionid'],
                     'oid'=>$userInfo['openid'],
-                    'avatar'=>$res['data']['info']['avatar']
+                    'avatar'=>$res['data']['info']['avatar'],
+                    'nickname'=>$res['data']['info']['nickname']
                 ];
                 Session($userInfo['unionid'],json_encode($arr));
                 $this->endRun($arr);
@@ -234,6 +235,10 @@ class WechatC extends C {
         $data['ksid'] = $arr['ksid'];
         $data['oid'] = $arr['oid'];
         $data['avatar'] = $arr['avatar'];
+        $data['nickname'] = $arr['nickname'];
+        $rank = new \App\M\RankingM();
+        $data['distance'] = $rank->countDistance(intval($arr['ksid']));
+
 //        $data['ksid'] = 0;
 //        $data['oid'] = 0;
 //        $data['avatar'] = 'http://img.kingsmith.com.cn/upload/avatar/User/204881464950129069.png';

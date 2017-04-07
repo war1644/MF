@@ -1,6 +1,4 @@
 <?php
-namespace App\M;
-
 /**
  *         ▂▃╬▄▄▃▂▁▁
  *  ●●●█〓██████████████▇▇▇▅▅▅▅▅▅▅▅▅▇▅▅          BUG
@@ -12,15 +10,12 @@ namespace App\M;
  * @author 路漫漫
  * @link ahmerry@qq.com
  * @version
- * v2017/04/07 初版
+ * v2017/4/7 初版
  */
 
-class WxQrcodeM extends MyModel{
+namespace App\M;
 
-    public function addMac($data=[]) {
-            foreach ($data as $i) {
-                $this->add($i);
-            }
-    }
+use Base\Lib\M;
+class MyModel extends M{
 
 }

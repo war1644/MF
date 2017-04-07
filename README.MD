@@ -13,7 +13,8 @@ MF
 目录结构
 ===
 * `Base` : 框架核心
-* `App` : 应用demo目录,使用举例    
+     * `Config` : 框架配置
+* `App` : demo目录,好吃的栗子    
 * `Public` : 入口
      * `index.php` : 入口文件
      * `V` : 视图目录

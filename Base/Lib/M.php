@@ -14,9 +14,10 @@ namespace Base\Lib;
  * @author 路漫漫
  * @link ahmerry@qq.com
  * @version
- * v1.1 2017/01/24 9:18  增加最简单粗暴的query 和 exec方法(注意这两个为非预处理方式)
- * v1.0 2017/01/23 11:22  表名映射采用正则匹配
- * v0.9 2016/12/08   初版
+ * v2017/04/07    增加executeSql方法（PDO预处理方式）;修复命名空间下AutoLoad时，表名匹配错误问题
+ * v2017/01/24    增加最简单粗暴的query 和 exec方法(注意这两个为非预处理方式)
+ * v2017/01/23    表名映射采用正则匹配
+ * v2016/12/08    初版
  */
 
 use Base\DB\DB;
@@ -59,8 +60,10 @@ class M {
         preg_match_all($patt, get_called_class(), $res);
         $res = $res[0];
         array_pop($res);
+        unset($res[0],$res[1]);
         $res = strtolower(join('_',$res));
         $this->table = $this->prefix.$res;
+
     }
 
     /**
@@ -263,7 +266,7 @@ class M {
      * 最简单粗暴的查询方式
      *
      * @param String $strSql
-     * @param String $queryMode 查询方式(All or Row)
+     * @param String $queryMode 查询方式(all or row)
      * @param Boolean $debug
      * @return Array
      */
@@ -280,6 +283,18 @@ class M {
      */
     public function execSql($strSql, $debug = false) {
         return $this->db->execSql($strSql, $debug);
+    }
+
+    /**
+     * executeSql 执行SQL语句
+     * 最简单粗暴的预处理执行方式,自动判定sql语句类型,返回对应数据
+     * @param String $sql
+     * @param String $mode 查询方式(all or row)
+     * @param Boolean $debug
+     * @return Int || Array || Boolean
+     */
+    public function executeSql($sql,$params=[],$mode='row',$debug=false) {
+        return $this->db->executeSql($sql,$params,$mode,$debug);
     }
 
 }

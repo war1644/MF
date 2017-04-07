@@ -15,6 +15,7 @@ namespace App\C;
  * v2017/02/26 Oauth授权处理
  * v2016/12/08 初版
  */
+use App\M\WxQrcodeM;
 use Base\Lib\C;
 use Base\Tool\MFWechat;
 use Base\Tool\Wechat\Wechat;
@@ -157,7 +158,12 @@ class WechatC extends C {
             $res = PostMan(API_URL,$jsonData);
             $res = json_decode($res,true);
             if ($res['ret']==200){
-                $arr = ['ksid'=>$res['data']['info']['ksid'],'uid'=>$userInfo['unionid'],'oid'=>$userInfo['openid']];
+                $arr = [
+                    'ksid'=>$res['data']['info']['ksid'],
+                    'uid'=>$userInfo['unionid'],
+                    'oid'=>$userInfo['openid'],
+                    'avatar'=>$res['data']['info']['avatar']
+                ];
                 Session($userInfo['unionid'],json_encode($arr));
                 $this->endRun($arr);
             }else{
@@ -202,7 +208,7 @@ class WechatC extends C {
         $postData = [
             "ticket"=> $_POST['ticket'],
             "device_id"=> $_POST['deviceId'],
-            "openid"=> $_POST['oid'],
+            "openid"=> $_POST['oid']
         ];
         echo $this->WX->bindDevice($postData);
     }
@@ -212,21 +218,26 @@ class WechatC extends C {
      * @return Wechat
      */
     public function index() {
-        $callback=$_GET['callback'];
-        $res = json_encode($this->jsApi);
-        printf("%s(%s);", $callback, $res);
+//        echo ResultFormat($this->jsApi);
+//        $callback=$_GET['callback'];
+//        $res = json_encode($this->jsApi);
+//        printf("%s(%s);", $callback, $res);
     }
 
     /**
      * 连接跑步机页面
      * @return Wechat
      */
-    public function endRun($arr) {
+    public function endRun($arr=[]) {
         $data['title'] = 'KS,为跑步而生';
         $data['jsSign'] = $this->jsApi;
         $data['ksid'] = $arr['ksid'];
         $data['oid'] = $arr['oid'];
-        $this->view('KSWechat/endRunning.php',$data);
+        $data['avatar'] = $arr['avatar'];
+//        $data['ksid'] = 0;
+//        $data['oid'] = 0;
+//        $data['avatar'] = 'http://img.kingsmith.com.cn/upload/avatar/User/204881464950129069.png';
+        $this->view('KSWechat/scanThread.html',$data);
     }
 
     /**
@@ -234,8 +245,9 @@ class WechatC extends C {
      * @return Wechat
      */
     public function addMac() {
+        die();
         $excel = $log = [];
-        for ($i=25;$i<28;$i++){
+        for ($i=1030;$i<2030;$i++){
             $mac = dechex($i);
             $len = 6-strlen($mac);
             $zeroNum = '';
@@ -245,7 +257,6 @@ class WechatC extends C {
                 }
             }
             $mac = "14580f$zeroNum$mac";
-
             $len = 5-strlen($i);
             $zeroNum = '';
             if ($len){
@@ -254,7 +265,7 @@ class WechatC extends C {
                 }
             }
             $name = "KingSmith-$zeroNum$i-V1";
-
+            $snid = "SNID:$zeroNum$i";
             $qrcode = [
                 "service"=>"connBLE",
                 [
@@ -281,16 +292,26 @@ class WechatC extends C {
                 ]],
                 "product_id"=>"27569"
             ];
-            $excel[] = [$name,$mac,$qrcode];
-            if ($this->WX->addDeviceMac($data)){
-                $log[] = "$name : $mac 添加成功\n";
-            }else{
-                $log[] = "$name : $mac 添加失败\n";
-            }
+//            if ($this->WX->addDeviceMac($data)){
+//                $log[] = "$name : $mac 添加成功\n";
+                $sqlData[] = [
+                    'mac'=>$mac,
+                    'name'=>$name,
+                    'qrcode'=>$qrcode,
+                    'snid'=>$i,
+                    'add_time'=>date('Y-m-d H:i:s')
+                ];
+//                $excel[] = [$name,$mac,$qrcode,$snid];
+//            }else{
+//                $log[] = "$name : $mac 添加失败\n";
+//            }
         }
-        $title = ['name','mac','qrcode'];
-        SaveToExcel::exportExcel($excel,$title);
-        MFLog($log);
+//        $title = ['NAME','MAC','QRCODE','SNID'];
+//        SaveToExcel::exportExcel($excel,$title);
+//        MFLog($log);
+        $qr = new WxQrcodeM();
+        $qr->addMac($sqlData);
+
     }
 
 

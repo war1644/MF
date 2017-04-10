@@ -10,14 +10,14 @@ namespace Base\Tool;
  * WebSocket工具类，PHP跟websocket交互咋就这么泪奔呢？
  * 客户端在Public/V/Base
  * 调用示例：
- * new WebSocket('127.0.0.1',8416);
+ * new WebSocket('127.0.0.1',2416);
  * @param $address 连接地址
  * @param $port 端口
  * @author 路漫漫
  * @link ahmerry@qq.com
  * @version
  * v2017/04/08      增加自动载入方法，方便框架内调用其他类，成为一条独立的Service框架模式
- * v2017/04/08      增加发送到单一客户端
+ * v2017/04/08      增加发送到指定客户端
  *                  改进CPU占用99%的问题
  *                  单例模式，感觉用处不大
  * v2017/01/17      初版
@@ -72,7 +72,7 @@ class WebSocket {
                     $len = socket_recv($sock,$buffer,2048,0);
                     $user = $this->search($sock);
                     if($len<7){
-                        $this->close($sock);
+                        $this->close($sock,$user);
                         continue;
                     }
                     if(!$this->users[$user]['isShakeHand']){
@@ -85,7 +85,10 @@ class WebSocket {
                         if (!$result) $result = $buffer;
                         $this->e($buffer);
                         //返回给客户端
-                        $this->send($user,$result);
+                        $this->send($result,$user);
+                        //返回给所有客户端
+//                        $this->send($result);
+
                     }
                 }
             }
@@ -95,12 +98,12 @@ class WebSocket {
     }
 
     //关闭连接
-    private function close($sock){
-        $k=array_search($sock, $this->sockets);
+    private function close($sock,$user){
+//        $k=array_search($sock, $this->sockets);
         socket_close($sock);
-        unset($this->sockets[$k]);
-        unset($this->users[$k]);
-        $this->e("连接:$k 关闭");
+        unset($this->sockets[$user]);
+        unset($this->users[$user]);
+        $this->e("连接:$user 关闭");
     }
 
     //获取发送socket的客户端
@@ -190,7 +193,7 @@ class WebSocket {
 
     //编码后发回到客户端
     //$user为客户端识别
-    private function send($user=null,$msg){
+    private function send($msg,$user=null){
         $msg = $this->code($msg);
         if (is_null($user)){
             foreach($this->users as $v){
@@ -247,5 +250,5 @@ class WebSocket {
     }
 }
 
-WebSocket::ins('127.0.0.1',8241);
+WebSocket::ins('127.0.0.1',2416);
 

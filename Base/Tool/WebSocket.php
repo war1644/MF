@@ -83,7 +83,7 @@ class WebSocket {
                         $buffer = $this->uncode($buffer);
                         $result = $this->notify($buffer);
                         if (!$result) $result = $buffer;
-                        $this->e($buffer);
+                        $this->e($result);
                         //返回给客户端
                         $this->send($result,$user);
                         //返回给所有客户端

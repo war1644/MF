@@ -294,7 +294,9 @@ class M {
      * @return Int || Array || Boolean
      */
     public function executeSql($sql,$params=[],$mode='row',$debug=false) {
-        return $this->db->executeSql($sql,$params,$mode,$debug);
+        $result = $this->db->executeSql($sql,$params,$mode,$debug);
+        if ($mode='row') $this->data = $result;
+        return $result;
     }
 
 }

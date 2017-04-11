@@ -173,6 +173,9 @@ class DB {
                         $result = $pdo->fetchAll();
                     }
                     break;
+                default :
+                    $this->outputError('暂不支持，自己补充');
+                    break;
             }
         }
         $this->getPDOError();

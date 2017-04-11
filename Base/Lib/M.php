@@ -38,15 +38,15 @@ class M {
     }
 
     /**
-    * 获取ORM调用中的属性值
-    */
+     * 获取ORM调用中的属性值
+     */
     public function __get($per) {
         return isset($this->data[$per]) ? $this->data[$per] : NULL;
     }
 
     /**
-    * 设置ORM调用中的属性值
-    */
+     * 设置ORM调用中的属性值
+     */
     public function __set($per , $value) {
         $this->data[$per] = $value;
     }
@@ -76,8 +76,8 @@ class M {
     /**
      * 根据主键来查询一条信息
      */
-    public function find($id) {
-        $sql = "select * from $this->table where $this->pk = ?";
+    public function find($id,$field = '*') {
+        $sql = "select $field from $this->table where $this->pk = ?";
         return $this->data = $this->db->getRow($sql , [$id]);
     }
 
@@ -144,8 +144,8 @@ class M {
     }
 
     /**
-    * 分析表字段与主键
-    */
+     * 分析表字段与主键
+     */
     public function parseTable() {
         $info = $this->db->getAll('desc ' . $this->table);
         foreach($info as $v) {
@@ -158,26 +158,26 @@ class M {
     }
 
     /**
-    * select 查询
-    */
+     * select 查询
+     */
     public function select() {
         echo $sql = $this->parseSql();
         return $this->db->getAll($sql);
     }
 
     /**
-    * 指定查询的列
-    * @param string $col 要查询的列名
-    */
+     * 指定查询的列
+     * @param string $col 要查询的列名
+     */
     public function field($cols='') {
         $this->options['cols'] = $cols;
         return $this;
     }
 
     /**
-    * 数组传递条件,如['name'=>'lisi' , 'age'=>29]---->where name='lisi' and age='29';
-    * @param $cond array
-    */
+     * 数组传递条件,如['name'=>'lisi' , 'age'=>29]---->where name='lisi' and age='29';
+     * @param $cond array
+     */
     public function where($cond=[]) {
         if(is_array($cond)) {
             $tmp = '';
@@ -235,16 +235,16 @@ class M {
     }
 
     /**
-    * 还原model的options,防止影响下一次select
-    */
+     * 还原model的options,防止影响下一次select
+     */
     public function reset() {
         $this->options = [
-                'cols'=>'*',
-                'where'=>'1',
-                'group'=>'',
-                'having'=>'',
-                'order'=>'',
-                'limit'=>''
+            'cols'=>'*',
+            'where'=>'1',
+            'group'=>'',
+            'having'=>'',
+            'order'=>'',
+            'limit'=>''
         ];
     }
 
@@ -297,6 +297,27 @@ class M {
         $result = $this->db->executeSql($sql,$params,$mode,$debug);
         if ($mode='row') $this->data = $result;
         return $result;
+    }
+
+    /**
+     * beginTransaction 开始事务
+     */
+    public function beginTransaction() {
+        $this->db->beginTransaction();
+    }
+
+    /**
+     * commit 提交事务
+     */
+    public function commit() {
+        $this->db->commit();
+    }
+
+    /**
+     * rollback 回滚事务
+     */
+    public function rollback() {
+        $this->db->rollback();
     }
 
 }

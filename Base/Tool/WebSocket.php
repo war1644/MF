@@ -16,7 +16,7 @@ namespace Base\Tool;
  * @author 路漫漫
  * @link ahmerry@qq.com
  * @version
- * v2017/04/08      增加自动载入方法，方便框架内调用其他类，成为一条独立的Service框架模式
+ * v2017/04/12      增加对客户端信息的转发处理以及过滤
  * v2017/04/08      增加发送到指定客户端
  *                  改进CPU占用99%的问题
  *                  单例模式，感觉用处不大
@@ -33,7 +33,6 @@ class WebSocket {
     private function __clone() {}
 
     private function __construct($address, $port){
-        $this->init();
         //        $cfg = Config('socket');后期读取配置host,端口
         //开启端口，并监听
         $this->master=$this->openSocket($address, $port);
@@ -82,13 +81,17 @@ class WebSocket {
                         //握手后，处理请求数据
                         $buffer = $this->uncode($buffer);
                         $result = $this->notify($buffer);
-                        if (!$result) $result = $buffer;
-                        $this->e($result);
-                        //返回给客户端
-                        $this->send($result,$user);
-                        //返回给所有客户端
-//                        $this->send($result);
 
+                        if ($result === -233){
+                            $this->close($sock,$user);
+                        }else{
+                            if (!$result) $result = $buffer;
+                            $this->e($result);
+                            //返给指定客户端
+                            $this->send($result,$user);
+                            //返回给所有客户端
+                            //$this->send($result);
+                        }
                     }
                 }
             }
@@ -209,6 +212,7 @@ class WebSocket {
     //通知对应控制器处理
     private function notify($msg=''){
         $info = json_decode($msg,true);
+        if (!isset($info['wl']) || !GetCache($info['wl'])) return -233;
         if (!isset($info['data'])) return false;
         $call = explode('.',$info['service']);
         $parmas = $info['data'];
@@ -219,36 +223,5 @@ class WebSocket {
     private function e($str){
         MFLog($str,'socket');
     }
-
-    /**
-     * 自动加载对应文件
-     *
-     * @param string $class
-     * @return bool
-     */
-    protected static function autoLoad($class) {
-        $file = str_replace('\\', DIRECTORY_SEPARATOR, $class) . '.php';
-        clearstatcache();
-        $path = MFPATH . $file;
-        if (is_file($path)) {
-            include $path;
-            if (class_exists($class, false)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
-     * 初始化,就是注册自动载入方法喽
-     *
-     * @return object
-     */
-    protected function init() {
-        spl_autoload_register([$this, 'autoLoad']);
-        return $this;
-    }
 }
-
-WebSocket::ins('127.0.0.1',2416);
 

@@ -16,6 +16,34 @@
  */
 
 /**
+ * 缓存
+ * @param $content 内容
+ * @param $name 文件名
+ * @param $path 日志路径
+ */
+function SetCache($content, $name, $path='') {
+    $path = RUN_PATH . 'Cache/'. $path;
+    if (!$name) return false;
+    CheckDir($path);
+    $file = $path.$name.'.cache';
+    if (is_array($content) || is_object($content)) $content = json_encode($content,JSON_UNESCAPED_UNICODE);
+    return file_put_contents($file,$content);
+}
+
+/**
+ * 缓存
+ * @param $content 内容
+ * @param $name 文件名
+ * @param $path 日志路径
+ */
+function GetCache( $name, $path='') {
+    $path = RUN_PATH . 'Cache/'. $path;
+    $file = $path.$name.'.cache';
+    $cache = json_decode(@file_get_contents($file),true);
+    return $cache;
+}
+
+/**
  * 随机字符串
  * @param int $length
  * @return string
@@ -32,9 +60,10 @@ function RandStr($length=6) {
  * @return json || jsonp
  */
 function ResultFormat($params = []){
-    if (!isset($_GET['callback'])) return json_encode($params);
+    header('Content-Type:application/json; charset=utf-8');
+    if (!isset($_GET['callback'])) return json_encode($params,JSON_UNESCAPED_UNICODE);
     $callback = $_GET['callback'];
-    $res = json_encode($params);
+    $res = json_encode($params,JSON_UNESCAPED_UNICODE);
     return sprintf("%s(%s)", $callback, $res);
 }
 
@@ -53,8 +82,7 @@ function MFLog($log, $name='', $path='') {
     if (!$name) $name = date( 'Ymd' );
     CheckDir($path);
     $file = $path.$name.'.log';
-    if (is_array($log)) $log = json_encode($log);
-
+    if (is_array($log) || is_object($log)) $log = json_encode($log,JSON_UNESCAPED_UNICODE);
     $content = "\n\nTime : ".date('Y-m-d H:i:s')."\n".$log;
     error_log($content,3,$file);
 }
@@ -104,6 +132,9 @@ function Session($name='',$value=''){
         return true;
     }else if($value){
         $_SESSION[$name] = $value;
+        return true;
+    }else if(is_null($name)){
+        session_destroy();
         return true;
     }
 }

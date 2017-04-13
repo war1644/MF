@@ -20,7 +20,7 @@ defined('RUN_PATH') || define('RUN_PATH' , MFPATH.'RunData/');
 defined('V_PATH') || define('V_PATH' , MFPATH.'Public/V/');
 defined('UP_PATH') || define('UP_PATH' , RUN_PATH.'Upload/');
 defined('CONFIG_PATH') || define('CONFIG_PATH' , MFPATH.'Base/Config/');
-
+defined('CACHE_PATH') || define('CACHE_PATH' , RUN_PATH.'Cache/');
 //功能性常量
 defined('APP_PATH') || define('APP_PATH' , MFPATH.'App/');
 

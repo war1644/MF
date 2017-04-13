@@ -22,10 +22,10 @@
  * @param $path 日志路径
  */
 function SetCache($content, $name, $path='') {
-    $path = RUN_PATH . 'Cache/'. $path;
+    $path = CACHE_PATH. $path;
     if (!$name) return false;
     CheckDir($path);
-    $file = $path.$name.'.cache';
+    $file = $path.$name;
     if (is_array($content) || is_object($content)) $content = json_encode($content,JSON_UNESCAPED_UNICODE);
     return file_put_contents($file,$content);
 }
@@ -37,8 +37,8 @@ function SetCache($content, $name, $path='') {
  * @param $path 日志路径
  */
 function GetCache( $name, $path='') {
-    $path = RUN_PATH . 'Cache/'. $path;
-    $file = $path.$name.'.cache';
+    $path = CACHE_PATH. $path;
+    $file = $path.$name;
     $cache = json_decode(@file_get_contents($file),true);
     return $cache;
 }
@@ -61,9 +61,9 @@ function RandStr($length=6) {
  */
 function ResultFormat($params = []){
     header('Content-Type:application/json; charset=utf-8');
-    if (!isset($_GET['callback'])) return json_encode($params,JSON_UNESCAPED_UNICODE);
-    $callback = $_GET['callback'];
     $res = json_encode($params,JSON_UNESCAPED_UNICODE);
+    if (!isset($_GET['callback'])) return $res;
+    $callback = $_GET['callback'];
     return sprintf("%s(%s)", $callback, $res);
 }
 

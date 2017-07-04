@@ -44,7 +44,9 @@ class DB {
 
     public static function Ins(){
         if (self::$obj===null){
-            self::$obj = new self();
+            self::$obj = new static();
+
+            //            self::$obj = new self();
         }
         return self::$obj;
     }
@@ -285,7 +287,7 @@ class DB {
     /**
      * 关闭数据库连接
      */
-    public function destruct(){
+    public function __destruct(){
         $this->db = null;
     }
 

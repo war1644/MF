@@ -29,6 +29,7 @@ class M {
     protected $data = [];
     protected $options = [];
     protected $prefix = '';
+    public $debug = false;
 
     public function __construct() {
         $this->getDb();
@@ -104,12 +105,12 @@ class M {
             throw new \Exception("data object is empty", 500);
         }
 
-        $sql = 'insert into ' . $this->table . ' (';
-        $sql .= implode(',',  array_keys($data) );
-        $sql .= ') values (';
+        $sql = "insert into $this->table (`";
+        $sql .= implode('`,`',  array_keys($data) );
+        $sql .= "`) values (";
         $sql .= substr( str_repeat('?,',  count($data) ) , 0 , -1 );
         $sql .= ')';
-
+        if ($this->debug) echo $sql;
         return $this->db->insert($sql , array_values($data));
     }
 

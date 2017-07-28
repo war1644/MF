@@ -22,6 +22,7 @@ class PublicC extends C {
     protected $WX;
 
     public function index(){
+
         $option = Config('wx');
         $option = Config('smtp');
     }
@@ -30,13 +31,29 @@ class PublicC extends C {
         $this->view();
     }
 
+    public function upload(){
+        $imgName = [];
+        $arr = $_POST['imgs'];
+        for ($i=0;$i<count($arr);$i++){
+            $imgName[] = base64ToImg($arr[$i]);
+        }
+        echo ResultFormat(['code'=>1,'data'=>$imgName,'count'=>count($arr)]);
+    }
+
     public function run(){
         define('IS_LOGIN',true);
         $this->view('KSWechat/running');
     }
 
     public function endRun(){
-
+        MFLog($_POST);
+        if ($_POST && $_POST['summary']['id']){
+            $ksid = $_POST['summary']['id'];
+            $data = base64_encode(gzcompress(json_encode($_POST)));
+            $jsonData = json_encode(["service"=>"pad.upload","ksid"=>$ksid,"data"=>$data,"appkey"=>"LlCKimYod15f","crc"=>"26a6922e6409095a1e4cbce91b98c41e"]);
+            echo $res = PostMan('api.kingsmith.com.cn/Open/',$jsonData);
+            MFLog($res);
+        }
         die();
     }
 

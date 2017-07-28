@@ -1,23 +1,24 @@
 <?php
-namespace Base\DB;
+
 /**
  *         ▂▃╬▄▄▃▂▁▁
  *  ●●●█〓██████████████▇▇▇▅▅▅▅▅▅▅▅▅▇▅▅          BUG
- *  ▄▅████☆RED █ WOLF☆███▄▄▃▂
- *  █████████████████████████████
+ *  ▄▅████☆RED█WOLF☆███▄▄▃▂
+ *  ███████████████████████████
  *  ◥⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙◤
  *
- * Redis数据库
+ * redis操作类
+ * 说明，任何为false的串，存在redis中都是空串。
+ * 只有在key不存在时，才会返回false。
+ * 这点可用于防止缓存穿透
  * @author 路漫漫
  * @link ahmerry@qq.com
  * @version
- * v0.9 2016/12/18 9:58  初版
+ * v2017/7/11 初版
  */
-
-class Redis {
-    const CONFIG_FILE = 'Config/redis.php';
-    protected static $redis;
-    protected static $auth;
+namespace Base\DB;
+class MyRedis {
+    protected static $redis=null;
     protected static $prefix;
 
     /**
@@ -27,27 +28,27 @@ class Redis {
      * @param string $config['auth'] Redis 密码
      */
     public static function init() {
-        $config = Config('redis');
-        self::$redis = new \Redis();
-        self::$redis->pconnect($config['host'], $config['port'], 300);
-        self::$prefix = isset($config['prefix']) ? $config['prefix'] : '';
-        self::$auth = isset($config['auth']) ? $config['auth'] : '';
+        if (self::$redis === null){
+            $config = Config('redis');
+            self::$redis = new \Redis();
+            self::$redis->connect($config['host'], $config['port']);
+            self::$prefix = isset($config['prefix']) ? $config['prefix'] : '';
 
-        if(self::$auth != ''){
-            self::$redis->auth(self::$auth);
+            if($config['auth']){
+                self::$redis->auth($config['auth']);
+            }
         }
     }
-
     /**
      * 将value 的值赋值给key,生存时间为expire秒
      */
-    public static function set($key, $value, $expire = 300){
+    public static function setex($key, $value, $expire = 300){
         return self::$redis->setex(self::formatKey($key), $expire, self::formatValue($value));
     }
     /**
      * 设置永久
      */
-    public static function setev($key, $value){
+    public static function set($key, $value){
         return self::$redis->set(self::formatKey($key), self::formatValue($value));
     }
 
@@ -59,7 +60,7 @@ class Redis {
         return self::$redis->ttl(self::formatKey($key));
     }
 
-    public static function delete($key) {
+    public static function del($key) {
         return self::$redis->del(self::formatKey($key));
     }
 
@@ -87,6 +88,26 @@ class Redis {
         $value = self::$redis->rPop(self::formatKey($key));
         return $value !== FALSE ? self::unformatValue($value) : NULL;
     }
+
+    public static function lIndex($key,$index) {
+        $value = self::$redis->lIndex(self::formatKey($key),$index);
+        return $value !== FALSE ? self::unformatValue($value) : NULL;
+    }
+
+    public static function lRange($key,$start=0,$end=-1) {
+        $value = self::$redis->lRange(self::formatKey($key),$start,$end);
+        return $value !== FALSE ? self::unformatValue($value) : NULL;
+    }
+
+    public static function lSet($key,$index,$value) {
+        return self::$redis->lSet(self::formatKey($key),$index,$value);
+    }
+    //删除队列里所有匹配的值
+    public static function lRem($key,$value) {
+        return self::$redis->lRem(self::formatKey($key),self::formatValue($value),0);
+    }
+
+
 
     protected static function formatKey($key) {
         return self::$prefix . $key;

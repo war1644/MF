@@ -13,7 +13,6 @@
  * v2017/01/09  增加该路由防御体系(cookie,get,post),若不想防御过滤,增加第三个参数为false
  * v2017/03/09  初版
  */
-
 use Base\Lib\Macaw;
 
 //路由分发
@@ -49,7 +48,8 @@ Macaw::any('Home/(:all)',function ($p){
 Macaw::any('wechat', 'App\C\WechatC@auth');
 
 Macaw::$error_callback = function() {
-    throw new \Exception("路由无匹配项 404 Not Found",404);
+    die(404);
+//    throw new \Exception("路由无匹配项 404 Not Found",404);
 };
 
 //有啥是我hold不住的？

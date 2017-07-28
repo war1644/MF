@@ -1,8 +1,6 @@
 <?php
 namespace Base\Tool;
 
-use App\C\User;
-
 /**
  *         ▂▃╬▄▄▃▂▁▁
  *  ●●●█〓██████████████▇▇▇▅▅▅▅▅▅▅▅▅▇▅▅          BUG
@@ -29,7 +27,7 @@ use App\C\User;
 class Socket {
     private $sockets;//socket数组
     private $users;
-    private $userName=[];
+    private $userName;
     private $master;
     private static $obj = null;
 
@@ -51,6 +49,10 @@ class Socket {
         return self::$obj;
     }
 
+    public function getSockets(){
+        return $this->sockets;
+    }
+
     private function run(){
         while(true){
             //拿所有的连接
@@ -59,30 +61,59 @@ class Socket {
             socket_select($changes,$null,$null,0);
 
             //遍历连接
-            foreach($changes as $sock){
-                if($sock==$this->master){
+            foreach($changes as $sock) {
+                if ($sock == $this->master) {
                     //接受一个Socket连接
-                    $client=socket_accept($this->master);
+                    $client = socket_accept($this->master);
                     //把该连接存到数组
-                    $this->sockets[]=$client;
+                    $this->sockets[] = $client;
                     //给该连接一个识别符
-                    $this->users[]=[
-                        'socket'=>$client,
-                        'isShakeHand'=>false
+                    $this->users[] = [
+                        'socket' => $client,
+                        'hold' => false
                     ];
-                }else{
+                } else {
                     //从连接里拿出请求信息
-                    $len = socket_recv($sock,$buffer,2048,0);
+                    $len = socket_recv($sock, $buffer, 1024, 0);
                     $user = $this->search($sock);
-                    if($len<1){
-                        $this->close($sock,$user);
+                    if (!$len){
+                        $this->close($sock, $user);
                         continue;
                     }
 
-                    $this->e($buffer);
-                    //返回给所有客户端
-                    $this->send($buffer);
-
+//                    $this->e($buffer);
+//                    $this->send($buffer);
+//                    if ($len < 1) {
+//                        $this->close($sock, $user);
+//                        continue;
+//                    }
+//                    if ($len>400){
+//                        if (!$this->users[$user]['hold']){
+//                            $this->woshou($user,$buffer);
+//                        }
+//                        continue;
+//                    }
+                    $hexData = $this->asciiToHexArray($buffer);
+                    $this->e($hexData);
+                    //                    $this->e($hexData);
+                    $result = $this->notify($hexData,$user);
+                    if (!$result){
+//                        MFLog($result,'RespondSocket');
+                        $this->send('false');
+                        continue;
+                    }
+////                    if ($result[0]=='wx'){
+////                        $this->send($result);
+////                    }
+//                    if ($result === -233){
+//                        $this->close($sock,$user);
+//                    } else {
+//                        //返给指定客户端
+////                        MFLog($result,'RespondSocket');
+                        $this->send(hex2bin($result));
+//                        //返回给所有客户端
+////                    $this->send($result);
+//                    }
                 }
             }
             //避免对锁，cpu占用99%等
@@ -90,12 +121,84 @@ class Socket {
         }
     }
 
+    /*public static function encode($payload, $connection)
+    {
+        if (empty($connection->websocketType)) {
+            $connection->websocketType = self::BINARY_TYPE_BLOB;
+        }
+        $payload = (string)$payload;
+        if (empty($connection->handshakeStep)) {
+            self::sendHandshake($connection);
+        }
+        $mask = 1;
+        $mask_key = "\x00\x00\x00\x00";
+
+        $pack = '';
+        $length = $length_flag = strlen($payload);
+        if (65535 < $length) {
+            $pack   = pack('NN', ($length & 0xFFFFFFFF00000000) >> 32, $length & 0x00000000FFFFFFFF);
+            $length_flag = 127;
+        } else if (125 < $length) {
+            $pack   = pack('n*', $length);
+            $length_flag = 126;
+        }
+
+        $head = ($mask << 7) | $length_flag;
+        $head = $connection->websocketType . chr($head) . $pack;
+
+        $frame = $head . $mask_key;
+        // append payload to frame:
+        for ($i = 0; $i < $length; $i++) {
+            $frame .= $payload[$i] ^ $mask_key[$i % 4];
+        }
+        if ($connection->handshakeStep === 1) {
+            // If buffer has already full then discard the current package.
+            if (strlen($connection->tmpWebsocketData) > $connection->maxSendBufferSize) {
+                if ($connection->onError) {
+                    try {
+                        call_user_func($connection->onError, $connection, WORKERMAN_SEND_FAIL, 'send buffer full and drop package');
+                    } catch (\Exception $e) {
+                        Worker::log($e);
+                        exit(250);
+                    } catch (\Error $e) {
+                        Worker::log($e);
+                        exit(250);
+                    }
+                }
+                return '';
+            }
+            $connection->tmpWebsocketData = $connection->tmpWebsocketData . $frame;
+            // Check buffer is full.
+            if ($connection->maxSendBufferSize <= strlen($connection->tmpWebsocketData)) {
+                if ($connection->onBufferFull) {
+                    try {
+                        call_user_func($connection->onBufferFull, $connection);
+                    } catch (\Exception $e) {
+                        Worker::log($e);
+                        exit(250);
+                    } catch (\Error $e) {
+                        Worker::log($e);
+                        exit(250);
+                    }
+                }
+            }
+            return '';
+        }
+        return $frame;
+    }*/
+
+
     //关闭连接
     private function close($sock,$user){
         socket_close($sock);
         unset($this->sockets[$user],$this->users[$user]);
-        $this->send(['msg'=>'','name'=>$user,'type'=>'removeUser']);
-        $this->send(['code'=>1,'msg'=>"玩家【 $user 】下线",'type'=>'talk']);
+//        $this->send(['msg'=>'','name'=>$user,'type'=>'removeUser']);
+//        $this->send(['code'=>1,'msg'=>"玩家【 $user 】下线",'type'=>'talk']);
+    }
+
+    //wifi模块数据转hex数组
+    private function asciiToHexArray($str) {
+        return str_split(bin2hex($str), 2);
     }
 
     //获取发送socket的客户端
@@ -106,6 +209,15 @@ class Socket {
         }
         return false;
     }
+    //获取发送socket的客户端
+    private function searchKey($sock,$key = 'ksKey'){
+        foreach ($this->users as $k=>$v){
+            if($sock==$v[$key])
+                return $k;
+        }
+        return false;
+    }
+
     //建立端口监听
     private function openSocket($address,$port){
         //创建端口
@@ -134,7 +246,7 @@ class Socket {
         $new_message .= "Sec-WebSocket-Accept: " . $new_key . "\r\n\r\n";
         //告诉客户端握手成功
         socket_write($this->users[$k]['socket'],$new_message,strlen($new_message));
-        $this->users[$k]['isShakeHand']=true;
+        $this->users[$k]['hold']=true;
         return true;
     }
 
@@ -175,7 +287,7 @@ class Socket {
         $data = implode('',$frame);
         return pack("H*", $data);
     }
-    private function ord_hex($data)  {
+    private function ord_hex($data) {
         $msg = '';
         $l = strlen($data);
         for ($i= 0; $i<$l; $i++) {
@@ -187,6 +299,7 @@ class Socket {
     //编码后发回到客户端
     //$user为客户端识别
     private function send($msg,$user=null){
+//        $msg = $this->code($msg);
         if (is_array($msg) || is_object($msg)){
             $msg = json_encode($msg,JSON_UNESCAPED_UNICODE);
         }
@@ -201,68 +314,262 @@ class Socket {
         }
     }
 
-    //通知对应控制器处理
-    private function notify($msg='',$key){
-        $info = json_decode($msg,true);
-        switch($info["type"]){
-            case "login":
-                if (in_array($info["name"],$this->userName)){
-                    $info['msg'] = '重复登录';
-                    $info['code'] = -1;
+    /**
+     * 通知对应控制器处理
+     * 校验码：一个Bytes，长度+命令码+数据码的累加和，加满溢出。（& 异或）
+     * request:
+     * 开始码 长度码 命令码 数据码 校验码 结束码
+     * 37 | 19 | 50 | F8 A2 33 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 D5 FD | 08 | 36
+     * respond:
+     * 开始码 长度码 命令码 数据码 校验码 结束码
+     * 36 | 19 | 50 | F7 A2 33 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 D5 FD | 08 | 37
+     *
+     *
+     */
+    private function notify($msg=[],$k){
+        //数据效验
+        if ($msg[0] != '37'){
+            $start=-1;$end=-1;
+            foreach ($msg as $k => $v){
+                if ($v=='37'){
+                    $start = $k;
+                }
+                if ($v=='36'){
+                    $end = $k;
+                }
+            }
+            if ($start==-1 || $end==-1 ){
+                return false;
+            }
+            $msg = array_slice($msg,$start,$end-$start+1);
+            MFLog(['校正后：',$msg]);
+        }
+        $count = count($msg);
+        if ( ($msg[0] != '37') || (hexdec($msg[1]) != $count)) return false;
+        $data = [];
+        switch($msg[4]){
+            /**
+             * 跑步机运行数据上报
+             * D0 	D1 	  D2   –    D17 	D18 	D19
+             * F8 	A2       	           校验码 	FD
+             */
+            case 'a2':
+//                if (isset($this->users[$k]['wx']) && $count==22){
+//                    $this->send($msg,$this->users[$k]['wx']);
+//                }
+                $c = new \App\C\TreadmillC();
+                $data = $c->runInfo();
+                $data = join('',$data);
+                break;
+            /**
+             * 闲时交互  （暂时不用）
+             * D0	D1	 D2  D3	 D4	 D5	    D6	    D7
+             * F8	A7   00  00  00  00   校验码   	FD
+             */
+            case 'a5':
+                $c = new \App\C\TreadmillC();
+                $data = $c->treammillInfo();
+                $data = join('',$data);
+                break;
+                break;
+            /**
+             * 安全相关
+             * D0	D1	 D2  D3	 D4	 D5	    D6	    D7
+             * F8	A7   00  00  00  00   校验码   	FD
+             *
+             */
+            case 'a7':
+                $c = new \App\C\TreadmillC();
+                //授权跑步机
+                if($msg[5] == '00' && $msg[6] == '00' && $msg[7] == '00' && $msg[8] == '00'){
+                    if (isset($this->user[$k]['ksKey'])){
+                        return $this->user[$k]['cmd'];
+                    }else{
+                        $data = $c->auth();
+                        $this->user[$k]['ksKey'] = $data[9].$data[10].$data[11].$data[12];
+                        $this->user[$k]['cmd'] = $data = join('',$data);
+                    }
                 }else{
-                    $this->userName[$key] = $info["name"];
-                    $user = new User();
-                    $user->name = $info["name"];
-                    $this->users[$key]['obj'] = $user;
-                    $info['msg'] = '登录成功';
-                    $info['code'] = 1;
-                    $this->send($info,$key);
+                    if (isset($this->user[$k]['ksKey'])){
+                        //解锁跑步机
+                        $c->setKey($this->user[$k]['ksKey']);
+                        $data = $c->unlock();
+                        $data = join('',$data);
+                    }else{
+                        $data = $c->checkAuth([$msg[5],$msg[6],$msg[7],$msg[8]]);
+                        if ($data){
+                            $this->user[$k]['ksKey'] = $data['ksKey'];
+                            return false;
+                        }
+                    }
                 }
-                $this->send(['type'=>'setUserList','list'=>$this->userName]);
-                $this->send(['type'=>'talk','msg'=>"玩家【$info[name]】进入游戏"]);
+                break;
+            case 'a8':
+                $c = new \App\C\TreadmillC();
+                if($msg[5] == 'aa' && $msg[6] == 'aa' && $msg[7] == 'aa' && $msg[8] == 'aa'){
+                    //解锁成功,启动跑步机
+                    $data = $c->start();
+                    $data = join('',$data);
+                }else{
+                    //解锁跑步机
+                    $c->setKey($this->user[$k]['ksKey']);
+                    $data = $c->unlock();
+                    $data = join('',$data);
+                }
+
+                break;
+
+            default:
                 return false;
-                break;
-            case "talk":
-                if($info['target'] == null) return false;
-                if($info['target'] != "all"){
-                    $k = array_search($info['target'],$this->userName);
-                    if (!is_numeric($k)) return false;
-                    $this->send($info,$k);
-                }
-                break;
-            case "addTank":
-                foreach ($this->users as $v){
-                    //把已经在线的玩家发送给当前登录玩家
-                    $obj = $v['obj'];
-                    if ($obj->name==$info['name'])continue;
-                    $add['name'] = $obj->name;
-                    $add['x'] = $obj->x;
-                    $add['y'] = $obj->y;
-                    $add['color'] = $obj->color;
-                    $add['direction'] = $obj->direction;
-                    $add['type'] = 'addTank';
-                    $this->send($add,$key);
-                }
-                //把登录玩家推送给所有玩家
-                $user = $this->users[$key]['obj'];
-                $user->x = $info['x'];
-                $user->y = $info['y'];
-                $user->color = $info['color'];
-                $user->direction = $info['direction'];
-                $this->send($info);
-                return false;
-                break;
-            case "move":
-                break;
-            case "shoot":
+//                $data = '366A52F733F0F30000001E5FC1A1A0A0A1C15F1E000000000000E1F31A0E0C0C0E1AF3E100000000000000818181A0FFFF000000000000000000000C0C0C0CFFFF0C0C0C0C0000000000004181A0A0A0A0A5DF530000000000000C0E1E5C4D8DAC2C0C0C000000FDCA37';
                 break;
         }
-        return $info;
+        return $data;
+    }
+
+    /**
+     * 通知对应控制器处理
+     * 校验码：一个Bytes，长度+命令码+数据码的累加和，加满溢出。（& 异或）
+     * request:
+     * 开始码 长度码 命令码 数据码 校验码 结束码
+     * 37 | 19 | 50 | F8 A2 33 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 D5 FD | 08 | 36
+     * respond:
+     * 开始码 长度码 命令码 数据码 校验码 结束码
+     * 36 | 19 | 50 | F7 A2 33 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 D5 FD | 08 | 37
+     *
+     *
+     */
+    private function wxNotify($msg=[],$k){
+        //数据效验
+        $count = count($msg);
+        if ($msg[0] != 'wx' || hexdec($msg[1]) == $count) return false;
+        $data = [];
+        switch($msg[4]){
+            case 'DA':
+                if ($this->user[$k]['tm']){
+                    $this->send(['wx','code'=>-1,'msg'=>'正在使用跑步机中'],$k);
+                    return false;
+                }
+                $c = new \App\C\TreadmillC();
+                $m = new \App\M\TreadmillM();
+                $treadmill = $m->getAuth(['id'=>hexdec($msg[5])]);
+                $key = $this->searchKey($treadmill['ksKey']);
+                if (!$key){
+                    $this->send(['wx','code'=>-1,'msg'=>'跑步机匹配错误'],$k);
+                    return false;
+                }
+                $this->user[$key]['wx'] = $k;
+                $this->user[$k]['tm'] = $key;
+
+                //解锁跑步机
+                $c->setKey($treadmill['ksKey']);
+                $c->unlock();
+                $data = join('',$data);
+                $this->send(hex2bin($data),$key);
+                $this->send(['wx','code'=>1,'msg'=>'解锁完成'],$k);
+
+                //通知跑步机上传数据
+                $cmd = join('',$c->runInfo());
+                $this->send(hex2bin($cmd),$key);
+                return false;
+                break;
+            case 'DB':
+
+                break;
+            /**
+             * 跑步机运行数据上报
+             * D0 	D1 	  D2   –    D17 	D18 	D19
+             * F8 	A2       	           校验码 	FD
+             */
+            case 'A2':
+                if (isset($this->users[$k]['wx']) && $count==22){
+                    $this->send($msg,$this->users[$k]['wx']);
+                }
+                return false;
+                break;
+            /**
+             * 闲时交互  （暂时不用）
+             * D0	D1	 D2  D3	 D4	 D5	    D6	    D7
+             * F8	A7   00  00  00  00   校验码   	FD
+             */
+            //            case 'A5':
+            //                $m = new \App\C\TreadmillC();
+            //                //授权跑步机
+            //                if($msg[5] == '00' && $msg[6] == '00' && $msg[7] == '00' && $msg[8] == '00'){
+            //                    if (isset($this->user[$k]['ksKey'])){
+            //                        return $this->user[$k]['cmd'];
+            //                    }else{
+            //                        $data = $m->auth();
+            //                        $this->user[$k]['ksKey'] = $data[9].$data[10].$data[11].$data[12];
+            //                        $this->user[$k]['cmd'] = $data = join('',$data);
+            //                    }
+            //                }else{
+            //                    if (isset($this->user[$k]['ksKey'])){
+            //                        return false;
+            //                    }else{
+            //                        $data = $m->checkAuth([$msg[5],$msg[6],$msg[7],$msg[8]]);
+            //                        if ($data){
+            //                            $this->user[$k]['ksKey'] = $data['ksKey'];
+            //                        }
+            //                    }
+            //                }
+            //                break;
+            /**
+             * 安全相关
+             * D0	D1	 D2  D3	 D4	 D5	    D6	    D7
+             * F8	A7   00  00  00  00   校验码   	FD
+             */
+            case 'A7':
+                $m = new \App\C\TreadmillC();
+                //授权跑步机
+                if($msg[5] == '00' && $msg[6] == '00' && $msg[7] == '00' && $msg[8] == '00'){
+                    if (isset($this->user[$k]['ksKey'])){
+                        return $this->user[$k]['cmd'];
+                    }else{
+                        $data = $m->auth();
+                        $this->user[$k]['ksKey'] = $data[9].$data[10].$data[11].$data[12];
+                        $this->user[$k]['cmd'] = $data = join('',$data);
+                    }
+                }else{
+                    if (isset($this->user[$k]['ksKey'])){
+                        return false;
+                    }else{
+                        $data = $m->checkAuth([$msg[5],$msg[6],$msg[7],$msg[8]]);
+                        if ($data){
+                            $this->user[$k]['ksKey'] = $data['ksKey'];
+                            return false;
+                        }
+                    }
+                }
+                break;
+
+            default:
+                return false;
+                //                $data = '366A52F733F0F30000001E5FC1A1A0A0A1C15F1E000000000000E1F31A0E0C0C0E1AF3E100000000000000818181A0FFFF000000000000000000000C0C0C0CFFFF0C0C0C0C0000000000004181A0A0A0A0A5DF530000000000000C0E1E5C4D8DAC2C0C0C000000FDCA37';
+                break;
+        }
+        return $data;
+    }
+
+    /**
+     * 指令效验计算
+     * 查询：D0 0xF7 D1 0xA4 ... D9 0xFD
+     * 控制：D0 0xF7 D1 0xA2 ... D12 0xFD
+     */
+    private function checkSign($info) {
+        $len = count($info) - 2;
+        $tmp = 0;
+        for ( $i = 1; $i < $len; $i++) {
+            $tmp += hexdec($info[$i]);
+        }
+        $tmp = $tmp & 255;
+        $tmp1 = (dechex($tmp) == $info[18]) || (dechex($tmp) == $info[3]);
+        return $tmp1;
     }
 
     //记录到log
     private function e($str){
-        MFLog($str,'socket');
+        MFLog($str,'RequestSocket');
     }
 }
 

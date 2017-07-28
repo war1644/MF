@@ -32,4 +32,5 @@ include MFPATH."Base/Lib/F.php";
 include MFPATH."Base/Lib/Base.php";
 
 //启动服务
-\Base\Tool\WebSocket::ins('127.0.0.1',2416);
+$S = \Base\Tool\Socket::ins('192.168.1.26',8404);
+//\Base\Tool\Socket::ins('0.0.0.0',8404);

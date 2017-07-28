@@ -3,8 +3,8 @@ namespace App\C;
 /**
  *         ▂▃╬▄▄▃▂▁▁
  *  ●●●█〓██████████████▇▇▇▅▅▅▅▅▅▅▅▅▇▅▅          BUG
- *  ▄▅████☆RED █ WOLF☆███▄▄▃▂
- *  █████████████████████████████
+ *  ▄▅████☆RED█WOLF☆███▄▄▃▂
+ *  ███████████████████████████
  *  ◥⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙◤
  *
  * 微信相关处理类demo 示例
@@ -179,6 +179,46 @@ class WechatC extends C {
     }
 
     /**
+     * 获取用户信息
+     * @return Wechat
+     */
+    public function getKSUserInfo() {
+        $userInfo = $this->userInfo;
+        MFLog($userInfo);
+        $arr = Session($userInfo['unionid']);
+        if (!$arr){
+            $jsonData = json_encode([
+                "service"=>"user.weixin",
+                "wx_openid"=>$userInfo['openid'],
+                "wx_unionid"=>$userInfo['unionid'],
+                "brand"=>"wechat",
+                "wx_nickname"=>$userInfo['nickname'],
+                "avatar"=>$userInfo['headimgurl'],
+            ]);
+            $res = PostMan(API_URL,$jsonData);
+            $res = json_decode($res,true);
+            if ($res['ret']==200){
+                $arr = [
+                    'ksid'=>$res['data']['info']['ksid'],
+                    'uid'=>$userInfo['unionid'],
+                    'oid'=>$userInfo['openid'],
+                    'avatar'=>$res['data']['info']['avatar'],
+                    'nickname'=>$res['data']['info']['nickname']
+                ];
+                Session($userInfo['unionid'],json_encode($arr));
+                $this->endRun($arr);
+            }else{
+                Dump('服务器获取信息失败,请刷新页面');
+            }
+        }else{
+            $this->endRun(json_decode($arr,true));
+        }
+        //https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx6834f279296c34e2&redirect_uri=http%3A%2F%2Fwx.duanxq.cn%2FWechat%2FgetKSUserInfo&response_type=code&scope=snsapi_userinfo&state=
+        //https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx91e7b6ade546e6a4&redirect_uri=http%3A%2F%2Fwx.duanxq.cn%2FWechat%2FgetKSUserInfo&response_type=code&scope=snsapi_userinfo&state=
+
+    }
+
+    /**
      * 排行榜
      * @return Wechat
      */
@@ -219,10 +259,8 @@ class WechatC extends C {
      * @return Wechat
      */
     public function index() {
-//        echo ResultFormat($this->jsApi);
-//        $callback=$_GET['callback'];
-//        $res = json_encode($this->jsApi);
-//        printf("%s(%s);", $callback, $res);
+        $data['jsSign'] = $this->jsApi;
+        $this->view('add.html',$data);
     }
 
     /**
@@ -232,17 +270,18 @@ class WechatC extends C {
     public function endRun($arr=[]) {
         $data['title'] = 'KS,为跑步而生';
         $data['jsSign'] = $this->jsApi;
-        $data['ksid'] = $arr['ksid'];
-        $data['oid'] = $arr['oid'];
-        $data['avatar'] = $arr['avatar'];
-        $data['nickname'] = $arr['nickname'];
+//        $data['ksid'] = $arr['ksid'];
+//        $data['oid'] = $arr['oid'];
+//        $data['avatar'] = $arr['avatar'];
+//        $data['nickname'] = $arr['nickname'];
         $rank = new \App\M\RankingM();
-        $data['distance'] = $rank->countDistance(intval($arr['ksid']));
+        $data['distance'] = $rank->countDistance(intval($arr['ksid']=20688));
 
-//        $data['ksid'] = 0;
-//        $data['oid'] = 0;
-//        $data['avatar'] = 'http://img.kingsmith.com.cn/upload/avatar/User/204881464950129069.png';
-        $this->view('KSWechat/scanThread.html',$data);
+        $data['nickname'] = 'nickname';
+        $data['ksid'] = 0;
+        $data['oid'] = 0;
+        $data['avatar'] = 'http://img.kingsmith.com.cn/upload/avatar/User/204881464950129069.png';
+        $this->view('KSWechat/test.html',$data);
     }
 
     /**

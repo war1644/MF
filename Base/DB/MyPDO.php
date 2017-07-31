@@ -17,7 +17,7 @@ namespace Base\DB;
  * v2016/12/15  初版
  */
 
-class DB {
+class MyPDO {
     protected static $obj = null;
     protected $db;
     protected $dbName;

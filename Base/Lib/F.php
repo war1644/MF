@@ -108,7 +108,6 @@ function Config($key='') {
             $C = array_merge($C,$APP_C);
         }
         define('CONFIG',json_encode($C));
-//        defined('CONFIG',json_encode($C));
     }else{
         $C = json_decode(CONFIG,true);
     }

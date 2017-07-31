@@ -23,8 +23,7 @@ class PublicC extends C {
 
     public function index(){
 
-        $option = Config('wx');
-        $option = Config('smtp');
+        echo 'hello';
     }
 
     public function test(){

@@ -20,7 +20,7 @@ namespace Base\Lib;
  * v2016/12/08    初版
  */
 
-use Base\DB\DB;
+use Base\DB\MyPDO;
 class M {
     protected $table = '';
     protected $db = null;
@@ -71,7 +71,7 @@ class M {
      * 获取Db的实例,用于查询数据库
      */
     public function getDb() {
-        $this->db = DB::Ins();
+        $this->db = MyPDO::Ins();
     }
 
     /**

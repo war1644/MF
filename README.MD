@@ -12,14 +12,13 @@ MF
         
 目录结构
 ===
-* `App` : demo目录,好吃的栗子 
-* `Base` : 框架核心
-     * `Config` : 
-        * `config.php` : 框架配置
-        * `routes.php` : 路由规则   
+* `App` :demo
+    * `Config` : 
+        * `config.php` : 配置
+        * `routes.php` : 路由规则 
+* `Base` : 框架核心  
 * `Public` : 入口
-     * `index.php` : 常规模式入口文件
-     * `service.php` : websocket服务模式入口文件
+     * `index.php` : 入口文件
      * `V` : 视图目录
 
 工作流程

@@ -11,6 +11,7 @@ namespace Base\Lib;
  * @author 路漫漫
  * @link ahmerry@qq.com
  * @version
+ * v2017/08/27      新增debug模式
  * v2017/04/12      重写错误和异常接管逻辑，与视图分离，增加通用性
  * v2017/03/14      删除composer,采用autoload方式加载文件
  * v2016/12/15      初版
@@ -47,41 +48,31 @@ class Base {
     public function handlerError($errno , $errstr , $file , $line) {
         //检查报错设置,没设置的就交给PHP系统去处理
         if (!(error_reporting() & $errno))  return false;
-
         //自己来处理错误
+        $err = '';
         switch ($errno) {
-            //这个必须得干
             case E_USER_ERROR:
-                //记录再说
-                $err = "Level : FATAL ERROR \nFile : $file \nLine : $line \n $errstr\n";
-                MFLog($err,'Error');
-//                echo "<b>YOUR ERROR</b> [$errno] $errstr<br />";
-//                echo "  Fatal error on line $line in file $file";
-//                echo ", PHP " . PHP_VERSION . " (" . PHP_OS . ")<br />";
-//                echo "神兽也救不了你的BUG，GO DIE<br />";
-//                die();
-//                break;
-
-            case E_USER_WARNING:
-                //记录再说
-                $err = "Level : WARNING \nFile : $file \nLine : $line \n $errstr\n";
-                MFLog($err,'Error');
-//                echo "<b>My WARNING</b> [$errno] $errstr<br />";
-//                break;
-
-            case E_USER_NOTICE:
-//                echo "<b>My NOTICE</b> [$errno] $errstr<br />";
+                $err = "Level : FATAL ERROR\nFile : $file\nLine : $line\n$errstr\n";
                 break;
-
+            case E_USER_WARNING:
+                $err = "Level : WARNING\nFile : $file\nLine : $line\n$errstr\n";
+                break;
+            case E_USER_NOTICE:
+                $err = "Level : NOTICE\nFile : $file\nLine : $line\n$errstr\n";
+                break;
             default:
-//                echo "Unknown error type: [$errno] $errstr<br />";
+                $err = "Level : UNKONW\nFile : $file\nLine : $line\n$errstr\n";
                 break;
         }
-
-        //这里只记录，最后还是交给 PHP 内部错误处理程序
-        return false;
-        //这里不再交给 PHP 内部错误处理程序
-//        return true;
+        //记录再说
+        MFLog($err,'Error');
+        if(Config('debug')){
+            //false继续交给 PHP 内部错误处理程序
+            return false;
+        }else{
+            //true不再交给 PHP 内部错误处理程序
+            return true;
+        }
     }
 
     public function handlerException($exception) {
@@ -98,23 +89,21 @@ class Base {
         $code = $exception->getCode();
 
         //写入日志
-        $err = "Level : Exception \nCode : $code \nFile : $file \nLine : $line\n $msg\n";
+        $err = "Level : Exception\nCode : $code\nFile : $file\nLine : $line\n$msg\n";
         MFLog($err,'Exception');
-        $traces = $exception->getTrace();
-        if($exception instanceof \ErrorException) {
-            array_shift($traces);
+
+        if(Config('debug')){
+            $traces = $exception->getTrace();
+            if($exception instanceof \ErrorException) {
+                array_shift($traces);
+            }
+            echo "<b>Your Exception $code</b><br />$msg<br />";
+            Dump($traces);
+            echo "神兽也救不了你的BUG，GO DIE<br />";
+        }else{
+            include MFPATH.'Base/Lib/404.html';
         }
-        echo "<b>Your Exception $code</b><br />$msg<br />";
-        Dump($traces);
-        echo "神兽也救不了你的BUG，GO DIE<br />";
         die();
-//        $c = new \Base\Lib\C();
-//        if (isset($code) && $code==404){
-//            $c->view('Base/404.php',['err'=>$err]);
-//        }else{
-//            $c->view('Base/error.php',['err'=>$err,'traces'=>$traces]);
-//
-//        }
     }
 
     /**

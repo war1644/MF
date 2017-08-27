@@ -10,7 +10,7 @@
  * @author 路漫漫
  * @link ahmerry@qq.com
  * @version
- * v2017/01/09  增加该路由防御体系(cookie,get,post),若不想防御过滤,增加第三个参数为false
+ * v2017/01/09  增加路由过滤体系(cookie,get,post),若不想过滤,增加第三个参数为false
  * v2017/03/09  初版
  */
 use Base\Lib\Macaw;

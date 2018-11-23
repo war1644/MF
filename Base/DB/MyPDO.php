@@ -2,15 +2,16 @@
 namespace Base\DB;
 /**
  *         ▂▃╬▄▄▃▂▁▁
- *  ●●●█〓██████████████▇▇▇▅▅▅▅▅▅▅▅▅▇▅▅          BUG
- *  ▄▅████☆RED █ WOLF☆███▄▄▃▂
- *  █████████████████████████████
- *  ◥⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙◤
+ *  ●●●█〓████████████▇▇▇▅▅▅▅▅▅▅▅▅▇▅▅          BUG
+ *  ▄▅█████☆█☆█☆███████▄▄▃▂
+ *  ███████████████████████████
+ *  ◥⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙◤
  *
  * 数据库PDO操作
  * @author 路漫漫
  * @link ahmerry@qq.com
  * @version
+ * v2018/10     修改方法名保持跟pdo方法一致，便于识别
  * v2017/03/28  增加PDO预处理方式的mysql语句写法
  * v2017/01/17  增加非预处理的执行，查询语句，增加debug模式，增加判断表引擎，以方便事务处理
  * v2016/12/28  数据连接采用单例模式
@@ -38,33 +39,31 @@ class MyPDO {
             throw new \Exception($e);
         }
     }
-    //单例目的就是统一管理对象，所以直接关闭clone
-    //想要对象？去找Ins()
+
+    //单例关闭clone
     private function __clone() {}
 
-    public static function Ins(){
+    public static function instance(){
         if (self::$obj===null){
             self::$obj = new static();
-
-            //            self::$obj = new self();
         }
         return self::$obj;
     }
 
-	/**
-	 * 选择数据库
-	 */
-	public function useDb($db) {
-        $this->db->exec('use ' . $db);
-	}
+    /**
+     * 选择数据库
+     */
+    public function useDb($db) {
+        $this->db->exec("use $db");
+    }
 
-	/**
-	 * 设置字符集
-	 */
-	private function charset($char) {
-        $this->db->exec('set names ' . $char);
-        $this->db->exec('SET character_set_connection='.$char.', character_set_results='.$char.', character_set_client=binary');
-	}
+    /**
+     * 设置字符集
+     */
+    private function charset($char) {
+        $this->db->exec("set names $char");
+        $this->db->exec("SET character_set_connection=$char, character_set_results=$char, character_set_client=binary");
+    }
 
     /**
      * 获取表引擎
@@ -80,31 +79,32 @@ class MyPDO {
         return $arrayTableInfo[0]['Engine'];
     }
 
-	/**
-	 * 查询1行
-	 */
-	public function getRow($sql , $params=[]) {
-		$st = $this->db->prepare($sql);
-		if($st->execute($params)) {
-			return $st->fetch(\PDO::FETCH_ASSOC);
-		} else {
-			list(,$errno , $errstr) = $st->errorinfo();
-			throw new \Exception($errstr, $errno);
-		}
-	}
+    /**
+     * 查询1行
+     */
+    public function fetch($sql , $params=[]) {
+        $st = $this->db->prepare($sql);
 
-	/**
-	 * 查询多行
-	 */
-	public function getAll($sql , $params=[]) {
-		$st = $this->db->prepare($sql);
-		if($st->execute($params)) {
-			return $st->fetchAll(\PDO::FETCH_ASSOC);
-		} else {
-			list(,$errno , $errstr) = $st->errorinfo();
-			throw new \Exception($errstr, $errno);
-		}
-	}
+        if($st->execute($params)) {
+            return $st->fetch(\PDO::FETCH_ASSOC);
+        } else {
+            list(,$errno , $errstr) = $st->errorinfo();
+            throw new \Exception($errstr, $errno);
+        }
+    }
+
+    /**
+     * 查询多行
+     */
+    public function fetchAll($sql , $params=[]) {
+        $st = $this->db->prepare($sql);
+        if($st->execute($params)) {
+            return $st->fetchAll(\PDO::FETCH_ASSOC);
+        } else {
+            list(,$errno , $errstr) = $st->errorinfo();
+            throw new \Exception($errstr, $errno);
+        }
+    }
 
 	/**
 	 * 删除数据

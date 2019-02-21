@@ -254,15 +254,15 @@ class Wechat {
     public $cacheDir;
 
 	public function __construct($options) {
-        $this->token = $options['token'] OR '';
-        $this->encodingAesKey = $options['encodingaeskey'] OR '';
-        $this->appid = $options['appid'] OR '';
-        $this->tokenName = $options['appid'] OR 'weToken';
-        $this->appsecret = $options['appsecret'] OR '';
-        $this->debug = $options['debug'] OR false;
-        $this->logcallback = $options['logcallback'] OR false;
-        $this->cacheDir = $options['cacheDir'] OR '';
-    }
+		$this->token = $options['token'] || '';
+		$this->encodingAesKey = $options['encodingaeskey'] || '';
+		$this->appid = $options['appid'] || '';
+		$this->tokenName = $options['appid'] || 'weToken';
+		$this->appsecret = $options['appsecret'] || '';
+		$this->debug = $options['debug'] || false;
+		$this->logcallback = $options['logcallback'] || false;
+		$this->cacheDir = $options['cacheDir'] || '';
+    	}
 
 	/**
 	 * 效验微信服务器合法性

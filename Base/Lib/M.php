@@ -267,11 +267,12 @@ class M {
      */
     public function where($where=[],$data=[]) {
         if(is_array($where)) {
-            $tmp = '';
+            $tmp = [];
             foreach($where as $k=>$v) {
-                $tmp .= "$k='$v'";
+                $tmp[] = " `$k`='$v'";
             }
-            $this->options['where'] = $tmp;
+            $where = join(' and',$tmp);
+            $this->options['where'] = $where;
         } else if( is_string($where) ) {
             $this->params = $data;
             $this->options['where'] = $where;

@@ -1,10 +1,11 @@
 <?php
 /**
  *         ▂▃╬▄▄▃▂▁▁
- *  ●●●█〓██████████████▇▇▇▅▅▅▅▅▅▅▅▅▇▅▅          BUG
- *  ▄▅████☆RED █ WOLF☆███▄▄▃▂
- *  █████████████████████████████
- *  ◥⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙◤
+ *  ●●●█〓████████████▇▇▇▅▅▅▅▅▅▅▅▅▇▅▅          BUG
+ *  ▄▅█████☆█☆█☆███████▄▄▃▂
+ *  ███████████████████████████
+ *  ◥⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙◤
+ *
  *
  * 全局方法，采用首字母大写驼峰命名（以标识这是框架的全局方法）
  * @author 路漫漫
@@ -14,6 +15,42 @@
  * v2017/02/25   扩充了一些方法
  * v2016/12/08   初版
  */
+
+function build_table_fields($fields, $red = 0) {
+    echo begin_tag('tr', $red);
+
+    foreach ($fields as $field) {
+        echo build_th($field, $red);
+    }
+    echo end_tag('tr');
+}
+
+function begin_tag($tag, $red = 0) {
+    if ($red ==1) {
+        return "<$tag style='background:#E6EDF5;'>";
+    }
+    return "<$tag>";
+}
+
+function build_th($str, $red = 0) {
+    if($red==2){
+        return "<th style='color:#F00;'>".$str."</th>";
+    }
+    return "<th>".$str."</th>";
+}
+
+function end_tag($tag) {
+    return "</$tag>";
+}
+
+// 用于将从数据库读到的rows 按指定key转成map
+function rows_to_map($rows, $bykey) {
+    $map = array();
+    foreach ($rows as $one) {
+        $map[$one[$bykey]] = $one;
+    }
+    return $map;
+}
 
 /**
  * 缓存
@@ -113,7 +150,7 @@ function Config($key='') {
     }
 
     if ($key === '') return $C;
-    return $C[$key];
+    return isset($C[$key])?$C[$key]:false;
 }
 
 /**

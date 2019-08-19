@@ -1,5 +1,4 @@
 <?php
-namespace Base\DB;
 /**
  *         ▂▃╬▄▄▃▂▁▁
  *  ●●●█〓████████████▇▇▇▅▅▅▅▅▅▅▅▅▇▅▅          BUG
@@ -11,30 +10,50 @@ namespace Base\DB;
  * @author 路漫漫
  * @link ahmerry@qq.com
  * @version
+ * v2019/07     修改实例逻辑，支持跨库联查
  * v2018/10     修改方法名保持跟pdo方法一致，便于识别
  * v2017/03/28  增加PDO预处理方式的mysql语句写法
  * v2017/01/17  增加非预处理的执行，查询语句，增加debug模式，增加判断表引擎，以方便事务处理
  * v2016/12/28  数据连接采用单例模式
  * v2016/12/15  初版
  */
+namespace Base\DB;
 
 class MyPDO {
-    protected static $obj = null;
+    protected static $obj = [];
     protected $db;
+    protected $dbs=[];
     protected $dbName;
-    public $prefix;
 
-    private function __construct() {
+    protected static $config = [
+            'host'=>'',
+            'port'=>'3306',
+            'password'=>'',
+            'user'=>'',
+
+    ];
+    public $prefix='';
+
+    private function __construct($cfg) {
         if (!class_exists('PDO')) throw new \Exception("你的环境不支持:PDO");
 
-        $cfg = Config('db');
-        $this->dbName = $cfg['dbname'];
-        $dsn = 'mysql:host=' . $cfg['host'] . ';dbname=' . $cfg['dbname'];
-        $this->prefix = $cfg['prefix'];
+        if(isset($cfg['dbname']) && $cfg['dbname']){
+            $dsn = 'mysql:host=' . $cfg['host'] . ';dbName=' . $cfg['dbname'];
+        }else{
+            $dsn = 'mysql:host=' . $cfg['host'] . ';';
+        }
 
+        !isset($cfg['prefix']) || $this->prefix = $cfg['prefix'];
         try {
             $this->db = new \PDO($dsn, $cfg['user'], $cfg['password']);
-            $this->charset($cfg['charset']);
+            if(isset($cfg['charset']) && $cfg['charset']){
+                $this->charset($cfg['charset']);
+            }else{
+                $this->charset('utf8');
+            }
+            if(isset($cfg['dbname']) && $cfg['dbname']){
+                $this->changeDb($cfg['dbname']);
+            }
         }catch (\PDOException $e){
             throw new \Exception($e);
         }
@@ -43,24 +62,34 @@ class MyPDO {
     //单例关闭clone
     private function __clone() {}
 
-    public static function instance(){
-        if (self::$obj===null){
-            self::$obj = new static();
+    public static function instance($cfg=[]){
+        if(!isset($cfg['dbname'])){
+            $key = 'readonly';
+            $cfg = self::$config;
+        }else{
+            $key = $cfg['dbname'];
         }
-        return self::$obj;
+
+        if (!isset(self::$obj[$key])){
+            self::$obj[$key] = new static($cfg);
+        }
+        return self::$obj[$key];
     }
 
     /**
      * 选择数据库
      */
-    public function useDb($db) {
+    public function changeDb($db) {
+        $this->dbName = $db;
         $this->db->exec("use $db");
+
     }
 
     /**
      * 设置字符集
      */
-    private function charset($char) {
+    private function charset($char='utf8') {
+        if (!$char) return;
         $this->db->exec("set names $char");
         $this->db->exec("SET character_set_connection=$char, character_set_results=$char, character_set_client=binary");
     }
@@ -84,7 +113,6 @@ class MyPDO {
      */
     public function fetch($sql , $params=[]) {
         $st = $this->db->prepare($sql);
-
         if($st->execute($params)) {
             return $st->fetch(\PDO::FETCH_ASSOC);
         } else {
@@ -169,10 +197,10 @@ class MyPDO {
                 case 'SELECT':
                     //返回格式为数组
                     $pdo->setFetchMode(\PDO::FETCH_ASSOC);
-                    if ($mode == 'row'){
-                        $result = $pdo->fetch();
-                    }else{
+                    if ($mode == 'all'){
                         $result = $pdo->fetchAll();
+                    }else{
+                        $result = $pdo->fetch();
                     }
                     break;
                 default :
@@ -210,7 +238,7 @@ class MyPDO {
      * @param Boolean $debug
      * @return Array
      */
-    public function query($strSql, $queryMode = 'all', $debug = false) {
+    public function query($strSql, $queryMode = 'row', $debug = false) {
         if ($debug === true) $this->debug($strSql);
         $recordset = $this->db->query($strSql);
         $this->getPDOError();
@@ -218,7 +246,7 @@ class MyPDO {
             $recordset->setFetchMode(\PDO::FETCH_ASSOC);
             if ($queryMode == 'all') {
                 $result = $recordset->fetchAll();
-            } elseif ($queryMode == 'row') {
+            } else {
                 $result = $recordset->fetch();
             }
         } else {

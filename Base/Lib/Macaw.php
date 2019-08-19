@@ -2,10 +2,11 @@
 namespace Base\Lib;
 /**
  *         ▂▃╬▄▄▃▂▁▁
- *  ●●●█〓██████████████▇▇▇▅▅▅▅▅▅▅▅▅▇▅▅          BUG
- *  ▄▅████☆RED █ WOLF☆███▄▄▃▂
- *  █████████████████████████████
- *  ◥⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙◤
+ *  ●●●█〓████████████▇▇▇▅▅▅▅▅▅▅▅▅▇▅▅          BUG
+ *  ▄▅█████☆█☆█☆███████▄▄▃▂
+ *  ███████████████████████████
+ *  ◥⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙◤
+ *
  *
  * 框架核心路由类
  *
@@ -48,7 +49,7 @@ class Macaw {
 //        $uri = dirname($_SERVER['PHP_SELF']).'/'.$params[0];
         $uri = dirname($_SERVER['SCRIPT_NAME']).'/'.$params[0];
         $callback = $params[1];
-        if (empty($params[2]) || $params[2]===true){
+        if ($params[2]===true){
             array_push(self::$wafs, true);
         }else{
             array_push(self::$wafs, false);
@@ -84,9 +85,9 @@ class Macaw {
         //当前请求方法
         $method = $_SERVER['REQUEST_METHOD'];
         //记录到日志
-        $get = json_encode($_GET);
-        $data = $_POST ? json_encode($_POST) : json_encode(file_get_contents("php://input"));
-        MFLog("$ip 访问 : $uri,\nmethod : $method,\nparams : $get,\ndata : $data");
+//        $get = json_encode($_GET);
+//        $data = $_POST ? json_encode($_POST) : json_encode(file_get_contents("php://input"));
+//        MFLog("$ip 访问 : $uri,\nmethod : $method,\nparams : $get,\ndata : $data");
         $searches = array_keys(static::$patterns);
         $replaces = array_values(static::$patterns);
         $found_route = false;

@@ -52,4 +52,6 @@ class HomeC extends C{
     public function test(){
         $this->view('Base/chat.php');
     }
+
+
 }

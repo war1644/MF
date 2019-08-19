@@ -138,7 +138,7 @@ class ErrCode
             return self::$errCode[$err];
         }else {
             return false;
-        };
+        }
     }
 }
 

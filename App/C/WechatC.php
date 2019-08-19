@@ -15,11 +15,9 @@ namespace App\C;
  * v2017/02/26 Oauth授权处理
  * v2016/12/08 初版
  */
-use App\M\WxQrcodeM;
 use Base\Lib\C;
 use Base\Tool\MFWechat;
 use Base\Tool\Wechat\Wechat;
-use Base\Tool\SaveToExcel;
 
 class WechatC extends C {
 
@@ -36,20 +34,17 @@ class WechatC extends C {
                 $this->WX = new MFWechat($option);
             }else{
                 $this->WX = new Wechat($option);
-                
                 if (!$this->WX->getCache($this->WX->tokenName))
                     //获取access_token,并进行全局缓存
                     $this->WX->checkAuth();
-                
             }
         }
+        //只要在第一次token或者加密消息才开启
 //        $this->WX->valid();
         if (!isset($_GET['callback'])){
             //处理请求内容
             $this->receiveEvent();
         }
-
-
         //开启JSAPI
         $this->jsApi();
     }
@@ -62,6 +57,14 @@ class WechatC extends C {
         MFLog($text,'WxDebug','Wechat/');
     }
 
+    /**
+     * 微信服务器回调方法
+     * 方法名在config定义
+     */
+    public static function wxCallback($text){
+        MFLog($text,'WxCallback','Wechat/');
+    }
+
     public function auth(){
         MFLog('auth完成');
     }
@@ -70,17 +73,18 @@ class WechatC extends C {
 
         //设置菜单
         $buttons =  [
-            ['type'=>'view','name'=>'连接智能设备','url'=>'https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx6834f279296c34e2&redirect_uri=http%3A%2F%2Fwx.duanxq.cn%2FWechat%2FgetKSUserInfo&response_type=code&scope=snsapi_userinfo&state='],
-            [
-                'name'=>'智能设备', 'sub_button'=>[
-                    ['type'=>'view','name'=>'已绑设备','url'=>'https://hw.weixin.qq.com/devicectrl/panel/device-list.html?appid=wx6834f279296c34e2'],
-                ]
-            ],
-            [
-                'name'=>'页面测试', 'sub_button'=>[
-                    ['type'=>'view','name'=>'test','url'=>'http://wx.duanxq.cn/Wechat/test'],
-                ]
-            ]
+//            ['type'=>'view','name'=>'连接智能设备','url'=>'https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx6834f279296c34e2&redirect_uri=http%3A%2F%2Fwx.duanxq.cn%2FWechat%2FgetKSUserInfo&response_type=code&scope=snsapi_userinfo&state='],
+            ['type'=>'view','name'=>'app下载','url'=>'https://sj.qq.com/myapp/detail.htm?apkName=com.android'],
+//            [
+//                'name'=>'智能设备', 'sub_button'=>[
+//                    ['type'=>'view','name'=>'已绑设备','url'=>'https://hw.weixin.qq.com/devicectrl/panel/device-list.html?appid='],
+//                ]
+//            ],
+//            [
+//                'name'=>'页面测试', 'sub_button'=>[
+//                    ['type'=>'view','name'=>'test','url'=>'http://wx.duanxq.cn/Wechat/test'],
+//                ]
+//            ]
         ];
         Dump($this->WX->createMenu($buttons));
     }
@@ -91,11 +95,12 @@ class WechatC extends C {
             $type = $this->WX->getRev()->getRevType();
             switch ( $type ) {
                 case Wechat::MSGTYPE_TEXT:
-                    $this->WX->text( "欢迎来到智能设备世界" )->reply();
+                    $this->WX->text( "come come" )->reply();
                     break;
                 case Wechat::MSGTYPE_EVENT:
                     $event = $this->WX->getRevEvent();
                     $this->wxDebug('收到微信事件 : '.json_encode($event));
+                    $this->responseWxEvent($event);
                     break;
                 case Wechat::MSGTYPE_BIND:
                     $event = $this->WX->getRevDevice();
@@ -116,6 +121,59 @@ class WechatC extends C {
         }
     }
 
+    public function responseWxEvent($event){
+        if($event['event'] == 'subscribe'){
+            $this->WX->text( "欢迎关注" )->reply();
+        }
+
+    }
+
+    public function send(){
+//        $list = $this->WX->getUserList()['data']['openid'];
+//        $list2['user_list'] = array_map(function ($v){
+//            return ['openid'=>$v];
+//        },$list);
+////        echo json_encode($list,256);die();
+//
+//        $res = $this->WX->getUsersInfo($list2);
+//        echo json_encode($res,256);die();
+//        die();
+//        {{first.DATA}}
+//        今日收益：{{keyword1.DATA}}
+//累计收益：{{keyword2.DATA}}
+//总资产：{{keyword3.DATA}}
+//{{remark.DATA}}
+        $data = [
+
+            "touser"=>"oRdRgw31VyzzUhbI3cccHcDD_qfY",//lmm
+            "template_id"=>"0z-DOPhn4CnQiBuQF-2MSRe_fH8pdoRZxwC22DTWM8s",
+            "url"=>"https://a.app.qq.com/o/simple.jsp?pkgname=com.android",
+            "data"=>[
+                "first"=>[
+                    "value"=>"即墨，你有收益入账",
+                    "color">"#173177",
+                ],
+                "keyword1"=>[
+                    "value"=>"1.80 元",
+                    "color">"#173177",
+                ],
+                "keyword2"=>[
+                    "value"=>"39.80 元",
+                    "color">"#173177",
+                ],
+                "keyword3"=>[
+                    "value"=>"50.80 元",
+                    "color">"#173177",
+                ],
+                "remark"=>[
+                    "value"=>"",
+                    "color">"#173177",
+                ],
+            ]
+        ];
+        $this->WX->sendTemplateMessage($data);
+    }
+
     protected function jsApi() {
         $tick = $this->WX->getJsTicket();
         if (!$tick) {
@@ -126,6 +184,10 @@ class WechatC extends C {
             exit;
         }
         $this->jsApi = $this->WX->getJsSign();
+    }
+
+    public function sendkfmsg(){
+
     }
 
     /**

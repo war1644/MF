@@ -2,10 +2,11 @@
 namespace Base\Lib;
 /**
  *         ▂▃╬▄▄▃▂▁▁
- *  ●●●█〓██████████████▇▇▇▅▅▅▅▅▅▅▅▅▇▅▅          BUG
- *  ▄▅████☆RED █ WOLF☆███▄▄▃▂
- *  █████████████████████████████
- *  ◥⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙◤
+ *  ●●●█〓████████████▇▇▇▅▅▅▅▅▅▅▅▅▇▅▅          BUG
+ *  ▄▅█████☆█☆█☆███████▄▄▃▂
+ *  ███████████████████████████
+ *  ◥⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙◤
+ *
  *
  * 在框架里面，你应该接管一切信息
  * @author 路漫漫
@@ -61,7 +62,7 @@ class Base {
                 $err = "Level : NOTICE\nFile : $file\nLine : $line\n$errstr\n";
                 break;
             default:
-                $err = "Level : UNKONW\nFile : $file\nLine : $line\n$errstr\n";
+                $err = "Level : $errno UNKONW\nFile : $file\nLine : $line\n$errstr\n";
                 break;
         }
         //记录再说

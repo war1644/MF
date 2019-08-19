@@ -48,7 +48,7 @@ return [
 //        'appsecret'=>'',//填写高级调用功能的密钥
         'debug'=>true,
         'cacheDir'=>RUN_PATH.'Wechat/',//缓存目录
-        'logcallback'=>'PublicC::wxDebug'//微信回调方法；需要注意，方法如果在类里，需要写类名"class::method"
+        'logcallback'=>'Wechat::wxCallback'//微信回调方法；需要注意，方法如果在类里，需要写类名"class::method"
     ],
     'cookie' => [
         'prefix'    =>  '', // cookie 名称前缀

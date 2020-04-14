@@ -82,7 +82,7 @@ class WechatC extends C {
 //            ],
 //            [
 //                'name'=>'页面测试', 'sub_button'=>[
-//                    ['type'=>'view','name'=>'test','url'=>'http://wx.duanxq.cn/Wechat/test'],
+//                    ['type'=>'view','name'=>'test','url'=>'http://wx.xxx.cn/Wechat/test'],
 //                ]
 //            ]
         ];
@@ -195,7 +195,7 @@ class WechatC extends C {
      * @return Wechat
      */
     public function getCode() {
-        $redirect_uri = 'http://wx.duanxq.cn/Wechat/getKSUserInfo';
+        $redirect_uri = 'http://wx.xxxx.cn/Wechat/getKSUserInfo';
         $url = $this->WX->getOauthRedirect($redirect_uri);
         Dump($url);
     }

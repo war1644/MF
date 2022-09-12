@@ -2,41 +2,58 @@
 namespace Base\Tool;
 /**
  *         ▂▃╬▄▄▃▂▁▁
- *  ●●●█〓██████████████▇▇▇▅▅▅▅▅▅▅▅▅▇▅▅          BUG
- *  ▄▅████☆RED█WOLF☆████▄▄▃▂
- *  █████████████████████████████
- *  ◥⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙◤
+ *  ●●●█〓████████████▇▇▇▅▅▅▅▅▅▅▅▅▇▅▅          BUG
+ *  ▄▅█████☆█☆█☆███████▄▄▃▂
+ *  ███████████████████████████
+ *  ◥⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙◤
  *
  * WebSocket工具类，PHP跟websocket交互咋就这么泪奔呢？
  * 客户端在Public/V/Base
  * 调用示例：
- * new WebSocket('127.0.0.1',8416);
+ * new WebSocket('127.0.0.1',2416);
  * @param $address 连接地址
  * @param $port 端口
  * @author 路漫漫
  * @link ahmerry@qq.com
  * @version
- * v0.9 2017/01/17   初版
+ * v2017/04/12      增加对客户端信息的转发处理以及过滤
+ * v2017/04/08      增加发送到指定客户端
+ *                  改进CPU占用99%的问题
+ *                  单例模式，感觉用处不大
+ * v2017/01/17      初版
  */
 
 class WebSocket {
     private $sockets;//socket数组
     private $users;
     private $master;
+    private static $obj = null;
 
-    public function __construct($address, $port){
+    //关闭clone
+    private function __clone() {}
 
+    private function __construct($address, $port){
+        //        $cfg = Config('socket');后期读取配置host,端口
         //开启端口，并监听
-        $this->master=$this->WebSocket($address, $port);
-        $this->sockets=array('s'=>$this->master);
+        $this->master=$this->openSocket($address, $port);
+        $this->sockets=['s'=>$this->master];
         $this->run();
     }
 
-    public function run(){
+    public static function ins($address, $port){
+        if (self::$obj===null){
+            self::$obj = new self($address, $port);
+        }
+        return self::$obj;
+    }
+
+    private function run(){
         while(true){
             //拿所有的连接
             $changes=$this->sockets;
-            socket_select($changes,$write,$except,0);
+            $null = null;
+            socket_select($changes,$null,$null,0);
+
             //遍历连接
             foreach($changes as $sock){
                 if($sock==$this->master){
@@ -45,39 +62,51 @@ class WebSocket {
                     //把该连接存到数组
                     $this->sockets[]=$client;
                     //给该连接一个识别符
-                    $this->users[]=array(
+                    $this->users[]=[
                         'socket'=>$client,
                         'isShakeHand'=>false
-                    );
+                    ];
                 }else{
                     //从连接里拿出请求信息
                     $len = socket_recv($sock,$buffer,2048,0);
-                    $k = $this->search($sock);
+                    $user = $this->search($sock);
                     if($len<7){
-                        $this->close($sock);
+                        $this->close($sock,$user);
                         continue;
                     }
-                    if(!$this->users[$k]['isShakeHand']){
+                    if(!$this->users[$user]['isShakeHand']){
                         //先握手
-                        $this->woshou($k,$buffer);
+                        $this->woshou($user,$buffer);
                     }else{
                         //握手后，处理请求数据
                         $buffer = $this->uncode($buffer);
-                        //推送给所有客户端
-                        $this->send($k,$buffer);
+                        $result = $this->notify($buffer);
+
+                        if ($result === -233){
+                            $this->close($sock,$user);
+                        }else{
+                            if (!$result) $result = $buffer;
+                            $this->e($result);
+                            //返给指定客户端
+                            $this->send($result,$user);
+                            //返回给所有客户端
+                            //$this->send($result);
+                        }
                     }
                 }
             }
+            //避免对锁，cpu占用99%等
+            usleep(100);
         }
     }
 
     //关闭连接
-    private function close($sock){
-        $k=array_search($sock, $this->sockets);
+    private function close($sock,$user){
+//        $k=array_search($sock, $this->sockets);
         socket_close($sock);
-        unset($this->sockets[$k]);
-        unset($this->users[$k]);
-        $this->e("连接:$k 关闭");
+        unset($this->sockets[$user]);
+        unset($this->users[$user]);
+        $this->e("连接:$user 关闭");
     }
 
     //获取发送socket的客户端
@@ -89,12 +118,14 @@ class WebSocket {
         return false;
     }
     //建立端口监听
-    private function WebSocket($address,$port){
+    private function openSocket($address,$port){
         $server = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
+        //阻塞模式
+        //        socket_set_block($server);
         socket_set_option($server, SOL_SOCKET, SO_REUSEADDR, 1);
         socket_bind($server, $address, $port);
         socket_listen($server);
-        $this->e('服务开启 : '.date('Y-m-d H:i:s'));
+        $this->e('socket服务已开启 : '.date('Y-m-d H:i:s'));
         $this->e('开始监听 : '.$address.' ,端口 : '.$port);
         return $server;
     }
@@ -164,25 +195,33 @@ class WebSocket {
     }
 
     //编码后发回到客户端
-    //$k为识别客户端（发送指定客户端），暂时不用，以后再扩展
-    private function send($k,$msg){
-//        $msg = json_encode($msg);
+    //$user为客户端识别
+    private function send($msg,$user=null){
         $msg = $this->code($msg);
-        $this->e($msg,1);
-        foreach($this->users as $v){
-            //发送到客户端
-            socket_write($v['socket'],$msg,strlen($msg));
+        if (is_null($user)){
+            foreach($this->users as $v){
+                //发送给所有客户端
+                socket_write($v['socket'],$msg,strlen($msg));
+            }
+        }else{
+            //发送给指定客户端
+            socket_write($this->users[$user]['socket'],$msg,strlen($msg));
         }
     }
 
+    //通知对应控制器处理
+    private function notify($msg=''){
+        $info = json_decode($msg,true);
+        if (!isset($info['wl']) || !GetCache($info['wl'])) return -233;
+        if (!isset($info['data'])) return false;
+        $call = explode('.',$info['service']);
+        $parmas = $info['data'];
+        return eval('$c = new App\C\Home\\'.$call[0].'();return $c->'.$call[1].'($parmas);');
+    }
+
     //记录到log
-    private function e($str,$flag=0){
-        $path=RUN_PATH.'WebSocket.log';
-        if ($flag) $str = json_decode($str);
-        $str=$str."\n";
-        error_log($str,3,$path);
-        $str = mb_convert_encoding($str,'GBK','UTF-8');
-        echo $str;
+    private function e($str){
+        MFLog($str,'socket');
     }
 }
 

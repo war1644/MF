@@ -1,0 +1,974 @@
+<?php include 'head.php';?>
+<style>
+    html,
+    body {
+        font-size: 1.3rem;
+        font-weight: bold;
+    }
+
+    #share-body-top {
+        width: 100%;
+        height: 160px;
+    }
+
+    .userinfo {
+        width: 200px;
+        height: 100px;
+        margin-top: 30px;
+        margin-left: 20px;
+    }
+
+    .userinfo_text {
+        width: 260px;
+        height: 50px;
+        line-height: 50px;
+    }
+
+    .float_left {
+        float: left;
+    }
+
+    .avatar {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        overflow: hidden;
+        margin-top: 30px;
+        margin-left: 5%;
+        top: 43px;
+    }
+
+    #canv {
+        position: relative;
+        height: 428px;
+        margin: 0 auto;
+        border-bottom: 2px solid silver;
+        border-top: 2px solid silver;
+    }
+
+    #scanThread {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        margin: 0 auto;
+    }
+
+    .random {
+        width: 20px;
+        height: 20px;
+        background: #99f85a;
+        position: absolute;
+        border-radius: 50%;
+        box-shadow: 0 0 50px 10px #fff;
+    }
+
+    #deviceInfo,
+    #devices>.list {
+        height: 80px;
+    }
+
+    #devices>.list>span {
+        margin-left: 23%;
+    }
+
+    footer {
+        font-size: 1.5rem;
+        margin: 60px auto;
+    }
+</style>
+<div class="container" id="wait">
+    <header>
+        <div id="share-body-top">
+            <div class="avatar float_left">
+                <img width="100" height="100" src="<?php echo $data['avatar'];?>">
+            </div>
+            <div class="userinfo float_left">
+                <div class="userinfo_text username">
+                    <?php echo $data['nickname'];?>
+                </div>
+                <div class="userinfo_text">总跑量:
+                    <?php echo $data['distance'];?> 公里
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div id="canv">
+        <audio src="/V/Static/声纳.mp3" loop autoplay></audio>
+        <canvas id="scanThread" height="420" width="420">浏览器不支持canvas,请更换</canvas>
+    </div>
+    <div class="clear"></div>
+    <footer class="text-center">
+        <div id="deviceInfo" class="text-center" style="display: none">正在搜索中...</div>
+        <div id="devices">
+        </div>
+    </footer>
+    <p id="logtext"></p>
+</div><!-- .container -->
+<script>
+    /*************************雷达动画相关***********************************/
+    // get the canvas
+    var ctx = document.querySelector("#scanThread").getContext("2d"),
+        marginTop = 10,
+        marginLeft = 10,
+        x = 200 + marginTop,
+        y = 200 + marginLeft,
+        t = 0,
+        doScan = null,
+        glisten = null;
+
+    (function scanThread() {
+        if (t > 160) t = 0;
+
+        //雷达屏幕背景
+        ctx.fillStyle = 'rgba(0,0,0,0.02)';
+        ctx.beginPath();
+        ctx.arc(x, y, 200, 0, Math.PI * 2, false);
+        ctx.fill();
+
+        // 雷达圈圈
+        ctx.strokeStyle = 'rgba(0,200,0,0.8)';
+        ctx.lineWidth = 3.0;
+        //'十'字架
+        ctx.beginPath();
+        ctx.moveTo(x, marginTop); // 起点
+        ctx.lineTo(x, y * 2 - marginTop); //终点
+        ctx.stroke(); // 进行线的着色，这时整条线才变得可见
+
+        ctx.beginPath();
+        ctx.moveTo(marginLeft, y);
+        ctx.lineTo(x * 2 - marginLeft, y);
+        ctx.stroke();
+
+        for (var i = 1; i < 5; i++) {
+            ctx.beginPath();
+            ctx.arc(x, y, 50 * i, 0, Math.PI * 2, false);
+            ctx.stroke();
+        }
+
+        ctx.fillStyle = 'rgba(0,200,0,1)';
+        ctx.beginPath();
+        ctx.arc(x, y, 8, 0, Math.PI * 2, false);
+        ctx.fill();
+
+        //扫描动画
+        ctx.fillStyle = 'rgba(0,200,200,0.99)';
+        ctx.save();
+        ctx.translate(x, y);
+        ctx.rotate(t++ * (Math.PI / 80));
+        ctx.beginPath();
+        //这里巨坑呀，由于translate移动了中心点,so坐标应按移动后的计算
+        ctx.arc(0, 0, 200, 1.98 * Math.PI, 0, false);
+        //没有这句只是个弧形，连接原点成为扇形
+        ctx.lineTo(0, 0);
+        ctx.fill();
+        ctx.restore();
+        doScan = window.setTimeout(scanThread, 1000 / 60);//60帧
+    })();
+
+    //音乐控制
+    function controAudio(play) {
+        if (play) {
+            $("audio")[0].pause();
+        } else {
+            $("audio")[0].play();
+        }
+    }
+    //在圆内的随机位置
+    function rand() {
+        return Math.ceil(Math.random() * 300) + 100;
+    }
+
+    function addPoint() {
+        $("#canv").append('<div class="random"></div>');
+        $(".random").css({ "left": rand(), "top": rand() });
+        if (glisten == null) {
+            glisten = window.setInterval(function () {
+                var state = $(".random").css('display');
+                if (state == 'none') {
+                    $(".random").show();
+                } else {
+                    $(".random").hide();
+                }
+            }, 800);
+        }
+
+    };
+    /*************************雷达动画结束***********************************/
+
+
+    var isRun = 0, deviceStatus = [], deviceId, timeForId, timeOut = 0, lat = 0, lnt = 0, id =<? php echo $data['id'];?>, discon = false, oid = '<?php echo $data['oid'];?>', syncObj;
+
+    window.onload = function () {
+        /*****************************H5获取地理信息API*************************************/
+        function success(pos) {
+            var crd = pos.coords;
+            lat = crd.latitude;
+            lnt = crd.longitude;
+        }
+        //保证位置的获取
+        var tryAPIGeolocation = function () {
+            $.getJSON('https://ipinfo.io/geo', function (response) {
+                var loc = response.loc.split(',');
+                showLog(JSON.stringify(loc));
+                success({ coords: { latitude: loc[0], longitude: loc[1] } });
+            });
+        };
+        function error(err) {
+            switch (err.code) {
+                case err.TIMEOUT:
+                    //                    alert(err.message);
+                    break;
+                case err.PERMISSION_DENIED:
+                    if (err.message.indexOf("Only secure origins are allowed") == 0) {
+                        tryAPIGeolocation();
+                    }
+                    break;
+                case err.POSITION_UNAVAILABLE:
+                    //                    alert(err.message);
+                    break;
+            }
+        }
+
+        var tryGeolocation = function () {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(success, error);
+            } else {
+                tryAPIGeolocation();
+            }
+        };
+
+        tryGeolocation();
+        /******************************获取地理信息API结束************************************/
+
+        //初始化库
+        loadXMLDoc();
+        //两秒后触发初始化
+        setTimeout(Init, 2000);
+        function Init() {
+            //1. 初始化设备
+            my_openWXDeviceLib();
+            //2. 扫描设备信息
+            scanDevice();
+            //3. 监听事件
+            ListeningEvents();
+
+        }
+
+        //初始化 微信硬件jsapi库
+        function loadXMLDoc() {
+            wx.config({
+                beta: true,
+                debug: false,
+                appId: "<?php echo $data['jsSign']['appid']; ?>", // 必填，公众号的唯一标识
+                timestamp: <? php echo $data['jsSign']['timestamp']; ?>, // 必填，生成签名的时间戳，切记时间戳是整数型，别加引号
+                nonceStr: "<?php echo $data['jsSign']['noncestr']; ?>", // 必填，生成签名的随机串
+                signature: "<?php echo $data['jsSign']['signature']; ?>", // 必填，签名，见附录1
+                jsApiList: [
+                'onMenuShareQQ',
+                //微信硬件jsapi库
+                "openWXDeviceLib",//初始化设备库（只支持蓝牙设备）
+                "closeWXDeviceLib",//关闭设备库（只支持蓝牙设备）
+                "getWXDeviceInfos",//获取设备信息（获取当前用户已绑定的蓝牙设备列表）
+                "sendDataToWXDevice",//发送数据给设备
+                "startScanWXDevice",//扫描设备（获取周围所有的设备列表，无论绑定还是未被绑定的设备都会扫描到）
+                "stopScanWXDevice",//停止扫描设备
+                "connectWXDevice",//连接设备
+                "disconnectWXDevice",//断开设备连接
+                "getWXDeviceTicket",//获取操作凭证
+
+                //监听事件：
+                "onWXDeviceBindStateChange",//微信客户端设备绑定状态被改变时触发此事件
+                "onWXDeviceStateChange",//监听连接状态，可以监听连接中、连接上、连接断开
+                "onReceiveDataFromWXDevice",//接收到来自设备的数据时触发
+                "onScanWXDeviceResult",//扫描到某个设备时触发
+                "onWXDeviceBluetoothStateChange"//手机蓝牙打开或关闭时触发
+            ]
+            });
+    }
+
+    //定时发送数据
+    function StartInteractive() {
+        timeForId = setInterval(SendApdu, 1000);
+        showLog('开始循环发送命令');
+    }
+
+    /**
+     * 跑步机启停
+     */
+    function SendApdu() {
+        timeOut += 0.5;
+        var Bytes = CheckApdu();
+        senddataBytes(Bytes, deviceId);
+    }
+    /**
+     * 扫描跑步机
+     */
+    function scanDevice(start) {
+        start = start || true;
+
+
+        if (start === true) {
+            WeixinJSBridge.invoke('startScanWXDevice', {}, function (res) {
+                showInfo('搜索中...');
+            });
+        } else {
+            WeixinJSBridge.invoke('stopScanWXDevice', {}, function (res) {
+                //                    showInfo('停止搜索附近设备');
+            });
+        }
+
+    }
+
+    /**
+     * 绑定解绑跑步机
+     */
+    function activeDevice(bind) {
+        bind = bind || '1';
+        wx.invoke('getWXDeviceTicket', { 'deviceId': deviceId, 'type': bind, 'connType': 'blue' }, function (res) {
+            if (res.ticket) {
+                var post = { ticket: res.ticket, oid: oid, deviceId: deviceId };
+                showLog(JSON.stringify(post));
+                $.post(
+                    location.origin + '/Wechat/bindDevice',
+                    post,
+                    function (res) {
+                        showLog(res);
+                        localStorage.setItem('"' + id + '"', deviceId);
+                        connetDevice();
+                    }
+                )
+            }
+        });
+    }
+
+    /*******************************************************************
+     * 发送数据
+     * 入口参数：
+     *     cmdBytes: 需要发送的命令字节
+     *     selDeviceID: 选择的需要发送设备的ID
+     * 出口参数：
+     *     返回: 0表示发送成功；1表示发送失败
+     *     如果成功，则接收事件应该能够收到相应的数据
+     *******************************************************************/
+    function senddataBytes(cmdBytes, selDeviceID) {
+
+        //1. 如果输入的参数长度为零，则直接退出
+        if (cmdBytes.length <= 0) return 1;
+        //1.1 如果设备ID为空，则直接返回
+        if (selDeviceID.length <= 0) return 1;
+
+        //2. 发送数据
+        var x = 0;
+        WeixinJSBridge.invoke('sendDataToWXDevice', {
+            "deviceId": selDeviceID,
+            "base64Data": bytes_array_to_base64(cmdBytes)
+        }, function (res) {
+            if (res.err_msg == 'sendDataToWXDevice:ok') {
+                x = 0;
+                showLog('发送指令：' + JSON.stringify(cmdBytes));
+            } else {
+                x = 1;
+            }
+        });
+        return x;
+    }
+
+    /*********************************************************
+     * 打开微信设备
+     * my_openWXDeviceLib
+     * 入口参数：无
+     * 出口参数：0表示打开成功；1表示打开失败
+     *********************************************************/
+    function my_openWXDeviceLib() {
+        var x = 0;
+        WeixinJSBridge.invoke('openWXDeviceLib', {},
+            function (res) {
+                if (res.err_msg == 'openWXDeviceLib:ok') {
+                    if (res.bluetoothState == 'off') {
+                        showInfo("请打开手机蓝牙");
+                        x = 1;
+                    }
+                    if (res.bluetoothState == 'unauthorized') {
+                        showInfo("亲请授权微信蓝牙功能并打开蓝牙");
+                        x = 1;
+                    }
+                    if (res.bluetoothState == 'on') {
+                        showInfo("开始搜索设备...");
+                        x = 0;
+                    }
+                } else {
+                    x = 1;
+                    showInfo("微信蓝牙打开失败,请重进页面");
+                }
+            }
+        );
+        return x;  //0表示成功 1表示失败
+    }
+
+    /**********************************************
+     * 连接设备
+     * 入口参数：无
+     * 出口参数：返回一个已经链接的设备的ID
+     **********************************************/
+    function connetDevice() {
+        WeixinJSBridge.invoke(
+            'connectWXDevice',
+            { 'deviceId': deviceId, 'connType': 'blue' },
+            function (res) {
+                //                    {"err_msg":"connectWXDevice:fail_noDeviceId"}
+                var arrRes = res.err_msg.split(':');
+                showLog("连接中..." + JSON.stringify(res));
+                if (arrRes[1] != 'ok') {
+                    connetDevice();
+                }
+            }
+        );
+    }
+
+    /**********************************************
+     * 关闭设备连接
+     * my_getWXDeviceInfos
+     * 入口参数：无
+     * 出口参数：返回一个已经链接的设备的ID
+     **********************************************/
+    function disDevice() {
+        discon = true;
+        WeixinJSBridge.invoke(
+            'disconnectWXDevice',
+            { 'deviceId': deviceId, 'connType': 'blue' },
+            function (res) {
+                showLog(JSON.stringify(res));
+            }
+        );
+    }
+
+    $('#devices').on('click', 'div', function () {
+        syncObj = $(this).children('span');
+        deviceId = $(this).data('id');
+        changeLinkText('正在同步...');
+        showLog(deviceId);
+        controAudio(1);
+        clearTimeout(doScan);
+        clearInterval(glisten);
+        scanDevice(1);
+        activeDevice();
+
+    });
+    function changeLinkText(text) {
+        syncObj.html(text);
+    }
+
+    /**
+     *  智能硬件事件监听
+     */
+    function ListeningEvents() {
+
+        //扫描到设备
+        wx.on('onScanWXDeviceResult', function (res) {
+            var arr = res.devices, str = '';
+            var len = arr.length;
+            for (var i = 0; i < len; i++) {
+                str += '<div class="list" data-id="' + arr[i].deviceId + '">' + arr[i].deviceId + ' <span class="listStatus">点击同步</span></div>';
+                addPoint();
+            }
+            $('#devices').append(str);
+
+            showLog("扫描到设备" + JSON.stringify(res));
+        });
+
+        //设备连接状态监听
+        wx.on('onWXDeviceStateChange', function (res) {
+            switch (res.state) {
+                case 'connected':
+                    showInfo("已连接");
+                    //                        StartInteractive();
+                    SendApdu();
+                    break;
+                case 'connecting':
+                    showInfo("连接设备中...");
+                    break;
+                default:
+                    if (!discon) {
+                        connetDevice()
+                    } else {
+                        showInfo("设备已断开");
+                        window.location.href = 'http://share.ss.com.cn/index.php?c=Record&m=index&detailid=' + deviceStatus['detailid'];
+                    }
+                    break;
+            }
+        });
+
+        //手机蓝牙状态改变事件
+        wx.on('onWXDeviceBluetoothStateChange', function (res) {
+            showInfo("蓝牙状态改变 : " + JSON.stringify(res));
+        });
+
+        //微信绑定事件
+        wx.on('onWXDeviceBindStateChange', function (res) {
+            showInfo("微信绑定事件 : " + JSON.stringify(res));
+        });
+
+        //接收蓝牙数据
+        wx.on('onReceiveDataFromWXDevice', function (argv) {
+
+            var u8Arr = new Uint8Array(atob(argv.base64Data).split("").map(
+                function (c) {
+                    return c.charCodeAt(0);
+                })
+            );
+            var tmp = ArrToHex(u8Arr);
+            showLog(JSON.stringify(tmp));
+            DeviceInfoSet(tmp);
+        });
+    }
+
+    /**
+     * 输出日志到页面
+     */
+    function showLog(text) {
+        return;
+        var log = $('#logtext').html();
+        log = log + formatDate() + "<br>\n" + text + "<br>\n";
+        $('#logtext').html(log);
+    }
+
+    /***************************************************************
+     * 显示设备信息
+     ***************************************************************/
+    function showInfo(content) {
+        $("#deviceInfo").show();
+        $("#deviceInfo").html(content);
+    }
+
+    /**
+     * 组建发送命令字节数组 Hex
+     * 查询：D0 0xF7 D1 0x01 ... D9 0xFD
+     * 控制：D0 0xF7 D1 0x02 ... D12 0xFD
+     */
+    function CheckApdu() {
+        var APDU = new Array();
+        APDU[0] = hex(247);//0xF7
+        switch (isRun) {
+            case 0:
+                APDU = NowTime(APDU);
+                break;
+            case 1:
+                APDU = RunApdu(APDU);
+                break;
+            case 6:
+                APDU = UpSportApdu(APDU);
+                break;
+            case 7:
+                APDU = ClearApdu(APDU);
+                break;
+        }
+        return APDU;
+    }
+
+
+    function formatDate(now) {
+        if (typeof now == 'undefined') {
+            now = new Date();
+        } else {
+            now = new Date(now);
+        }
+        var year = now.getFullYear();
+        var month = addZero(now.getMonth() + 1);
+        var date = addZero(now.getDate());
+        var hour = addZero(now.getHours());
+        var minute = addZero(now.getMinutes());
+        var second = addZero(now.getSeconds());
+        return year + "-" + month + "-" + date + " " + hour + ":" + minute + ":" + second;
+    }
+
+    /**
+     * 获取显示机器的信息
+     */
+    function DeviceInfoSet(info) {
+        //确定指令未受干扰
+        if ((info[0] == 'F8' && info[19] == 'FD') || info[4] == 'FD') {
+            //数据校验
+            if (CheckSign(info)) {
+                //                    clearInterval(timeForId);
+                if (info[1] == 'A5') {
+                    //机型型号
+                    var tmp = parseInt(info[3] + info[4], 16);
+                    deviceStatus['serial'] = tmp;
+                    deviceStatus['uuid'] = '1234-V1';
+                    showLog('uuid' + tmp);
+                    isRun = 1;
+                    SendApdu();
+                } else if (info[1] == 'A2') {
+                    if (isRun == 7) {
+                        disDevice();
+                    } else {
+                        ResponApdu(info);
+                    }
+                } else if (info[1] == 'A3') {
+                    isRun = 7;
+                    SendApdu();
+                    changeLinkText('同步数据完成');
+                } else {
+                    if (isRun >= 2) isRun = 1;
+                }
+            }
+        }
+    }
+
+    /**
+     * 获取显示机器的信息
+     */
+    function ResponApdu(info) {
+        info[2] = parseInt(info[2], 16);
+        var clear = false, run = false;
+        switch (info[2]) {
+            case 1:
+                showLog('E01 通信异常保护');
+                break;
+            case 2:
+                showLog('E02 过流保护');
+                break;
+            case 3:
+                showLog('E03 无速度信号保护');
+                break;
+            case 4:
+                showLog('E04 电压异常保护');
+                break;
+            case 5:
+                showLog('E05 无扬升信号');
+                break;
+            case 10:
+                showLog('E10 安全锁脱落');
+                break;
+            case 11:
+                clear = true;
+                showLog('待机状态');
+                break;
+            case 12:
+                showLog('倒计时0s');
+                break;
+            case 13:
+                showLog('倒计时1s');
+                break;
+            case 14:
+                showLog('倒计时2s');
+                break;
+            case 15:
+                showLog('倒计时3s');
+                break;
+            case 16:
+                showLog('倒计时4s');
+                break;
+            case 17:
+                showLog('倒计时5s');
+                break;
+            case 18:
+                run = true;
+                showLog('运行状态');
+                break;
+            case 19:
+                showLog('缓慢停机状态');
+                break;
+            case 20:
+                clear = true;
+                showLog('暂停状态');
+                break;
+            case 21:
+                showLog('跑步机自检状态');
+                break;
+            case 22:
+                showLog('待机状态下 公制');
+                break;
+            case 23:
+                showLog('待机状态下 英制');
+                break;
+            case 24:
+                clear = true;
+                showLog('跑步机休眠状态');
+                break;
+            default:
+                showLog('D2预留');
+                break;
+        }
+        if (run) {
+            alert('跑步机正在运行状态，请在待机状态同步数据');
+        }
+        deviceStatus['time'] = parseInt(info[5] + info[6] + info[7], 16);
+        showLog(deviceStatus['time'] + ' s');
+        //            $('#time').html(deviceStatus['time'] + ' s');
+
+        deviceStatus['dist'] = parseInt(info[8] + info[9] + info[10], 16) / 100;
+        showLog(deviceStatus['dist'] + ' km');
+
+        deviceStatus['energy'] = parseInt(info[11] + info[12] + info[13], 16) / 10;
+        //            $('#calorie').html(deviceStatus['energy'] + ' cal');
+
+        deviceStatus['steps'] = parseInt(info[14] + info[15] + info[16], 16);
+        //            $('#steps').html(deviceStatus['steps']);
+
+        deviceStatus['stepf'] = Math.round(deviceStatus['steps'] / (deviceStatus['time'] / 60));
+        //pace
+        deviceStatus['pace'] = Math.round((deviceStatus['time']) / deviceStatus['dist']);
+
+        //speed
+        deviceStatus['speed'] = (deviceStatus['dist'] / (deviceStatus['time'] / 3600)).toFixed(2);
+        //            $('#speed').html(deviceStatus['speed'] +' km/h');
+
+        //startime
+        var timestamp = Date.parse(new Date());
+        timestamp -= deviceStatus['time'] * 1000;
+        deviceStatus['startime'] = formatDate(timestamp);
+
+        if (isRun >= 2 && !clear) {
+            isRun = 1;
+        } else if (clear) {
+            if (deviceStatus['time'] == 0) {
+                showInfo('数据为空,请跑步后再同步数据');
+                //                    changeLinkText('同步完成');
+                //                    disDevice();
+                return;
+            }
+            sendToServiceData();
+        }
+    }
+
+    function sendToServiceData() {
+        changeLinkText('上传数据中...');
+        if (isRun == 6) return;
+        isRun = 6;
+        var data = {
+            "mps": {},
+            "points": {},
+            "summary": {
+                "appver": "wechat 2017.04",
+                "avgbpm": 0,                           //平均心率
+                "lat": lat,                                    //经度
+                "lng": lnt,                                   //纬度
+                "date": deviceStatus['startime'], //跑步开始时间
+                "serial": deviceStatus['serial'],                         //机型
+                "tuuid": "WXP12017",    //跑步机id
+                "pace": deviceStatus['pace'],                         //配速
+                "sp": deviceStatus['speed'],                            //速度
+                "climb": "0",                          //爬升
+                "stepf": deviceStatus['stepf'],                        //步频
+                "ver": "2",                               //数据结构版本
+                "mode": 401,                          //运动模式
+                //101：室外跑步自由模式    102：室外跑步倒计时模式  103：室外跑倒计卡洛里模式   104：室外跑倒计距离模式
+                //201：室内跑自由模式    202：室内跑步倒计时模式  203：室内跑倒计卡洛里模式   204：室内跑倒计距离模式
+                //401：微信跑步模式
+                "dist": deviceStatus['dist'],                            //本次跑步总距离 单位：公里
+                "energy": deviceStatus['energy'],                        //本次跑步总消耗  单位：大卡
+                "points": 0,                            //总共多少个数据点
+                "steps": deviceStatus['steps'],                            //总步数
+                "time": deviceStatus['time'],                             //总时间，单位秒
+                "type": "2",                            //运动类型   1：室外跑步  2：跑步机跑步
+                "id": id,                         //用户应用内id
+                "maxsp": "0",                        //最高速度
+                "minsp": "0",                             //最慢速度
+                "model": deviceStatus['serial'],                             //跑步机型号,
+                "hm": 0,                             //半马时间 类型:整型,
+                "fm": 0                             //全马时间 类型:整型
+            }
+        };
+        $.post(location.origin + '/Public/endRun', data, function (res) {
+            //                showLog(res);
+            var jsonRes = JSON.parse(res);
+            if (jsonRes.ret == 200 && jsonRes.data.code === '0') {
+                deviceStatus['detailid'] = jsonRes.data.detailid;
+                showLog('跑步记录：' + jsonRes.data.detailid)
+                changeLinkText('上传步数中...');
+                SendApdu();
+                //                    StartInteractive();
+            }
+        });
+    }
+
+
+    function addZero(num) {
+        if (num < 10) {
+            num = '0' + num;
+        }
+        return num;
+    }
+
+    //处理MCU指令
+    function ArrToHex(arr) {
+        var newArr = new Array();
+        for (var i = 12, length1 = arr.length; i < length1; i++) {
+            newArr.push(hex(arr[i], 2));
+        }
+        return newArr;
+    }
+
+    /**
+     * 指令效验计算
+     * 查询：D0 0xF7 D1 0xA4 ... D9 0xFD
+     * 控制：D0 0xF7 D1 0xA2 ... D12 0xFD
+     */
+    function CheckSign(info) {
+        var len = info.length - 2;
+        var tmp = 0;
+        for (var i = 1; i < len; i++) {
+            tmp += parseInt(info[i], 16);
+        }
+        tmp = tmp & 255;
+        var tmp1 = (hex(tmp, 2) == info[18]) || (hex(tmp, 2) == info[3]);
+        return tmp1;
+    }
+
+    //初始查询指令
+    function NowTime(APDU) {
+        var myDate = new Date();
+        APDU[1] = 165;//0xA5
+        APDU[2] = myDate.getYear();        //获取当前年份(2位)
+        APDU[3] = myDate.getMonth() + 1;       //获取当前月份(0-11,0代表1月)
+        APDU[4] = myDate.getDate();        //获取当前日(1-31)
+        APDU[5] = myDate.getHours();       //获取当前小时数(0-23)
+        APDU[6] = myDate.getMinutes();     //获取当前分钟数(0-59)
+        APDU[7] = myDate.getSeconds();     //获取当前秒数(0-59)
+        var a8 = 0;
+        for (var i = 1; i <= 7; i++) {
+            a8 += APDU[i];
+        }
+        //只保留低位一字节，超出部分舍弃
+        APDU[8] = hex((a8 & 255));
+
+        for (var i = 1; i <= 7; i++) {
+            APDU[i] = hex(APDU[i]);
+        }
+        APDU[9] = '0xFD';//0xFD
+        return APDU;
+    }
+
+    //步数上报指令
+    function UpSportApdu(APDU) {
+        APDU[1] = 163;//0xA3
+        APDU[5] = APDU[6] = APDU[7] = APDU[8] = APDU[9] = APDU[10] = 0;
+        var tmp = hex(deviceStatus['steps'], 2);
+        if (tmp.length > 4) {
+            APDU[2] = parseInt(tmp[0] + tmp[1], 16);
+            APDU[3] = parseInt(tmp[2] + tmp[3], 16);
+            APDU[4] = parseInt(tmp[4] + tmp[5], 16);
+        } else if (tmp.length > 2) {
+            APDU[2] = 0;
+            APDU[3] = parseInt(tmp[0] + tmp[1], 16);
+            APDU[4] = parseInt(tmp[2] + tmp[3], 16);
+        } else {
+            APDU[2] = 0;
+            APDU[3] = 0;
+            APDU[4] = parseInt(tmp[0] + tmp[1], 16);
+        }
+        var a11 = 0;
+        for (var i = 1; i <= 10; i++) {
+            a11 += APDU[i];
+        }
+        //只保留低位一字节，超出部分舍弃
+        APDU[11] = hex((a11 & 255));
+
+        for (var i = 1; i <= 10; i++) {
+            APDU[i] = hex(APDU[i]);
+        }
+
+        APDU[12] = '0xFD';//0xFD
+        return APDU;
+    }
+
+    //清空数据指令
+    function ClearApdu(APDU) {
+
+        APDU[1] = '0xA2';//0xA2
+
+        APDU[2] = APDU[3] = APDU[4] = APDU[5] = APDU[7] = APDU[8] = APDU[9] = APDU[10] = '0x00';
+        APDU[6] = hex(21);
+        var a11 = 162 + 21;
+        //只保留低位一字节，超出部分舍弃
+        APDU[11] = hex((a11 & 255));
+        APDU[12] = '0xFD';//0xFD
+        return APDU;
+    }
+
+    //运行中信息获取指令
+    function RunApdu(APDU) {
+
+        APDU[11] = APDU[1] = '0xA2';//0xA2
+
+        APDU[2] = APDU[3] = APDU[4] = APDU[5] = APDU[6] = APDU[7] = APDU[8] = APDU[9] = APDU[10] = '0x00';
+
+        APDU[12] = '0xFD';//0xFD
+        return APDU;
+    }
+
+    /**
+     * dec转换hex, 0x和补0
+     * prefix 0x前缀
+     */
+    function hex(decValue, prefix) {
+        var prefix = prefix || 1;
+        var hexValue = (decValue.toString(16)).toUpperCase();
+        //单数位补0
+        if (hexValue.length % 2 == 1) {
+            hexValue = '0' + hexValue;
+        }
+        if (!hexValue) {
+            hexValue = '00';
+        }
+        //补0x标识
+        if (prefix == 1) {
+            hexValue = '0x' + hexValue;
+        }
+        return hexValue;
+    }
+
+    /**
+     * Byte数组转Base64字符,原理同上
+     * @Param [0x00,0x00]
+     * @return Base64字符串
+     */
+    function bytes_array_to_base64(array) {
+        if (array.length == 0) {
+            return "";
+        }
+        var b64Chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
+        var result = "";
+        // 给末尾添加的字符,先计算出后面的字符
+        var d3 = array.length % 3;
+        var endChar = "";
+        if (d3 == 1) {
+            var value = array[array.length - 1];
+            endChar = b64Chars.charAt(value >> 2);
+            endChar += b64Chars.charAt((value << 4) & 0x3F);
+            endChar += "==";
+        } else if (d3 == 2) {
+            var value1 = array[array.length - 2];
+            var value2 = array[array.length - 1];
+            endChar = b64Chars.charAt(value1 >> 2);
+            endChar += b64Chars.charAt(((value1 << 4) & 0x3F) + (value2 >> 4));
+            endChar += b64Chars.charAt((value2 << 2) & 0x3F);
+            endChar += "=";
+        }
+
+        var times = array.length / 3;
+        var startIndex = 0;
+        // 开始计算
+        for (var i = 0; i < times - (d3 == 0 ? 0 : 1); i++) {
+            startIndex = i * 3;
+
+            var S1 = array[startIndex + 0];
+            var S2 = array[startIndex + 1];
+            var S3 = array[startIndex + 2];
+
+            var s1 = b64Chars.charAt(S1 >> 2);
+            var s2 = b64Chars.charAt(((S1 << 4) & 0x3F) + (S2 >> 4));
+            var s3 = b64Chars.charAt(((S2 & 0xF) << 2) + (S3 >> 6));
+            var s4 = b64Chars.charAt(S3 & 0x3F);
+            // 添加到结果字符串中
+            result += (s1 + s2 + s3 + s4);
+        }
+        return result + endChar;
+    }
+    }
+</script>
+<?php include 'foot.php';?>

@@ -2,10 +2,10 @@
 namespace App\C\Admin;
 /**
  *         ▂▃╬▄▄▃▂▁▁
- *  ●●●█〓██████████████▇▇▇▅▅▅▅▅▅▅▅▅▇▅▅          BUG
- *  ▄▅████☆RED █ WOLF☆███▄▄▃▂
- *  █████████████████████████████
- *  ◥⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙◤
+ *  ●●●█〓████████████▇▇▇▅▅▅▅▅▅▅▅▅▇▅▅          BUG
+ *  ▄▅█████☆█☆█☆███████▄▄▃▂
+ *  ███████████████████████████
+ *  ◥⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙◤
  *
  * demo 示例
  * @author 路漫漫
@@ -13,7 +13,7 @@ namespace App\C\Admin;
  * @version
  * v2016/12/09 初版
  */
-class AdminC extends \Base\C {
+class AdminC extends \Base\Lib\C {
     function __construct() {
         if (!defined('IS_ADMIN') || !IS_ADMIN){
             die();

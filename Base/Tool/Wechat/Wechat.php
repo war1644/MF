@@ -107,6 +107,7 @@ class Wechat {
 	const MASS_SEND_URL = '/message/mass/send?';
 	const TEMPLATE_SET_INDUSTRY_URL = '/template/api_set_industry?';
 	const TEMPLATE_ADD_TPL_URL = '/template/api_add_template?';
+	const TEMPLATE_GET_TPL_LIST = '/template/get_all_private_template?';
 	const TEMPLATE_SEND_URL = '/message/template/send?';
 	const MASS_SEND_GROUP_URL = '/message/mass/sendall?';
 	const MASS_DELETE_URL = '/message/mass/delete?';
@@ -254,15 +255,16 @@ class Wechat {
     public $cacheDir;
 
 	public function __construct($options) {
-        $this->token = $options['token'] OR '';
-        $this->encodingAesKey = $options['encodingaeskey'] OR '';
-        $this->appid = $options['appid'] OR '';
-        $this->tokenName = $options['appid'] OR 'weToken';
-        $this->appsecret = $options['appsecret'] OR '';
-        $this->debug = $options['debug'] OR false;
-        $this->logcallback = $options['logcallback'] OR false;
-        $this->cacheDir = $options['cacheDir'] OR '';
-    }
+		$this->token = $options['token'];
+		$this->encodingAesKey = $options['encodingaeskey'];
+		$this->appid = $options['appid'];
+		//缓存的access token name
+		$this->tokenName = 'wxAccessToken';
+		$this->appsecret = $options['appsecret'];
+		$this->debug = $options['debug'];
+		$this->logcallback = $options['logcallback'];
+		$this->cacheDir = $options['cacheDir'];
+	}
 
 	/**
 	 * 效验微信服务器合法性
@@ -2407,6 +2409,7 @@ class Wechat {
 		return false;
 	}
 
+
 	/**
 	 * 获取关注者详细信息
 	 * @param string $openid
@@ -2779,6 +2782,25 @@ class Wechat {
 	    }
 	    return false;
 	}
+    /**
+     * 模板消息 获取模板列表
+     * 成功返回消息模板的调用id
+     * @return boolean|array
+     */
+    public function getTemplateMessage(){
+        if (!$this->access_token && !$this->checkAuth()) return false;
+        $result = $this->http_get(self::API_URL_PREFIX.self::TEMPLATE_GET_TPL_LIST.'access_token='.$this->access_token);
+        if($result){
+            $json = json_decode($result,true);
+            if (!$json || !empty($json['errcode'])) {
+                $this->errCode = $json['errcode'];
+                $this->errMsg = $json['errmsg'];
+                return false;
+            }
+            return $json['template_list'];
+        }
+        return false;
+    }
 
 	/**
 	 * 模板消息 添加消息模板
@@ -4927,6 +4949,6 @@ class ErrorCode {
             return self::$errCode[$err];
         } else {
             return false;
-        };
+        }
     }
 }

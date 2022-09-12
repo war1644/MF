@@ -15,19 +15,13 @@
  */
 /***********************检测常量**************************/
 //核心常量
-//define('BASE_URL' , '/');
-//define('API_URL' , 'api.com.cn/V0.5/');
-defined('RUN_PATH') || define('RUN_PATH' , MFPATH.'../data/');
+defined('MFPATH') || define('MFPATH' , $_SERVER["DOCUMENT_ROOT"].'/../');
+defined('RUN_PATH') || define('RUN_PATH' , MFPATH.'RunData/');
 defined('V_PATH') || define('V_PATH' , MFPATH.'Public/V/');
-defined('V_URL') || define('V_URL' , BASE_URL.'V/');
 defined('UP_PATH') || define('UP_PATH' , RUN_PATH.'Upload/');
 defined('CONFIG_PATH') || define('CONFIG_PATH' , MFPATH.'Base/Config/');
-defined('STATIC_URL') || define('STATIC_URL' , V_URL.'Static/');
 defined('CACHE_PATH') || define('CACHE_PATH' , RUN_PATH.'Cache/');
-
 //功能性常量
-defined('REDIS') || define('REDIS' , false);
-//可以是A_PATH,B_PATH等等，为多项目提供支持
 defined('APP_PATH') || define('APP_PATH' , MFPATH.'App/');
 
 /***********************框架需要的全局内容可以在此引入**************************/
@@ -36,8 +30,7 @@ include MFPATH."Base/Lib/F.php";
 
 //接管系统
 include MFPATH."Base/Lib/Base.php";
-//路由,交通指挥出场
-if(file_exists(APP_PATH.'Config/config.php')){
-    include APP_PATH."Config/routes.php";
-}
-include CONFIG_PATH."routes.php";
+
+//启动服务
+$S = \Base\Tool\Socket::ins('192.168.1.26',8404);
+//\Base\Tool\Socket::ins('0.0.0.0',8404);

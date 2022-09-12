@@ -2,16 +2,16 @@
 namespace Base\Tool;
 /**
  *         ▂▃╬▄▄▃▂▁▁
- *  ●●●█〓██████████████▇▇▇▅▅▅▅▅▅▅▅▅▇▅▅          BUG
- *  ▄▅████☆RED█WOLF☆████▄▄▃▂
- *  █████████████████████████████
- *  ◥⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙◤
+ *  ●●●█〓████████████▇▇▇▅▅▅▅▅▅▅▅▅▇▅▅          BUG
+ *  ▄▅█████☆█☆█☆███████▄▄▃▂
+ *  ███████████████████████████
+ *  ◥⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙◤
  *
  *
  * @author 路漫漫
  * @link ahmerry@qq.com
  * @version
- * v0.9 2016/12/19   初版
+ * v2016/12/19   初版
  */
 class Upload {
 	public $file = [];
@@ -44,14 +44,9 @@ class Upload {
 
 	// 创建目录
 	public function createDir() {
-		$this->dir = 'Upload' . date('/Y/m');
-		$path = MFPATH . $this->dir;
-
-		if(is_dir($path) || mkdir($path , 0777 , true) ) {
-			return $this->dir;
-		} else {
-			throw new \Exception("create dir fail", 500);
-		}
+		$this->dir = UP_PATH . date('Ymd/');
+        if (CheckDir($this->dir)) return true;
+        return false;
 	}
 
 	// 获取文件后缀
@@ -62,8 +57,7 @@ class Upload {
 
 	// 生成文件名
 	public function createName($len = 6) {
-		$str = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz123456789';
-		return $this->name = substr(str_shuffle($str) , 0 , $len);
+		return $this->name = RandStr($len);
 	}
 	// 检查是否允许上传
 	// 检查上传文件大小

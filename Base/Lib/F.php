@@ -1,10 +1,11 @@
 <?php
 /**
  *         ▂▃╬▄▄▃▂▁▁
- *  ●●●█〓██████████████▇▇▇▅▅▅▅▅▅▅▅▅▇▅▅          BUG
- *  ▄▅████☆RED █ WOLF☆███▄▄▃▂
- *  █████████████████████████████
- *  ◥⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙◤
+ *  ●●●█〓████████████▇▇▇▅▅▅▅▅▅▅▅▅▇▅▅          BUG
+ *  ▄▅█████☆█☆█☆███████▄▄▃▂
+ *  ███████████████████████████
+ *  ◥⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙▲⊙◤
+ *
  *
  * 全局方法，采用首字母大写驼峰命名（以标识这是框架的全局方法）
  * @author 路漫漫
@@ -14,6 +15,70 @@
  * v2017/02/25   扩充了一些方法
  * v2016/12/08   初版
  */
+
+function build_table_fields($fields, $red = 0) {
+    echo begin_tag('tr', $red);
+
+    foreach ($fields as $field) {
+        echo build_th($field, $red);
+    }
+    echo end_tag('tr');
+}
+
+function begin_tag($tag, $red = 0) {
+    if ($red ==1) {
+        return "<$tag style='background:#E6EDF5;'>";
+    }
+    return "<$tag>";
+}
+
+function build_th($str, $red = 0) {
+    if($red==2){
+        return "<th style='color:#F00;'>".$str."</th>";
+    }
+    return "<th>".$str."</th>";
+}
+
+function end_tag($tag) {
+    return "</$tag>";
+}
+
+// 用于将从数据库读到的rows 按指定key转成map
+function rows_to_map($rows, $bykey) {
+    $map = array();
+    foreach ($rows as $one) {
+        $map[$one[$bykey]] = $one;
+    }
+    return $map;
+}
+
+/**
+ * 缓存
+ * @param $content 内容
+ * @param $name 文件名
+ * @param $path 日志路径
+ */
+function SetCache($content, $name, $path='') {
+    $path = CACHE_PATH. $path;
+    if (!$name) return false;
+    CheckDir($path);
+    $file = $path.$name;
+    if (is_array($content) || is_object($content)) $content = json_encode($content,JSON_UNESCAPED_UNICODE);
+    return file_put_contents($file,$content);
+}
+
+/**
+ * 缓存
+ * @param $content 内容
+ * @param $name 文件名
+ * @param $path 日志路径
+ */
+function GetCache( $name, $path='') {
+    $path = CACHE_PATH. $path;
+    $file = $path.$name;
+    $cache = json_decode(@file_get_contents($file),true);
+    return $cache;
+}
 
 /**
  * 随机字符串
@@ -32,9 +97,18 @@ function RandStr($length=6) {
  * @return json || jsonp
  */
 function ResultFormat($params = []){
-    if (!isset($_GET['callback'])) return json_encode($params);
+    header('Content-Type:application/json; charset=utf-8');
+
+    if (!isset($_GET['callback'])){
+        if (is_string($params)) return $params;
+        return json_encode($params,JSON_UNESCAPED_UNICODE);
+    }
     $callback = $_GET['callback'];
-    $res = json_encode($params);
+    if (is_string($params)){
+        $res = $params;
+    }else{
+        $res = json_encode($params,JSON_UNESCAPED_UNICODE);
+    }
     return sprintf("%s(%s)", $callback, $res);
 }
 
@@ -53,8 +127,7 @@ function MFLog($log, $name='', $path='') {
     if (!$name) $name = date( 'Ymd' );
     CheckDir($path);
     $file = $path.$name.'.log';
-    if (is_array($log)) $log = json_encode($log);
-
+    if (is_array($log) || is_object($log)) $log = json_encode($log,JSON_UNESCAPED_UNICODE);
     $content = "\n\nTime : ".date('Y-m-d H:i:s')."\n".$log;
     error_log($content,3,$file);
 }
@@ -67,13 +140,17 @@ function Config($key='') {
     if (!defined('CONFIG')){
         //载入配置并供全局调用
         $C = include CONFIG_PATH.'config.php';
+        if (file_exists(APP_PATH.'Config/config.php')){
+            $APP_C = include APP_PATH.'Config/config.php';
+            $C = array_merge($C,$APP_C);
+        }
         define('CONFIG',json_encode($C));
     }else{
         $C = json_decode(CONFIG,true);
     }
 
     if ($key === '') return $C;
-    return $C[$key];
+    return isset($C[$key])?$C[$key]:false;
 }
 
 /**
@@ -104,6 +181,9 @@ function Session($name='',$value=''){
         return true;
     }else if($value){
         $_SESSION[$name] = $value;
+        return true;
+    }else if(is_null($name)){
+        session_destroy();
         return true;
     }
 }

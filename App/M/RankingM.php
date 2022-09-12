@@ -1,5 +1,4 @@
 <?php
-namespace App\M;
 /**
  *         ▂▃╬▄▄▃▂▁▁
  *  ●●●█〓████████████▇▇▇▅▅▅▅▅▅▅▅▅▇▅▅          BUG
@@ -11,10 +10,16 @@ namespace App\M;
  * @author 路漫漫
  * @link ahmerry@qq.com
  * @version
- * v0.9 2016/12/18 初版
+ * v2017/4/7 初版
  */
-class UserM extends \Base\Lib\M {
-    function test() {
-        var_dump($this->prefix);
+
+namespace App\M;
+
+class RankingM extends MyModel {
+
+    public function countDistance($id) {
+        $sql = "select distance from $this->table WHERE id=? and type=?";
+        $res = $this->executeSql($sql,[$id,4]);
+        return $res ? $res['distance'] : 0;
     }
 }
